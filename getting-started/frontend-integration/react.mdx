@@ -8,7 +8,7 @@ description:
 
 For the full React Library Reference, click [here](/reference/frontend-apis/react).
 
-### Quick example
+## Quick example
 
 The following example will display a different message for logged-in users vs
 logged out. We'll go into more detail about how it works and show more advanced
@@ -38,7 +38,7 @@ root.render(
 
 Your auth URL can be found in your PropelAuth dashboard. We are using an ENV variable because you will have a different URL for your test and production environment.
 
-### How it works
+## How it works
 
 ![auth overview](/images/react-1.png)
 
@@ -63,7 +63,7 @@ third-party cookie issues for your users. Browsers like Safari, for example,
 will block cookies across domains. For this reason, we include custom domains in
 all of our [plans](https://www.propelauth.com/pricing).
 
-### Configure
+## Configure
 
 Go to your [PropelAuth project](https://auth.propelauth.com/signup) and click
 **Frontend Integration** in the sidebar. You will see:
@@ -78,7 +78,7 @@ Go to your [PropelAuth project](https://auth.propelauth.com/signup) and click
 - **Auth URL** - This is where your authentication pages are hosted, and you
   will need this for the setup step.
 
-### Installation
+## Installation
 
 In your React app, install the **@propelauth/react** library.
 
@@ -94,7 +94,7 @@ $ yarn add @propelauth/react
 
 </CodeGroup>
 
-### Set up AuthProvider
+## Set up AuthProvider
 
 **AuthProvider** is the provider of a
 [React context](https://reactjs.org/docs/context.html) that manages the current
@@ -119,7 +119,7 @@ root.render(
 
 The authUrl is the base URL where your authentication pages are hosted. You can find this under the Frontend Integration section for your project.
 
-### RequiredAuthProvider
+## RequiredAuthProvider
 
 If your entire application requires a user to be logged in, you can instead use
 **RequiredAuthProvider**.
@@ -147,7 +147,7 @@ RequiredAuthProvider has two additional props:
 2. **displayIfLoggedOut**: A React eleent to display if the current user is
    logged out. Defaults to [RedirectToLogin](/reference/frontend-apis/react#redirecttologin)
 
-### Get current user information
+## Get current user information
 
 There are three options for getting the current user's information:
 
@@ -266,7 +266,7 @@ information. authInfo contains:
 | [accessHelper](/reference/frontend/react#accesshelper) | An object with useful functions for accessing role and permissions (RBAC)                                                     |
 | [user](/reference/frontend/react#the-user-object)      | If user is logged in, this contains metadata about them. Otherwise, null                                                      |
 
-### Other utilities
+## Other utilities
 
 - [useLogoutFunction](/reference/frontend-apis/react#logout) - Returns a function for logging out the current user.
 
@@ -305,7 +305,7 @@ type OrgMemberInfo = {
 }
 ```
 
-### Roles and Permissions
+## Roles and Permissions
 
 Your users will have a role in an organization. By default, these roles are
 Owner, Admin, and Member - but you can configure them. Each role can have
@@ -325,7 +325,7 @@ type AccessHelper = {
 }
 ```
 
-### Active Organization
+## Active Organization
 
 Since users can be in more than one organization, one common use case is to pick
 a single organization that your user is currently operating within.
@@ -353,7 +353,7 @@ function OrgName() {
 }
 ```
 
-### Making an authenticated HTTP request
+## Making an authenticated HTTP request
 
 For authenticated requests on behalf of your user, you must provide an access
 token. There are many of ways to make HTTP requests in Javascript. You could use
@@ -380,7 +380,7 @@ function whoAmI(accessToken) {
 }
 ```
 
-### Examples
+## Examples
 
 For detailed examples, please see
 [React Library Reference Examples](/reference/frontend-apis/react#examples).
