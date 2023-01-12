@@ -2,11 +2,13 @@
 title: "Javascript - Integrate your frontend"
 sidebarTitle: "Javascript"
 description:
-  "The following example will display a different message for logged-in users vs
-  logged out."
+  "This guide will show you how PropelAuth makes it easy to add authentication into your JS application"
 ---
 
-### Minimal example
+## Minimal example
+
+The following example will display a different message for logged-in users vs
+  logged out.
 
 We'll go into more detail about how it works and show more advanced examples
 down below.
@@ -15,8 +17,12 @@ down below.
 import { createClient } from "@propelauth/javascript";
 
 const client = createClient({
-  authUrl: "YOUR_AUTH_URL", // Your auth URL can be found in your PropelAuth dashboard. You will have a different URL for your test and production environment, so you may want to store it in an ENV variable.
-  enableBackgroundTokenRefresh: true, // PropelAuth uses short-lived tokens for security reasons. Enabling this feature will automatically refresh those tokens in the background. See technical details for more info.
+  // Your auth URL can be found in your PropelAuth dashboard. 
+  // You will have a different URL for your test and production environment, so you may want to store it in an ENV variable.
+  authUrl: "YOUR_AUTH_URL", 
+  // PropelAuth uses short-lived tokens for security reasons. 
+  // Enabling this feature will automatically refresh those tokens in the background. See technical details for more info.
+  enableBackgroundTokenRefresh: true, 
 });
 
 client.getAuthenticationInfoOrNull().then((authInfo) => {
@@ -29,7 +35,7 @@ client.getAuthenticationInfoOrNull().then((authInfo) => {
 });
 ```
 
-### Technial details
+## Technial details
 
 When a user logs in via your hosted pages, a secure, http-only cookie is
 created. This cookie allows PropelAuth to identify logged-in users. In
@@ -56,7 +62,7 @@ The access token is short-lived, and our libraries will refresh the token both
 periodically and when the user switches to your tab or reconnects to the
 internet.
 
-### Configure
+## Configure
 
 Go to your [PropelAuth project](https://auth.propelauth.com/signup) and click
 **Frontend Integration** in the sidebar. You will see:
@@ -69,7 +75,7 @@ Go to your [PropelAuth project](https://auth.propelauth.com/signup) and click
 - **Logout Redirect Path** - After a user logs out, they will be redirected
   here.
 
-### Installation
+## Installation
 
 In your application, install the **@propelauth/javascript** library.
 
@@ -93,7 +99,7 @@ import { createClient } from "@propelauth/javascript";
 
 Alternatively, you can use a CDN:
 
-```js
+```html
 <script
   src="https://www.unpkg.com/@propelauth/javascript@2.0.0/dist/javascript.min.js"
   integrity="sha384-CnMW/GT96q1vxl3xq1fIbUrmXpDIsXVtY+/FpJW+rMSCgjlOWpbVfs5G0dg2bMN5"
@@ -104,13 +110,13 @@ Alternatively, you can use a CDN:
 then a global **PropelAuth** object will be created, and you can call
 **createClient** from it:
 
-```js
+```html
 <script>
   PropelAuth.createClient({...});
 </script>
 ```
 
-### createClient
+## createClient
 
 `createClient` creates an authentication client which manages your access token,
 fetches user information, and provides other useful authentication functions.
@@ -120,16 +126,18 @@ tab or reconnects (if they were offline).
 
 ```js
 const authClient = createClient({
-  authUrl: "https://auth.yourdomain.com", // The base URL where your authentication pages are hosted. You can find this under the Frontend Integration section for your project.
-  enableBackgroundTokenRefresh: true, // If true, periodically refresh the access token in the background. This helps ensure you always have a valid token ready to go. Default true.
+  // The base URL where your authentication pages are hosted. You can find this under the Frontend Integration section for your project.
+  authUrl: "https://auth.yourdomain.com", 
+  // If true, periodically refresh the access token in the background. This helps ensure you always have a valid token ready to go. Default true.
+  enableBackgroundTokenRefresh: true, 
 });
 ```
 
-### AuthenticationInfo and User metadata
+## AuthenticationInfo and User metadata
 
 There are a few key types that this library uses, here are their signatures:
 
-```js
+```ts
 type AuthenticationInfo = {
     // An access token for the current logged in user
     accessToken: string,
@@ -173,11 +181,11 @@ type User = {
 }
 ```
 
-### Organizations, Roles, and Authorization
+## Organizations, Roles, and Authorization
 
 Here are more types that you can find in the AuthenticationInfo object
 
-```js
+```ts
 type OrgHelper = {
     // returns all orgs that the user is a member of
     getOrgs: () => OrgMemberInfo[],
@@ -206,16 +214,16 @@ type OrgMemberInfo = {
 }
 ```
 
-### Get current user information
+## Get current user information
 
-```
+```ts
 authClient.getAuthenticationInfoOrNull(forceRefresh?: boolean): Promise<AuthenticationInfo | null>
 ```
 
 If the user is logged in, this method returns authentication information about
 them, including their access token, user metadata, and, for B2B applications,
 organization information. See
-[AuthenticationInfo schema](/getting-started/frontend-integration/javascript) for
+[AuthenticationInfo schema](#authenticationinfo-and-user-metadata) for
 the full schema. Otherwise, this method returns null.
 
 The promise will generally resolve immediately, _without making an external
@@ -225,10 +233,10 @@ new one.
 If **forceRefresh** is true, this method will always fetch a new token. The
 default is false.
 
-### Example Usage
+## Example Usage
 
 You can see a full list of method on the client in our
-[reference](/reference/frontend/javascript). Here's an example which creates
+[reference](/reference/frontend-apis/javascript). Here's an example which creates
 signup/login/logout buttons that change based on whether the user is logged in
 or not.
 
@@ -275,7 +283,7 @@ If you have any issues seeing the logged-in user, check the FAQ.
 
 </Note>
 
-### Making an authenticated HTTP request
+## Making an authenticated HTTP request
 
 There are a lot of ways to make HTTP requests in Javascript. You could use the
 [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch),
@@ -284,7 +292,7 @@ or a library like [axios](https://www.npmjs.com/package/axios)
 
 Whichever you choose, to make an `authenticated` request on behalf of your user,
 you'll need to provide an access token. Access tokens are available from
-[getAuthenticationInfoOrNull](/reference/frontend/javascript/#get-current-user-information).
+[getAuthenticationInfoOrNull](/reference/frontend-apis/js/#get-current-user-information).
 You provide it in the request in the `Authorization` header, like so:
 
 ```
@@ -304,7 +312,7 @@ function whoAmI(accessToken) {
 }
 ```
 
-### Next Steps
+## Next Steps
 
 Done with your frontend? Next you can
-[integrate your backend](/getting-started/backend-integration/overview).
+[integrate your backend](/getting-started/backend-integration).
