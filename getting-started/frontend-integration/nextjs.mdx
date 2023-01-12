@@ -241,9 +241,9 @@ The code example above will inject the following props into Component:
 | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | [accessToken](/overview/access-tokens)     | If user is logged in, this string can access your APIs on behalf of the user. Otherwise, null. |
 | isLoggedIn                                              | Returns user logged in status                                                                  |
-| [orgHelper](/reference/frontend/nextjs#orghelper)       | An object with useful functions for managing organizations                                     |
-| [accessHelper](/reference/frontend/nextjs#accesshelper) | An object with useful functions for accessing role and permissions (RBAC)                      |
-| [user](/reference/frontend/nextjs#the-user-object)      | If user is logged in, this contains metadata about them. Otherwise, null                       |
+| [orgHelper](/reference/frontend-apis/nextjs#orghelper)       | An object with useful functions for managing organizations                                     |
+| [accessHelper](/reference/frontend-apis/nextjs#accesshelper) | An object with useful functions for accessing role and permissions (RBAC)                      |
+| [user](/reference/frontend-apis/nextjs#the-user-object)      | If user is logged in, this contains metadata about them. Otherwise, null                       |
 
 ### withRequiredAuthInfo
 
@@ -277,9 +277,9 @@ information. authInfo contains:
 | loading                                                 | True if the AuthProvider is still fetching auth information. This will only happen once when the application is first loaded. |
 | [accessToken](/overview/access-tokens)     | If user is logged in, this string can access your APIs on behalf of the user. Otherwise, null.                                |
 | isLoggedIn                                              | Returns user logged in status                                                                                                 |
-| [orgHelper](/reference/frontend/nextjs#orghelper)       | An object with useful functions for managing organizations                                                                    |
-| [accessHelper](/reference/frontend/nextjs#accesshelper) | An object with useful functions for accessing role and permissions (RBAC)                                                     |
-| [user](/reference/frontend/nextjs#the-user-object)      | If user is logged in, this contains metadata about them. Otherwise, null                                                      |
+| [orgHelper](/reference/frontend-apis/nextjs#orghelper)       | An object with useful functions for managing organizations                                                                    |
+| [accessHelper](/reference/frontend-apis/nextjs#accesshelper) | An object with useful functions for accessing role and permissions (RBAC)                                                     |
+| [user](/reference/frontend-apis/nextjs#the-user-object)      | If user is logged in, this contains metadata about them. Otherwise, null                                                      |
 
 ## Other utilities
 

@@ -144,9 +144,9 @@ which will inject the following props into Component:
 | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
 | [accessToken](/overview/access-tokens)          | If the user is logged in, this string can access your APIs on behalf of the user. Otherwise, null |
 | isLoggedIn                                                   | Returns user logged in status                                                                     |
-| [orgHelper](/reference/frontend/react/#the-org-helper)       | An object with useful functions for managing organizations                                        |
-| [accessHelper](/reference/frontend/react/#the-access-helper) | An object with useful functions for accessing role and permissions (RBAC)                         |
-| [user](/reference/frontend/react/#the-user-object)           | If the user is logged in, this contains metadata about them. Otherwise, null                      |
+| [orgHelper](/reference/frontend-apis/react/#the-org-helper)       | An object with useful functions for managing organizations                                        |
+| [accessHelper](/reference/frontend-apis/react/#the-access-helper) | An object with useful functions for accessing role and permissions (RBAC)                         |
+| [user](/reference/frontend-apis/react/#the-user-object)           | If the user is logged in, this contains metadata about them. Otherwise, null                      |
 
 #### withRequiredAuthInfo
 
@@ -157,7 +157,7 @@ withRequiredAuthInfo(Component, {
 });
 ```
 
-This is identical to [withAuthInfo](/reference/frontend/react/#with-auth-info),
+This is identical to [withAuthInfo](/reference/frontend-apis/react/#with-auth-info),
 except **Component** is only rendered if the user is logged in. You are
 guaranteed that **isLoggedIn** is true and the **accessToken** is not null.
 
@@ -177,9 +177,9 @@ A React hook which gets auth information. authInfo contains:
 | loading                                                      | True if the **AuthProvider** is still fetching auth information. This will only happen once when the application is first loaded. |
 | [accessToken](/overview/access-tokens)          | If the user is logged in, this string can access your APIs on behalf of the user. Otherwise, null                                 |
 | isLoggedIn                                                   | Returns user logged in status                                                                                                     |
-| [orgHelper](/reference/frontend/react/#the-org-helper)       | An object with useful functions for managing organizations                                                                        |
-| [accessHelper](/reference/frontend/react/#the-access-helper) | An object with useful functions for accessing role and permissions (RBAC)                                                         |
-| [user](/reference/frontend/react/#the-user-object)           | If the user is logged in, this contains metadata about them. Otherwise, null                                                      |
+| [orgHelper](/reference/frontend-apis/react/#the-org-helper)       | An object with useful functions for managing organizations                                                                        |
+| [accessHelper](/reference/frontend-apis/react/#the-access-helper) | An object with useful functions for accessing role and permissions (RBAC)                                                         |
+| [user](/reference/frontend-apis/react/#the-user-object)           | If the user is logged in, this contains metadata about them. Otherwise, null                                                      |
 
 ### Logout
 
@@ -257,7 +257,7 @@ export default withRequiredAuthInfo(Private, {
 
 A React component that redirects the user to the signup hosted authentication
 page when rendered. This is identical to calling **redirectToSignupPage** from
-[useRedirectFunctions](/reference/frontend/react/#use-redirect-functions).
+[useRedirectFunctions](/reference/frontend-apis/react/#use-redirect-functions).
 
 ### Schemas
 
