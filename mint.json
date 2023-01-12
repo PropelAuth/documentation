@@ -24,7 +24,7 @@
   "topbarLinks": [
     {
       "name": "Contact us",
-      "url": "support@propelauth.com"
+      "url": "mailto:support@propelauth.com"
     }
   ],
   "anchors": [
