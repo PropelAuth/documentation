@@ -6,7 +6,7 @@ description:
   hosted authentication service into your React application."
 ---
 
-For the full React Library Reference, click [here](/reference/frontend/react).
+For the full React Library Reference, click [here](/reference/frontend-apis/react).
 
 ### Quick example
 
@@ -14,7 +14,7 @@ The following example will display a different message for logged-in users vs
 logged out. We'll go into more detail about how it works and show more advanced
 examples below.
 
-```js
+```jsx
 import { AuthProvider, withAuthInfo } from "@propelauth/react";
 
 const App = withAuthInfo((props) => {
@@ -29,12 +29,14 @@ const App = withAuthInfo((props) => {
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <AuthProvider authUrl={process.env.REACT_APP_AUTH_URL}> // Your auth URL can be found in your PropelAuth dashboard. We are using an ENV variable because you will have a different URL for your test and production environment.
+    <AuthProvider authUrl={process.env.REACT_APP_AUTH_URL}> 
       <App />
     </AuthProvider>
   </React.StrictMode>
 );
 ```
+
+Your auth URL can be found in your PropelAuth dashboard. We are using an ENV variable because you will have a different URL for your test and production environment.
 
 ### How it works
 
@@ -103,17 +105,19 @@ information and all other components fetches from it.
 It is recommended to put the **AuthProvider** context at the top level of your
 application, so it never unmounts.
 
-```js
+```jsx
 import { AuthProvider } from "@propelauth/react";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <AuthProvider authUrl={process.env.REACT_APP_AUTH_URL}> // The authUrl is the base URL where your authentication pages are hosted. You can find this under the Frontend Integration section for your project.
+  <AuthProvider authUrl={process.env.REACT_APP_AUTH_URL}> 
     <YourApp />
   </AuthProvider>,
   document.getElementById("root")
 );
 ```
+
+The authUrl is the base URL where your authentication pages are hosted. You can find this under the Frontend Integration section for your project.
 
 ### RequiredAuthProvider
 
@@ -141,7 +145,7 @@ RequiredAuthProvider has two additional props:
 1. **displayWhileLoading**: A React element to display while the AuthProvider is
    fetching auth information. Defaults to an empty element
 2. **displayIfLoggedOut**: A React eleent to display if the current user is
-   logged out. Defaults to [RedirectToLogin](/reference/frontend/react)
+   logged out. Defaults to [RedirectToLogin](/reference/frontend-apis/react#redirecttologin)
 
 ### Get current user information
 
@@ -149,7 +153,7 @@ There are three options for getting the current user's information:
 
 <CodeGroup>
 
-```js withAuthInfo
+```jsx withAuthInfo
 import { withAuthInfo } from "@propelauth/react";
 
 function MinimalExample(props) {
@@ -161,10 +165,12 @@ function MinimalExample(props) {
   }
 }
 
-export default withAuthInfo(MinimalExample); // A React Higher-Order Component that provides common values like isLoggedIn and accessToken. These values are injected into the props of your component.
+// withAuthInfo is a React Higher-Order Component that provides common values like isLoggedIn and accessToken. 
+// These values are injected into the props of your component.
+export default withAuthInfo(MinimalExample); 
 ```
 
-```js withRequiredAuthInfo
+```jsx withRequiredAuthInfo
 import { withRequiredAuthInfo } from "@propelauth/react";
 
 function MinimalExample(props) {
@@ -172,10 +178,12 @@ function MinimalExample(props) {
   return <div>You are logged in as {props.user.email}</div>;
 }
 
-export default withRequiredAuthInfo(MinimalExample); // A React Higher-Order Component that provides common values like isLoggedIn and accessToken. These values are injected into the props of your component.
+// withAuthInfo is a React Higher-Order Component that provides common values like isLoggedIn and accessToken. 
+// These values are injected into the props of your component.
+export default withRequiredAuthInfo(MinimalExample); 
 ```
 
-```js useAuthInfo
+```jsx useAuthInfo
 import { useAuthInfo } from "@propelauth/react";
 
 function MinimalExample() {
@@ -206,9 +214,9 @@ should) add as many of these functions as you need.
 
 </Note>
 
-### withAuthInfo
+#### withAuthInfo
 
-```js
+```jsx
 withAuthInfo(Component, {
   displayWhileLoading: <div>Loading...</div>, // A React element to display while the AuthProvider is fetching auth information. Defaults to an empty element
 });
@@ -220,13 +228,13 @@ The code example above will inject the following props into Component:
 | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
 | [accessToken](/overview/access-tokens)    | If user is logged in, this string can access your APIs on behalf of the user. Otherwise, null. |
 | isLoggedIn                                             | Returns user logged in status                                                                  |
-| [orgHelper](/reference/frontend/react#orghelper)       | An object with useful functions for managing organizations                                     |
-| [accessHelper](/reference/frontend/react#accesshelper) | An object with useful functions for accessing role and permissions (RBAC)                      |
-| [user](/reference/frontend/react#the-user-object)      | If user is logged in, this contains metadata about them. Otherwise, null                       |
+| [orgHelper](/reference/frontend-apis/react#orghelper)       | An object with useful functions for managing organizations                                     |
+| [accessHelper](/reference/frontend-apis/react#accesshelper) | An object with useful functions for accessing role and permissions (RBAC)                      |
+| [user](/reference/frontend-apis/react#the-user-object)      | If user is logged in, this contains metadata about them. Otherwise, null                       |
 
-### withRequiredAuthInfo
+#### withRequiredAuthInfo
 
-```js
+```jsx
 withRequiredAuthInfo(Component, {
   displayWhileLoading: <div>Loading...</div>, // A React element to display while the AuthProvider is fetching auth information. Defaults to an empty element
   displayIfLoggedOut: <div>You are logged out</div>, // A React element to display if the current user is logged out. Defaults to <RedirectToLogin />
@@ -237,9 +245,9 @@ This is identical to withAuthInfo, except Component is only rendered if the user
 is logged in. You are guaranteed that isLoggedIn is true and the accessToken is
 not null.
 
-### useAuthInfo
+#### useAuthInfo
 
-```js
+```jsx
 function Component() {
   const authInfo = useAuthInfo();
   // ...rest of the component
@@ -375,7 +383,7 @@ function whoAmI(accessToken) {
 ### Examples
 
 For detailed examples, please see
-[React Library Reference Examples](/reference/frontend/react).
+[React Library Reference Examples](/reference/frontend/react#examples).
 
 ### Next Steps
 
