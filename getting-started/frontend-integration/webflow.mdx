@@ -9,26 +9,30 @@ Whether you are starting with Webflow and plan to move to another framework
 (e.g. React/Next.js) or if you are building something like documentation in
 Webflow and want to include dynamic authenticated content, PropelAuth can help.
 
-### Minimal example
+## Minimal example
 
 The following example will display a different message for logged-in users vs
 logged out. We'll go into more detail about how it works and show more advanced
 examples down below.
 
-```js
+```html
 <script src="https://www.unpkg.com/@propelauth/javascript@2.0.0/dist/javascript.min.js"
         integrity="sha384-CnMW/GT96q1vxl3xq1fIbUrmXpDIsXVtY+/FpJW+rMSCgjlOWpbVfs5G0dg2bMN5"
         crossorigin="anonymous"></script>
 <script>
     const client = PropelAuth.createClient({
-        authUrl: "YOUR_AUTH_URL", // Your auth URL can be found in your PropelAuth dashboard. You will have a different URL for your test and production environment, so you may want to store it in an ENV variable.
-        enableBackgroundTokenRefresh: true, // PropelAuth uses short-lived tokens for security reasons. Enabling this feature will automatically refresh those tokens in the background. See technical details for more info.
+        // Your auth URL can be found in your PropelAuth dashboard. 
+        authUrl: "YOUR_AUTH_URL", 
+        // PropelAuth uses short-lived tokens for security reasons. 
+        // Enabling this feature will automatically refresh those tokens in the background. See technical details for more info.
+        enableBackgroundTokenRefresh: true, 
     });
 
     client.getAuthenticationInfoOrNull().then(authInfo => {
         const element = document.getElementById("text")
         if (authInfo) {
-            element.innerText = "You are logged in as " + authInfo.user.email // User contains other metadata like userId
+            // User contains other metadata like userId
+            element.innerText = "You are logged in as " + authInfo.user.email 
         } else {
             element.innerText = "You are not logged in"
         }
@@ -36,7 +40,7 @@ examples down below.
 </script>
 ```
 
-### Technial details
+## Technial details
 
 When a user logs in via your hosted pages, a secure, http-only cookie is
 created. This cookie allows PropelAuth to identify logged-in users. In
@@ -63,7 +67,7 @@ The access token is short-lived, and our libraries will refresh the token both
 periodically and when the user switches to your tab or reconnects to the
 internet.
 
-### Configure
+## Configure
 
 Go to your [PropelAuth project](https://auth.propelauth.com/signup) and click
 **Frontend Integration** in the sidebar. You will see:
@@ -76,11 +80,11 @@ Go to your [PropelAuth project](https://auth.propelauth.com/signup) and click
 - **Logout Redirect Path** - After a user logs out, they will be redirected
   here.
 
-### Installation
+## Installation
 
 Add the following custom code to the `Inside <head>` tag of your page.
 
-```js
+```html
 <script
   src="https://www.unpkg.com/@propelauth/javascript@2.0.0/dist/javascript.min.js"
   integrity="sha384-CnMW/GT96q1vxl3xq1fIbUrmXpDIsXVtY+/FpJW+rMSCgjlOWpbVfs5G0dg2bMN5"
@@ -91,7 +95,7 @@ Add the following custom code to the `Inside <head>` tag of your page.
 then a global `PropelAuth` object will be created, and you can call
 `createClient` from it:
 
-```js
+```html
 <script>
     PropelAuth.createClient({...});
 </script>
@@ -107,18 +111,20 @@ tab or reconnects (if they were offline).
 
 ```js
 const client = createClient({
-  authUrl: "REPLACE_ME", // The base URL where your authentication pages are hosted. You can find this under the Frontend Integration section for your project.
-  enableBackgroundTokenRefresh: true, // If true, periodically refresh the access token in the background. This helps ensure you always have a valid token ready to go. Default true.
+  // The base URL where your authentication pages are hosted. You can find this under the Frontend Integration section for your project.
+  authUrl: "REPLACE_ME", 
+  // If true, periodically refresh the access token in the background. This helps ensure you always have a valid token ready to go. Default true.
+  enableBackgroundTokenRefresh: true, 
 });
 ```
 
-### Usage
+## Usage
 
-[getAuthenticationInfoOrNull](/reference/frontend/javascript) will return user
+[getAuthenticationInfoOrNull](/reference/frontend-apis/js#get-current-user-information) will return user
 metadata and the current user's organizations.
 
 You can see a full list of methods on the client in our
-[reference](/reference/frontend/javascript). Here's an example which creates
+[reference](/reference/frontend-apis/js). Here's an example which creates
 signup/login/logout buttons that change based on whether the user is logged in
 or not.
 
@@ -180,7 +186,7 @@ If you have any issues seeing the logged-in user, check the FAQ.
 
 </Note>
 
-### Making an authenticated HTTP request
+## Making an authenticated HTTP request
 
 There are a lot of ways to make HTTP requests in Javascript. You could use the
 [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch),
@@ -212,4 +218,4 @@ function whoAmI(accessToken) {
 ### Next Steps
 
 Done with your frontend? Next you can
-[integrate your backend](/getting-started/backend-integration/overview).
+[integrate your backend](/getting-started/backend-integration).
