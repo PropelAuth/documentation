@@ -178,5 +178,10 @@
     "github": "https://github.com/propelauth",
     "medium": "https://medium.com/@PropelAuth",
     "website": "https://www.propelauth.com/"
+  },
+  "analytics": {
+    "amplitude": {
+        "apiKey": "df4703100596a0e25b85de9b4630369f"
+    }
   }
 }
