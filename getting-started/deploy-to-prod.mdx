@@ -1,0 +1,42 @@
+---
+title: "Deploy to prod"
+description: "Once you are done integrating and testing, it's time to go live."
+---
+
+Start by going to the **Go Live** section of your project.
+
+### Verify your domain
+
+In your test environment, you use a subdomain of `https://propelauthtest.com` to
+log in. In production, however, it's more natural to your users if they use
+`https://auth.yourdomain.com`.
+
+To set this up, you need to set up two DNS records:
+
+- A **TXT** record with a unique verification code. This proves to us that you
+  are the owner of the domain.
+- A **CNAME** record redirecting traffic from auth.yourdomain.com to PropelAuth,
+  so we can handle authentication on your behalf.
+
+After entering your domain in the **Go Live section**, you'll be provided with
+the exact DNS records to set.
+
+Instructions for how to do this will vary depending on where you purchased the
+domain from. If you need any help, please reach out to us at
+support@propelauth.com. It may take a few minutes for the DNS records to be set.
+
+### Updating your configurations
+
+It's important to keep your test and production environments separate. For that
+reason, the API keys that you used when you were testing only work in your test
+environment. This also applies to your authUrl, which should be
+`https://auth.yourdomain.com` in production.
+
+Make sure to double check that when you deploy to production, you are using the
+production values for your API keys and authUrl. Additionally, if you set up any
+social logins, you'll want to make sure you add your production redirect URIs to
+the providers.
+
+### You are live
+
+Congrats!

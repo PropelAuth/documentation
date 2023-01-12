@@ -1,0 +1,614 @@
+---
+title: "Node Library Reference"
+sidebarTitle: "Node"
+---
+
+### Installation
+
+<CodeGroup>
+
+```bash npm
+$ npm install --save @propelauth/node
+```
+
+```bash yarn
+$ yarn add @propelauth/node
+```
+
+</CodeGroup>
+
+### Initialize
+
+**initBaseAuth** performs a one-time initialization of the library. It will
+verify your `apiKey` is correct and fetch the metadata needed to verify access
+tokens in
+[validateAccessTokenAndGetUser](/reference/backend/node/#validate-access-token-and-get-user)
+and
+[validateAccessTokenAndGetUserWithOrgInfo](/reference/backend/node/#add-user-to-organization).
+
+```js
+const propelAuth = require("@propelauth/node");
+const {
+  validateAccessTokenAndGetUser,
+  validateAccessTokenAndGetUserWithOrgInfo,
+  validateAccessTokenAndGetUserWithOrgInfoWithMinimumRole,
+  validateAccessTokenAndGetUserWithOrgInfoWithExactRole,
+  validateAccessTokenAndGetUserWithOrgInfoWithPermission,
+  validateAccessTokenAndGetUserWithOrgInfoWithAllPermissions,
+  fetchUserMetadataByUserId,
+  fetchUserMetadataByEmail,
+  fetchUserMetadataByUsername,
+  fetchBatchUserMetadataByUserIds,
+  fetchBatchUserMetadataByEmails,
+  fetchBatchUserMetadataByUsernames,
+  fetchOrg,
+  fetchOrgByQuery,
+  fetchUsersByQuery,
+  fetchUsersInOrg,
+  createUser,
+  updateUserMetadata,
+  updateUserEmail,
+  createMagicLink,
+  migrateUserFromExternalSource,
+  createOrg,
+  addUserToOrg,
+  deleteUser,
+  disableUser,
+  enableUser,
+  allowOrgToSetupSamlConnection,
+  disallowOrgToSetupSamlConnection,
+} = propelAuth.initBaseAuth({
+  authUrl: "https://auth.yourdomain.com", // The base URL where your authentication pages are hosted. You can find this under the Backend Integration section for your project at https://app.propelauth.com.
+  apiKey: "YOUR_API_KEY", // You can manage your api keys under the Backend Integration section for your project.
+});
+```
+
+We recommend putting this in its own file and exporting it:
+
+```js
+// propelauth.js
+const propelAuth = require("@propelauth/node");
+module.exports = propelAuth.initBaseAuth({
+  authUrl: "https://auth.yourdomain.com",
+  apiKey: "YOUR_API_KEY",
+});
+```
+
+And then importing just what you need:
+
+```js
+const { validateAccessTokenAndGetUser } = require("./propelauth");
+```
+
+### Protect API routes
+
+#### validateAccessTokenAndGetUser
+
+This function takes in the `Authorization` HTTP header and verifies the request
+was made by a valid user. It expects the header to be in the format
+`Bearer ACCESS_TOKEN`. If the `Authorization` HTTP header is malformed or
+doesn't contain a valid access token, an `UnauthorizedException` is thrown.
+
+```js
+const authorizationHeader = // Get the Authorization header from an HTTP request
+try {
+    const user = await validateAccessTokenAndGetUser(authorizationHeader)
+    console.log(`Got request from user ${user.userId}`);
+} catch (err) {
+    // You can return a 401, or continue the request knowing it wasn't sent from a logged-in user
+    console.log(`Unauthorized request ${err}`);
+}
+```
+
+The **user** object looks like:
+
+| Property             | Description                                                                              |
+| -------------------- | ---------------------------------------------------------------------------------------- |
+| userId               | The id of the user                                                                       |
+| orgIdToOrgMemberInfo | A dictionary of org ids to metadata about the org. Includes all orgs that the user is in |
+| legacyUserId         | The original ID of the user, if the user was migrated from an external source            |
+
+The values of **orgIdToOrgMemberInfo** are **OrgMemberInfo**'s, with the
+following fields/functions:
+
+| OrgMemberInfo                                     | fields/properties                                                                                                                                                                                                                  | Description |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| org_id                                            | The id of the org                                                                                                                                                                                                                  |
+| org_name                                          | The name of the org                                                                                                                                                                                                                |
+| urlSafeOrgName                                    | A URL-safe version of the name of the org                                                                                                                                                                                          |
+| assignedRole(): string                            | The user's role within the organization. See [Roles and Permissions](/overview/roles) for more details.                                                                                                               |
+| permissions(): string[]                           | The user's permissions within the organization. See [Roles and Permissions](/overview/roles)                                                                                                                          |
+| isRole(role: string): boolean                     | Returns True if the user's role within the organization matches the `role` passed in                                                                                                                                               |
+| isAtLeastRole(role: string): boolean              | Returns True if the user's role within the organization is at least the `role` passed in. If the hierarchy of roles is Owner => Admin => Member, specifying "Admin" will return True for Admins and Owners, but False for Members. |
+| hasPermission(permission: string): boolean        | Return True if the user has a specific permission. The users' permissions are derived from their role within this organization.                                                                                                    |
+| hasAllPermissions(permissions: string[]): boolean | Return True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.                                                                                            |
+
+#### validateAccessTokenAndGetUserWithOrgInfo
+
+This function will verify that a request was made by a valid user AND that user
+is in an organization.
+
+| Argument                  | Description                                                                                                                                                                                                                                                                            |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Authorization HTTP Header | It expects the header to be in the format `Bearer ACCESS_TOKEN`. If the `Authorization` HTTP header is malformed or doesn't contain a valid access token, an `UnauthorizedException` is thrown.                                                                                        |
+| Required Org Info         | An object with optional fields `orgId` and `orgName`. This function will make sure the user who made the request is a member of an organization with the specified `orgId` and `orgName`. If the user is NOT a member of the specified organization, a `ForbiddenException` is thrown. |
+
+It returns an object with two fields:
+
+```js
+{
+    user: //...
+    orgMemberInfo: //...
+}
+```
+
+You can see the structure of the `user` and `orgMemberInfo` objects above:
+**validateAccessTokenAndGetUser**.
+
+### Roles and Permissions
+
+A user has a **Role** within an organization. By default, the available roles
+are **Owner**, **Admin**, or **Member**, but these can be configured. These
+roles are also hierarchical, so Owner > Admin > Member.
+
+Roles allow you to control what different users can do within your product. If
+you want to check a user's role, you can use
+**validateAccessTokenAndGetUserWithOrgInfoWithExactRole** or
+**validateAccessTokenAndGetUserWithOrgInfoWithMinimumRole**.
+
+Permissions are arbitrary strings associated with a role. For example,
+**can_view_billing**, **ProductA::CanCreate**, and **ReadOnly** are all valid
+permissions. The PropelAuth dashboard allows you to set up these permissions.
+
+You can use **validateAccessTokenAndGetUserWithOrgInfoWithPermission\*** or
+**validateAccessTokenAndGetUserWithOrgInfoWithAllPermissions** to check for a
+given permission.
+
+All of these functions, just like **validateAccessTokenAndGetUserWithOrgInfo**,
+will take in an authorization header and an organization ID. The last parameter
+is either a role, permission, or list of permissions depending on the function.
+
+### Fetch user metadata by id
+
+```
+function fetchUserMetadataByUserId(userId: string, includeOrgs?: boolean): Promise<UserMetadata | null>
+
+// Example
+const userMetadata = await fetchUserMetadataByUserId(req.user.userId);
+console.log({"userId": userMetadata.userId, "email": userMetadata.email, "lastActiveAt": userMetadata.lastActiveAt});
+```
+
+Successful response (UserMetadata):
+
+```json
+{
+  "userId": "e9d3520f-836e-403c-82c2-09843517e1ce",
+  "email": "user@example.com",
+  "emailConfirmed": true,
+  "hasPassword": true,
+
+  "username": "example", // Optional: Only returned if you have the field enabled as part of your user schema
+  "firstName": "first", // Optional: Only returned if you have the field enabled as part of your user schema
+  "lastName": "last", // Optional: Only returned if you have the field enabled as part of your user schema
+  "pictureUrl": "https://...", // Optional: Only returned if you have the field enabled as part of your user schema
+  
+  "locked": false, // True if the user's account is locked for security purposes.
+  "enabled": true,
+  "mfaEnabled": false,
+
+  "createdAt": 1645131680,
+  "lastActiveAt": 1650654711,
+
+  // Only returned if includeOrgs = true
+  "orgIdToOrgInfo": { // Includes all organizations that the user is a member of
+    "2ef0e1fc-234f-4dc0-a50c-35adb1bbb7e4": {
+      "orgId": "2ef0e1fc-234f-4dc0-a50c-35adb1bbb7e4",
+      "orgName": "ExampleOrganization",
+      "userAssignedRole": "Owner"
+    }
+  },
+
+  // Only returned if user was migrated from an external system
+  "legacyUserId": "507f191e810c19729de860ea"
+}
+```
+
+### Fetch user metadata by email
+
+```js
+function fetchUserMetadataByEmail(email: string, includeOrgs?: boolean): Promise<UserMetadata | null>
+
+// Example
+const email = await db.fetchEmailFromAnalytics()
+const userMetadata = await fetchUserMetadataByEmail(req.email)
+if (userMetadata) {
+    console.log("Found user " + userMetadata)
+} else {
+    console.log("No user found")
+}
+```
+
+Successful response is the same as Fetch user metadata by id.
+
+### Fetch user metadata by username
+
+```js
+function fetchUserMetadataByUsername(username: string, includeOrgs?: boolean): Promise<UserMetadata | null>
+
+// Example
+app.get("/username/lookup", async (req, res) => {
+    const userMetadata = await fetchUserMetadataByUsername(req.query.username);
+    res.json({"userId": userMetadata.userId, "pictureUrl": userMetadata.pictureUrl});
+})
+```
+
+Successful response is the same as **Fetch user metadata by id**.
+
+### Batch fetch users by ids
+
+```js
+function fetchBatchUserMetadataByUserIds(userIds: string[], includeOrgs?: boolean): Promise<{ [userId: string]: UserMetadata }>
+```
+
+Successful response:
+
+<Note>
+  Any IDs that don't have a match are not returned. Duplicate users are only
+  returned once.
+</Note>
+
+```json
+{
+  "e9d3520f-836e-403c-82c2-09843517e1ce": {
+    "userId": "e9d3520f-836e-403c-82c2-09843517e1ce",
+    "email": "user@example.com",
+    "emailConfirmed": true,
+    "hasPassword": true,
+
+    "username": "example", // Optional: Only returned if you have the field enabled as part of your user schema
+    "firstName": "first", // Optional: Only returned if you have the field enabled as part of your user schema
+    "lastName": "last", // Optional: Only returned if you have the field enabled as part of your user schema
+    "pictureUrl": "https://...", // Optional: Only returned if you have the field enabled as part of your user schema
+
+    "locked": false, // True if the user's account is locked for security purposes.
+    "enabled": true,
+    "mfaEnabled": false,
+
+    "createdAt": 1645131680,
+    "lastActiveAt": 1650654711,
+
+    // Only returned if includeOrgs = true
+    "orgIdToOrgInfo": { // Includes all organizations that the user is a member of
+      "2ef0e1fc-234f-4dc0-a50c-35adb1bbb7e4": {
+        "orgId": "2ef0e1fc-234f-4dc0-a50c-35adb1bbb7e4",
+        "orgName": "ExampleOrganization",
+        "userAssignedRole": "Owner"
+      }
+    },
+
+    // Only returned if user was migrated from an external system
+    "legacyUserId": "507f191e810c19729de860ea"
+  }
+  // other user_ids
+}
+```
+
+### Batch fetch users by emails
+
+```
+function fetchBatchUserMetadataByEmails(emails: string[], includeOrgs?: boolean): Promise<{ [email: string]: UserMetadata }>
+```
+
+Successful response is the same as **Batch fetch users by ids**, but the keys
+are matching email addresses.
+
+### Batch fetch users by usernames
+
+```
+function fetchBatchUserMetadataByUsernames(usernames: string[], includeOrgs?: boolean): Promise<{ [username: string]: UserMetadata }>
+```
+
+Successful response is the same as Batch fetch users by ids, but the keys are
+matching usernames.
+
+### Search for users
+
+```js
+function fetchUsersByQuery(usersQuery: UsersQuery): Promise<UsersPagedResponse>
+
+// Example
+const usersResponse = await auth.fetchUsersByQuery({emailOrUsername: "@example.com", orderBy: "LAST_ACTIVE_AT_DESC"})
+for (const user of userResponse.users) {
+    console.log("Found user " + user)
+}
+```
+
+| Argument        | Description                                                                                                                                     |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| page_size       | The number of results to return at a time. Must be between 1 and 100, default 10.                                                               |
+| page_number     | Used to page over results                                                                                                                       |
+| orderBy         | How to order the results. Must be one of: `CREATED_AT_ASC`, `CREATED_AT_DESC`, `LAST_ACTIVE_AT_ASC`, `LAST_ACTIVE_AT_DESC`, `EMAIL`, `USERNAME` |
+| emailOrUsername | Searches for partial matches within email addresses or usernames. **port** would match a user with email address support@propelauth.com.        |
+| include_orgs    | Whether or not to include the user's organization information in the response. Default false                                                    |
+
+Successful response:
+
+```json
+{
+    "totalUsers": 103,
+    "currentPage": 0,
+    "pageSize": 10,
+    "hasMoreResults": true,
+    "users": [{
+        // See
+ for example users
+    }, {
+        // There will be 10 users in this response
+    }]
+}
+```
+
+### Fetch users in organization
+
+```
+function fetchUsersInOrg(usersInOrgQuery: UsersInOrgQuery): Promise<UsersPagedResponse>
+
+// Example
+app.get("/org/:orgId/members", requireOrgMember(), async (req, res) => {
+    const usersResponse = await auth.fetchUsersInOrg({
+        orgId: req.org.orgId,
+        pageNumber: req.params.pageNumber,
+    })
+})
+```
+
+| Argument        | Description                                                                                                                              |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| page_size       | The number of results to return at a time. Must be between 1 and 100, default 10.                                                        |
+| page_number     | Used to page over results                                                                                                                |
+| emailOrUsername | Searches for partial matches within email addresses or usernames. **port** would match a user with email address support@propelauth.com. |
+| include_orgs    | Whether or not to include the user's organization information in the response. Default false                                             |
+
+```json
+{
+    "totalUsers": 43,
+    "currentPage": 0,
+    "pageSize": 10,
+    "hasMoreResults": true,
+    "users": [{
+        // See
+ for example users
+    }, {
+        // There will be 10 users in this response, all in the specified organization
+    }]
+}
+```
+
+### Create User
+
+| Argument                       | Description                                                                                                                                                |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| email                          | The user's email address                                                                                                                                   |
+| email_confirmed                | Whether the email address should start off as already confirmed. If false, the user is required to confirm the email address before they sign in.          |
+| sendEmailToConfirmEmailAddress | Whether we should send an email immediately to confirm the user's email address. If false, the user will get a confirmation email when they first sign in. |
+| password                       | Optional password. If unset, the user can set it themselves via their account page                                                                         |
+| username                       | Optional username. Can only be used if username is enabled in your user schema                                                                             |
+| first_name                     | Optional first name. Can only be used if name is enabled in your user schema                                                                               |
+| last_name                      | Optional last name. Can only be used if name is enabled in your user schema                                                                                |
+
+Successful response:
+
+```
+{
+    "userId": "b5f667fb-e51a-49c6-a396-711e62948689"
+}
+```
+
+### Migrate User from External Source
+
+Similar to Create User, but for cases where you already have a user stored in an
+external system. You can, for example, pass in a password hash for an existing
+user, and they will be able to login with their same password. It is also
+possible to provide an existing identifier, and we will store and return it
+along with our future identifiers, allowing you to link them.
+
+```js
+function migrateUserFromExternalSource(migrateUserFromExternalSourceRequest: MigrateUserFromExternalSourceRequest): Promise<User>
+```
+
+| Argument                       | Description                                                                                                                                                |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| email                          | The user's email address                                                                                                                                   |
+| email_confirmed                | Whether the email address should start off as already confirmed. If false, the user is required to confirm the email address before they sign in.          |
+| sendEmailToConfirmEmailAddress | Whether we should send an email immediately to confirm the user's email address. If false, the user will get a confirmation email when they first sign in. |
+| password                       | Optional password. If unset, the user can set it themselves via their account page                                                                         |
+| username                       | Optional username. Can only be used if username is enabled in your user schema                                                                             |
+| first_name                     | Optional first name. Can only be used if name is enabled in your user schema                                                                               |
+| last_name                      | Optional last name. Can only be used if name is enabled in your user schema                                                                                |
+
+Successful response:
+
+```
+{
+    "userId": "b5f667fb-e51a-49c6-a396-711e62948689"
+}
+```
+
+### Create Magic Link
+
+Creates a magic link that a user can use to log in. Use this API if you'd prefer
+to send the magic link to the customer yourself, otherwise, we have createUser
+which will email them directly.
+
+```js
+function createMagicLink(createUserRequest: CreateMagicLinkRequest): Promise<MagicLink>
+```
+
+| Argument                            | Description                                                                                                                                                                                   |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| email                               | The user's email address                                                                                                                                                                      |
+| redirect_to_url                     | (Optional) Where to redirect the user after they login. If unspecified, will use the login redirect path specified in your dashboard.                                                         |
+| expires_in_hours                    | (Optional) How many hours should the link be valid for?                                                                                                                                       |
+| create_new_user_if_one_doesnt_exist | (Optional) If true, this will create a new user if one matching the provided email address doesn't exist. If false, the request will fail if no user with that email exists. Default is true. |
+
+Successful response:
+
+```json
+{
+  "url": "https://auth.yourdomain.com/..."
+}
+```
+
+### Update User Email
+
+```js
+// Returns true if it was successful, false if the user was not found
+function updateUserEmailWrapper(userId: string, updateUserEmailRequest: UpdateUserEmailRequest): Promise<boolean>
+```
+
+| Argument                   | Description                                                                                                                                                                                           |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| new_email                  | New email address for this user                                                                                                                                                                       |
+| require_email_confirmation | Whether the new email address requires confirmation. If true, an email will be sent to the new email address to confirm. If false, the users email address will be updated and confirmed immediately. |
+
+### Update User Metadata
+
+```js
+// Returns true if it was successful, false if the user was not found
+function updateUserMetadata(userId: string, updateUserMetadataRequest: UpdateUserMetadataRequest): Promise<boolean>
+```
+
+| Argument   | Description                                                                    |
+| ---------- | ------------------------------------------------------------------------------ |
+| username   | Optional username. Can only be used if username is enabled in your user schema |
+| first_name | Optional first name. Can only be used if name is enabled in your user schema   |
+| last_name  | Optional last name. Can only be used if name is enabled in your user schema    |
+
+### Delete user
+
+```js
+function deleteUser(userId: string): Promise<boolean>
+```
+
+Returns true if the user was deleted.
+
+### Disable user
+
+```js
+function disableUser(userId: string): Promise<boolean>
+```
+
+Returns true if the user was disabled. Afterwards, the user is logged out and
+unable to log back in.
+
+### Enable user
+
+```js
+function enableUser(userId: string): Promise<boolean>
+```
+
+Returns true if the user was enabled, allowing them to log in again.
+
+### Fetch an organization
+
+```js
+function fetchOrg(orgId: string): Promise<Org | null>
+```
+
+Successful response:
+
+```json
+{
+    "orgId": "d488996d-8ccc-4101-b5f2-131f5f09ddb6"
+    "name": "OneOfYourCustomers"
+}
+```
+
+### Fetch all organizations
+
+```js
+function fetchOrgsByQuery(orgQuery: OrgQuery): Promise<OrgQueryResponse>
+```
+
+| Argument    | Description                                                                                                                                     |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| page_size   | The number of results to return at a time. Must be between 1 and 100, default 10.                                                               |
+| page_number | Used to page over results                                                                                                                       |
+| orderBy     | How to order the results. Must be one of: `CREATED_AT_ASC`, `CREATED_AT_DESC`, `LAST_ACTIVE_AT_ASC`, `LAST_ACTIVE_AT_DESC`, `EMAIL`, `USERNAME` |
+
+Successful response:
+
+```json
+{
+  "totalOrgs": 21,
+  "currentPage": 0,
+  "pageSize": 10,
+  "hasMoreResults": true,
+  "orgs": [
+    {
+      "orgId": "d488996d-8ccc-4101-b5f2-131f5f09ddb6",
+      "name": "OneOfYourCustomers"
+    },
+    {
+      // There will be 10 orgs in this response
+    }
+  ]
+}
+```
+
+### Create Organization
+
+```js
+function createOrg(createOrgRequest: CreateOrgRequest): Promise<Org>
+```
+
+| Argument | Description             |
+| -------- | ----------------------- |
+| name     | The organization's name |
+
+Successful response:
+
+```json
+{
+  "orgId": "d488996d-8ccc-4101-b5f2-131f5f09ddb6"
+}
+```
+
+### Add user to organization
+
+```js
+function addUserToOrg(addUserToOrgRequest: AddUserToOrgRequest): Promise<boolean>
+```
+
+| Argument | Description                                           |
+| -------- | ----------------------------------------------------- |
+| userId   | The id of the user                                    |
+| orgid    | The org's ID                                          |
+| role     | The role of the user in that organization, e.g. Admin |
+
+Argument Description userId The user's ID orgId The org's ID role The role of
+the user in that organization, e.g. Admin
+
+Successful response:
+
+```json
+{}
+```
+
+### Allow organization to set up SAML connection
+
+```js
+function allowOrgToSetupSamlConnection(orgId: string): Promise<boolean>
+```
+
+Returns true if successful, meaning the organization can now set up SAML
+connections.
+
+### Disallow organization to set up SAML connection
+
+```js
+function disallowOrgToSetupSamlConnection(orgId: string): Promise<boolean>
+```
+
+Returns true if successful, meaning the organization can no longer set up SAML
+connections.

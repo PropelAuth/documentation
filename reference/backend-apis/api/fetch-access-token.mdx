@@ -1,0 +1,27 @@
+---
+title: "Fetch access token verification metadata"
+api: "GET https://{auth_url}/api/backend/v1/token_verification_metadata"
+---
+
+This endpoint fetches the metadata necessary to validate
+[access tokens](/overview/access-tokens). The access tokens
+themselves are JWTs signed with RS256 (RSA Signature with SHA-256). The
+**RS256** algorithm is more secure, and you can rotate keys quickly if they are
+compromised.
+
+### Path Parameters
+
+<ParamField path="auth_url" type="string" required>
+  The domain for your application
+</ParamField>
+
+<ResponseExample>
+
+```json
+{
+  // The public key you should use to the verify the access token
+  "public_key_pem": "..."
+}
+```
+
+</ResponseExample>

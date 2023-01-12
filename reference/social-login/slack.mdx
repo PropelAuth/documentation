@@ -1,0 +1,54 @@
+---
+title: "Slack - Social login (SSO) configuration"
+sidebarTitle: "Slack"
+---
+
+Enabling `Sign in with Slack` only requires two fields: Client ID and Client
+secret. Both of these are provided by Slack, and these steps will help you
+create them.
+
+<Note>
+  Users that sign up via Slack look the same as users that sign up via any other
+  method. Your code will handle both automatically.
+</Note>
+
+### Step-by-step Instructions
+
+1. Start by going to https://api.slack.com/apps
+
+2. If you don't have one already, click **Create An App** and follow the
+   instructions to create one.
+
+![click create an app](/images/slack_0.png)
+
+use front scratch
+
+3. After creating an App, you can configure what your users will see in the
+   **Display Information** section.
+
+![display information](/images/slack_1.png)
+
+4. In the **App Credentials** section of your Slack application, you will see a
+   Client ID and Client Secret.
+
+![locate client_id and client_secret](/images/slack_2.png)
+
+5. Back in your [PropelAuth project](https://app.propelauth.com/), under
+   **Social Logins**, you enter your Client ID and Client Secret for Slack.
+
+![add client_id and secret here](/images/slack_3.png)
+
+6. After entering those values, note the callback URLs that PropelAuth provides.
+   PropelAuth handles the OAuth flow on your behalf, so all we have to do is
+   tell Slack to allow these callback URLs.
+
+7. Click **Permissions** under **Building Apps for Slack**.
+
+![click permissions](/images/slack_enter.png)
+
+8. Under **Redirect URLs**, enter PropelAuth's provided URL(s).
+
+![redirect_urls!](/images/slack_4.png)
+
+And that's it! When you go to your hosted authentication pages, you should see
+the `Sign in with Slack` button.

@@ -1,0 +1,39 @@
+---
+title: "Update user metadata"
+api: "PUT https://{auth_url}/api/backend/v1/user/{user_id}"
+---
+
+### Path Parameters
+
+<ParamField path="auth_url" type="string" required>
+  The domain for your application
+</ParamField>
+
+<ParamField path="user_id" type="string" required>
+  The ID of the user
+</ParamField>
+
+### JSON Body Parameters
+
+<ParamField body="username">
+  Optional username. Can only be used if **username** is enabled in your user
+  schema
+</ParamField>
+
+<ParamField body="first_name">
+  Optional first name. Can only be used if **name** is enabled in your user
+  schema
+</ParamField>
+
+<ParamField body="last_name">
+  Optional last name. Can only be used if **name** is enabled in your user
+  schema
+</ParamField>
+
+<ResponseExample>
+
+```json
+{}
+```
+
+</ResponseExample>

@@ -1,0 +1,52 @@
+---
+title: "Access tokens"
+description:
+  "An access token is a string that uniquely identifies a user. It is called an
+  access token because it is used to give your users access to your product."
+---
+
+To fully understand it, let's look at the full lifecycle of an access token in
+PropelAuth for a very typical application with a frontend and backend:
+
+<Note>
+  Our goal at PropelAuth is to provide a developer friendly authentication
+  experience. So, while this whole process might seem complex, we provide
+  libraries that can reduce all six steps down to a few lines of code.
+</Note>
+
+![](/images/auth-generic.png)
+
+1. User Bob logs in with PropelAuth's Hosted Pages.
+2. User Bob is redirected back to your application.
+3. Your frontend makes a request to PropelAuth, checking if the current user is
+   logged in.
+4. PropelAuth sees that the current user is logged in, knows that it's Bob, and
+   returns an **access token** for Bob. This **access token** is unique to Bob
+   and must remain secret.
+5. When your frontend needs to make requests on Bob's behalf (e.g.
+   fetching/setting data for Bob), it will include that **access token** in the
+   request.
+6. Your backend is able to verify that the **access token** is valid and that it
+   belongs to Bob. It's able to do this because it has a public key provided by
+   PropelAuth.
+
+### Technical Details (JWTs)
+
+PropelAuth uses
+[JSON Web Tokens](https://www.propelauth.com/post/jwts-explained-with-code-examples)
+or JWTs for our access tokens. At a high level, a JWT is a JSON payload that is
+signed, with some standardized fields.
+
+There are a lot of different ways to create a JWT, including different
+algorithms to sign it (symmetric or asymmetric) and different fields to verify,
+however, PropelAuth's libraries and hosted services hide that complexity.
+
+PropelAuth uses an asymmetric signing algorithm which uses one private key to
+sign the tokens and a different public key to verify them. PropelAuth manages
+the private key used to sign the JWT and your libraries will use the public key
+to verify the JWTs are valid.
+
+This approach has some key advantages like validating access tokens is fast,
+since your backend can do it without making any external requests. It also works
+well with microservices since each service can validate the token independently,
+if necessary.

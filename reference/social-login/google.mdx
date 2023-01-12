@@ -1,0 +1,42 @@
+---
+title: "Google - Social login (SSO) configuration"
+sidebarTitle: "Google"
+---
+
+![Sign in with google example button](/images/google-signin.png)
+
+Enabling `Sign in with Google` only requires two fields: **Client ID** and
+**Client secret**. Both of these are provided by Google, and these steps will
+help you create them.
+
+The official Google guide is
+[here](https://support.google.com/cloud/answer/6158849?hl=en). You'll be
+following the guide to create an OAuth 2.0 client, and PropelAuth will manage
+the OAuth workflow.
+
+<Note>
+  Users that sign up via Google look the same as users that sign up via any
+  other method. Your code will handle both automatically.
+</Note>
+
+### Steps
+
+1. Go to the [Google Cloud Platform Console](https://console.cloud.google.com/).
+2. From the projects list, select a project or create a new one.
+3. On the left side menu, select APIs & services.
+4. Click Credentials.
+5. If you have never created an OAuth consent screen (what your users will see
+   after clicking `Sign in with Google`), you will be prompted to fill that out
+   first. Fill in the information for your application.
+6. Click Create Credentials, then select OAuth client ID.
+7. Select `Web application` for your Application type.
+8. Under **Authorized redirect URIs**, enter PropelAuth's provided URI. You can
+   find this on the **Social Logins** section for your
+   [PropelAuth](https://auth.propelauth.com/signup) project.
+9. Click Create, note down the Client ID and Client secret you are provided.
+10. On the **Social Logins** section for your
+    [PropelAuth project](https://auth.propelauth.com/signup), enter your Client
+    ID and Client **secret**. Click enable and save.
+
+When you go to your hosted authentication pages, you should see the
+`Sign in with Google` button.

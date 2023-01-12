@@ -1,0 +1,258 @@
+---
+title: "Flask Backend Integration"
+desciption:
+  "PropelAuth offers an end-to-end managed user authentication library for
+  seamless integration into your Flask application. This guide will show you how
+  to connect the PropelAuth library to your backend."
+---
+
+For the full Flask Library Reference, click [here](/reference/backend/flask).
+
+### Quick Example
+
+The following example creates a route which can only be accessed from logged-in
+users.
+
+```js
+from flask import Flask
+from propelauth_flask import init_auth, current_user
+
+app = Flask(__name__)
+auth = init_auth("YOUR_AUTH_URL", #
+                 "YOUR_API_KEY") #
+
+@app.route("/api/whoami")
+@auth.require_user
+def who_am_i():
+    return {"user_id": current_user.user_id}
+```
+
+### How it works
+
+The front-end receives an [access token](/overview/access-tokens).
+This access token is provided in an `Authorization` header when an HTTP request
+is made.
+
+PropelAuth provides you with metadata that you use to validate the access token
+and figure out who it belongs to. The complexity of fetching the metadata and
+validating the tokens is hidden in the
+[Flask library](/reference/backend/flask).
+
+### Installation
+
+In your Flask app, install the **propelauth_flask** library.
+
+```bash
+$ pip install propelauth-flask
+```
+
+### Initialize
+
+**init_auth** performs a one-time initialization of the library. It will verify
+your `api_key` is correct and fetch the metadata needed to verify access tokens
+in
+[IsUserAuthenticated](/getting-started/backend-integration/flask/#is-user-authenticated),
+[AllowAny](/getting-started/backend-integration/flask/#allow-any), and
+[IsUserInOrg](/getting-started/backend-integration/flask/#is-user-in-org).
+
+```js
+from propelauth_flask import init_auth
+
+auth = init_auth("YOUR_AUTH_URL", #
+                 "YOUR_API_KEY") #
+```
+
+### Protect API routes
+
+#### require_user
+
+A decorator that will verify the request was made by a valid user. Specifically,
+it will:
+
+1. Check that a valid access token was provided. If not, the request is rejected
+   with a `401` status code.
+2. Set **current_user** (scoped to the current request) with the user's
+   information.
+
+```js
+from flask import Flask
+from propelauth_flask import init_auth, current_user
+
+app = Flask(__name__)
+auth = init_auth("YOUR_AUTH_URL", "YOUR_API_KEY")
+
+@app.route("/api/whoami")
+@auth.require_user
+def who_am_i():
+    """This route is protected, current_user is always set"""
+    return {"user_id": current_user.user_id} #
+```
+
+#### optional_user
+
+Similar to
+[IsUserAuthenticated](/getting-started/backend-integration/flask/#is-user-authenticated),
+except if an access token is missing or invalid, the request is allowed to
+continue, but `current_user.exists()` will be `False`.
+
+```js
+from flask import Flask
+from propelauth_flask import init_auth, current_user
+
+app = Flask(__name__)
+auth = init_auth("YOUR_AUTH_URL", "YOUR_API_KEY")
+
+@app.route("/api/whoami_optional")
+@auth.optional_user
+def who_am_i_optional():
+    if current_user.exists(): #
+        return {"user_id": current_user.user_id}
+    return {}
+```
+
+#### current-user
+
+A per-request value that contains user information for the user making the
+request. It's set by one of
+[IsUserAuthenticated](/getting-started/backend-integration/flask/#is-user-authenticated),
+[AllowAny](/getting-started/backend-integration/flask/#allow-any), or any
+organization checking like
+[IsUserInOrg](/getting-started/backend-integration/flask/#is-user-in-org).
+
+| Property                  | Description                                                                                                                                                                                                                         |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| user_id                   | The id of the user                                                                                                                                                                                                                  |
+| org_id_to_org_member_info | A dictionary of org ids to metadata about the org. Includes all orgs that the user is in                                                                                                                                            |
+| legacy_user_id            | The original ID of the user, if the user was migrated from an external source                                                                                                                                                       |
+| exists()                  | A function that returns True if the user is logged in and False otherwise. You only need to check this if you are using [optional_user](/getting-started/backend-integration/flask/#optional-user), otherwise it always returns True. |
+
+The values of `org_id_to_org_member_info` are `OrgMemberInfo`'s, with the
+following fields/functions:
+
+| OrgMemberInfo                                          | fields/properties                                                                                                                                                                                                                  | Description |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| org_id                                                 | The id of the org                                                                                                                                                                                                                  |
+| org_name                                               | The name of the org                                                                                                                                                                                                                |
+| user_assigned_role                                     | The user's role within the organization. See [Roles and Permissions](/overview/roles) for more details.                                                                                                               |
+| user_is_role(role: str): bool                          | Returns True if the user's role within the organization matches the `role` passed in                                                                                                                                               |
+| user_is_at_least_role(role: str): bool                 | Returns True if the user's role within the organization is at least the `role` passed in. If the hierarchy of roles is Owner => Admin => Member, specifying "Admin" will return True for Admins and Owners, but False for Members. |
+| user_has_permission(permission: str): bool             | Return True if the user has a specific permission. The users' permissions are derived from their role within this organization.                                                                                                    |
+| user_has_all_permissions(permissions: List[str]): bool | Return True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.                                                                                            |
+
+#### require_ord_member
+
+A decorator that will verify the request was made by a valid user that belongs
+to a specific organization.
+
+<CodeGroup>
+
+```js Basic example
+@app.route("/org/<org_id>/check")
+@auth.require_org_member()
+def hello(org_id):
+   return f"You are in {current_org.org_name}"
+```
+
+```js Advanced example
+# Expect users to query with /hello?org_id=...
+def org_id_in_query_extractor(req):
+   return req.args.get('org_id')
+
+@app.route("/hello")
+@auth.require_org_member(req_to_org_id=org_id_in_query_extractor)
+def hello():
+    return f"You are in {current_org.org_name}"
+```
+
+</CodeGroup>
+
+| IsUserInOrg Argument | Description                                                                                                                                                                                               |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| req_to_org_id        | A function that takes in the request and outputs the org_id to require the user to be a member of. If none is specified, it will check for a path param org_id by checking request.GET.get('org_id', ''). |
+
+Specifically, it will:
+
+1. Check that a valid access token was provided. If not, the request is rejected
+   with a `401` status code.
+2. Set [current-user](/getting-started/backend-integration/flask/#current-user)
+   with the user's information.
+3. Find an id for an organization within the request. By default, it will check
+   for a path parameter **org_id**.
+4. Check that the user is a member of that organization. If not, the request is
+   rejected with a `403` status code.
+5. Set [current-user](/getting-started/backend-integration/flask/#current-user)
+   (scoped to the current request) with the organization's information for this
+   user.
+
+### Roles and Permissions
+
+A user has a **Role** within an organization. By default, the available roles
+are **Owner**, **Admin**, or **Member**, but these can be configured. These
+roles are also hierarchical, so Owner > Admin > Member.
+
+Roles allow you to control what different users can do within your product. If
+you want to check a user's role, you can use **auth.IsUserInOrgWithRole** or
+**auth.IsUserInOrgWithMinimumRole**.
+
+```js
+## Assuming a Role structure of Owner => Admin => Member
+
+@app.route("/org/<org_id>/admin")
+@auth.require_org_member_with_exact_role("Admin")
+def admin(org_id):
+   return f"You are an Admin of {current_org.org_name}"
+
+@app.route("/org/<org_id>/admin_or_owner")
+@auth.require_org_member_with_minimum_role("Admin")
+def admin_or_owner(org_id):
+   return f"You are an Admin or Owner of {current_org.org_name}"
+```
+
+Permissions are arbitrary strings associated with a role. For example,
+**can_view_billing**, **ProductA::CanCreate**, and **ReadOnly** are all valid
+permissions. The PropelAuth dashboard allows you to set up these permissions.
+
+You can use **auth.IsUserInOrgWithPermission** or
+**auth.IsUserInOrgWithAllPermissions** to check for a given permission.
+
+```
+@api_view(['GET'])
+@permission_classes([auth.IsUserInOrgWithPermission("can_view_billing")])
+def billing_req(request):
+   pass
+```
+
+All of these functions, just like IsUserInOrg, will also take in
+**req_to_org_id**, and will set both
+[current-user](/getting-started/backend-integration/flask/#current-user) and
+[current-org](/getting-started/backend-integration/flask/#current-org) on a valid
+request.
+
+#### current_org
+
+A per-request value that contains org information for the user making the
+request. It's set by **require_org_member**.
+
+| Property                                               | Description                                                                                                                                                                                                                        |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| org_id                                                 | The id of the org                                                                                                                                                                                                                  |
+| org_name                                               | The name of the org                                                                                                                                                                                                                |
+| user_assigned_role                                     | The user's role within the organization. See [Roles and Permissions](/overview/roles) for more details.                                                                                                               |
+| user_is_role(role: str): bool                          | Returns True if the user's role within the organization matches the `role` passed in                                                                                                                                               |
+| user_is_at_least_role(role: str): bool                 | Returns True if the user's role within the organization is at least the `role` passed in. If the hierarchy of roles is Owner => Admin => Member, specifying "Admin" will return True for Admins and Owners, but False for Members. |
+| user_has_permission(permission: str): bool             | Return True if the user has a specific permission. The users' permissions are derived from their role within this organization.                                                                                                    |
+| user_has_all_permissions(permissions: List[str]): bool | Return True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.                                                                                            |
+
+### API calls
+
+In addition to protecting API routes, you can make requests to PropelAuth to
+fetch more information about your users or organizations. You can also create
+new users, update user metadata, and more.
+
+See [Flask Library Reference](/reference/backend/flask) for more information on
+available functionality.
+
+### Next Steps
+
+Done with your backend? Next you can deploy to
+[production](/getting-started/deploy-to-prod).

@@ -1,0 +1,63 @@
+---
+title: "Microsoft - Social login (SSO) configuration"
+sidebarTitle: "Microsoft"
+---
+
+Enabling `Sign in with Microsoft` only requires two fields: **Client ID** and
+**Client secret**. Both of these are provided by Azure, and these steps will
+help you create them.
+
+<Note>
+  Users that sign up via Microsoft look the same as users that sign up via any
+  other method. Your code will handle both automatically.
+</Note>
+
+### Step-by-step Instructions
+
+1. Start by going to https://portal.azure.com/
+2. Next, search for **App Registrations**
+3. If you don't have one already, click **Create An App** and follow the
+   instructions to create one. You can choose if you want to limit signups to
+   business accounts, personal accounts, or both.
+
+![click create an app](/images/microsoft_00.png)
+
+![configure_app])(/images/01.png)
+
+4. After creating an App, first copy the Client ID.
+
+![](/images/02.png)
+
+5. Back in your [PropelAuth project](https://app.propelauth.com/), under
+   **Social Logins**, you enter your Client ID for Microsoft.
+
+![paste client id](/images/03.png)
+
+6. Next, we need to get the Client Secret, so back in the Azure portal, click
+   **Add a certificate or secret**, and then click **New client secret**.
+
+![add a certificate or secret](/images/04.png)
+
+7. Enter a name for your secret and a duration.
+
+![secret name](/images/05.png)
+
+8. Then copy the provided Client Secret, and paste it back in your
+   [PropelAuth project](https://app.propelauth.com/), where you previously
+   pasted your Client ID.
+
+![copy client secret](/images/06.png)
+
+9. After entering the secret, note the callback URLs that PropelAuth provides.
+   PropelAuth handles the OAuth flow on your behalf, so all we have to do is
+   tell Microsoft to allow these callback URLs.
+
+10. Click **Authentication** in the sidebar, and then click **Add a Platform**.
+    Choose **Web** and enter PropelAuth's provided URL(s). Note that if you have
+    two to enter (one for test, one for prod), you can only enter one on this
+    screen, but you'll be allowed to add more after.
+
+![redirect_urls](/images/07.png)
+
+And that's it! When you go to your hosted authentication pages, you should see
+the `Sign in with Microsoft` button.

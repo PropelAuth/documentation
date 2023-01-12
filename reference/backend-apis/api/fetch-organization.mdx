@@ -1,0 +1,25 @@
+---
+title: "Fetch organizations"
+api: "GET https://{auth_url}/api/backend/v1/org/{org_id}"
+---
+
+### Path Parameters
+
+<ParamField path="auth_url" type="string" required>
+  The domain for your application
+</ParamField>
+
+<ParamField path="org_id" type="string" required>
+  The ID of the organization
+</ParamField>
+
+<ResponseExample>
+
+```json
+{
+    "org_id": "d488996d-8ccc-4101-b5f2-131f5f09ddb6"
+    "name": "OneOfYourCustomers"
+}
+```
+
+</ResponseExample>

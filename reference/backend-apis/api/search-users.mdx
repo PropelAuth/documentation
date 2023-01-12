@@ -1,0 +1,55 @@
+---
+title: "Search for users"
+api: "GET https://{auth_url}/api/backend/v1/user/query"
+---
+
+### Path Parameters
+
+<ParamField path="auth_url" type="string" required>
+  The domain for your application
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="page_size">
+  The number of results to return at a time. Must be between 1 and 100, default
+  10.
+</ParamField>
+
+<ParamField query="page_number">Used to page over results</ParamField>
+
+<ParamField query="order_by">
+  How to order the results. Must be one of: `CREATED_AT_ASC`, `CREATED_AT_DESC`,
+  `LAST_ACTIVE_AT_ASC`, `LAST_ACTIVE_AT_DESC`, `EMAIL`, `USERNAME`
+</ParamField>
+
+<ParamField query="email_or_username">
+  Searches for partial matches within email addresses or usernames. **port**
+  would match a user with email address support@propelauth.com.
+</ParamField>
+
+<ParamField query="include_orgs" default="false">
+  Whether or not to include the user's organization information in the response.
+  Default false
+</ParamField>
+
+<ResponseExample>
+
+```json
+{
+  "total_users": 103,
+  "current_page": 0,
+  "page_size": 10,
+  "has_more_results": true,
+  "users": [
+    {
+      // See  for example users
+    },
+    {
+      // There will be 10 users in this response
+    }
+  ]
+}
+```
+
+</ResponseExample>

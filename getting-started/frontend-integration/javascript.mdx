@@ -1,0 +1,310 @@
+---
+title: "Javascript - Integrate your frontend"
+sidebarTitle: "Javascript"
+description:
+  "The following example will display a different message for logged-in users vs
+  logged out."
+---
+
+### Minimal example
+
+We'll go into more detail about how it works and show more advanced examples
+down below.
+
+```js
+import { createClient } from "@propelauth/javascript";
+
+const client = createClient({
+  authUrl: "YOUR_AUTH_URL", // Your auth URL can be found in your PropelAuth dashboard. You will have a different URL for your test and production environment, so you may want to store it in an ENV variable.
+  enableBackgroundTokenRefresh: true, // PropelAuth uses short-lived tokens for security reasons. Enabling this feature will automatically refresh those tokens in the background. See technical details for more info.
+});
+
+client.getAuthenticationInfoOrNull().then((authInfo) => {
+  const element = document.getElementById("text");
+  if (authInfo) {
+    element.innerText = "You are logged in as " + authInfo.user.email; // User contains other metadata like userId
+  } else {
+    element.innerText = "You are not logged in";
+  }
+});
+```
+
+### Technial details
+
+When a user logs in via your hosted pages, a secure, http-only cookie is
+created. This cookie allows PropelAuth to identify logged-in users. In
+production, we require you use a custom domain to avoid third-party cookie
+issues for your users. Browsers like Safari will block cookies across domains,
+which is why we include custom domains even in our free plan.
+
+Afterwards, your frontend can make a request to PropelAuth to determine if the
+current user is logged in and get their information.
+
+![auth generic](/images/auth-generic-1.png)
+
+On top of user information, your frontend will get an
+[access token](/overview/access-tokens) for that user. These tokens
+are JWTs, which we've written about For more information on JWTs, view our blog
+[here](https://www.propelauth.com/post/jwts-explained-with-code-examples).
+
+Later on, when your frontend makes requests to your backend, it will include an
+access token, which your backend can validate and determine whose token it is.
+This validation is done entirely on your backend and doesn't need to make any
+requests to PropelAuth.
+
+The access token is short-lived, and our libraries will refresh the token both
+periodically and when the user switches to your tab or reconnects to the
+internet.
+
+### Configure
+
+Go to your [PropelAuth project](https://auth.propelauth.com/signup) and click
+**Frontend Integration** in the sidebar. You will see:
+
+- **Auth URL** - This is where your authentication pages are hosted, and you
+  will need this for the setup step.
+- **Test Environment** - This is where you test. In our case, we'll select
+  Webflow and enter our subdomain.
+- **Login Redirect Path** - After a user logs in, they will be redirected here.
+- **Logout Redirect Path** - After a user logs out, they will be redirected
+  here.
+
+### Installation
+
+In your application, install the **@propelauth/javascript** library.
+
+<CodeGroup>
+
+```bash npm
+$ npm install --save @propelauth/javascript
+```
+
+```bash yarn
+$ yarn add @propelauth/javascript
+```
+
+</CodeGroup>
+
+and then you can import it
+
+```js
+import { createClient } from "@propelauth/javascript";
+```
+
+Alternatively, you can use a CDN:
+
+```js
+<script
+  src="https://www.unpkg.com/@propelauth/javascript@2.0.0/dist/javascript.min.js"
+  integrity="sha384-CnMW/GT96q1vxl3xq1fIbUrmXpDIsXVtY+/FpJW+rMSCgjlOWpbVfs5G0dg2bMN5"
+  crossorigin="anonymous"
+></script>
+```
+
+then a global **PropelAuth** object will be created, and you can call
+**createClient** from it:
+
+```js
+<script>
+  PropelAuth.createClient({...});
+</script>
+```
+
+### createClient
+
+`createClient` creates an authentication client which manages your access token,
+fetches user information, and provides other useful authentication functions.
+
+The client also refreshes auth information when a user switches focus to your
+tab or reconnects (if they were offline).
+
+```js
+const authClient = createClient({
+  authUrl: "https://auth.yourdomain.com", // The base URL where your authentication pages are hosted. You can find this under the Frontend Integration section for your project.
+  enableBackgroundTokenRefresh: true, // If true, periodically refresh the access token in the background. This helps ensure you always have a valid token ready to go. Default true.
+});
+```
+
+### AuthenticationInfo and User metadata
+
+There are a few key types that this library uses, here are their signatures:
+
+```js
+type AuthenticationInfo = {
+    // An access token for the current logged in user
+    accessToken: string,
+    // When the access token will no longer be valid, in seconds.
+    expiresAtSeconds: number,
+    // A collection of functions for managing organization membership information for the current user
+    orgHelper: OrgHelper
+    // A collection of functions for checking roles (RBAC) and permissions for the current user
+    accessHelper: AccessHelper
+    // For all organizations the current user is a member of,
+    //   this provides a mapping from their ids to metadata about them
+    // You should prefer orgHelper and accessHelper to orgIdToOrgMemberInfo.
+    orgIdToOrgMemberInfo?: OrgIdToOrgMemberInfo,
+
+    // Metadata about the current logged in user
+    user: User,
+}
+
+// Metadata about the current logged in user
+type User = {
+    userId: string
+
+    email: string
+    emailConfirmed: boolean,
+
+    hasPassword: boolean,
+
+    username?: string
+    firstName?: string,
+    lastName?: string,
+    pictureUrl?: string,
+
+    locked: boolean,
+    enabled: boolean,
+    mfaEnabled: boolean,
+
+    createdAt: number,
+    lastActiveAt: number,
+
+    legacyUserId?: string
+}
+```
+
+### Organizations, Roles, and Authorization
+
+Here are more types that you can find in the AuthenticationInfo object
+
+```js
+type OrgHelper = {
+    // returns all orgs that the user is a member of
+    getOrgs: () => OrgMemberInfo[],
+    // returns all org ids that the user is a member of
+    getOrgIds: () => string[],
+    // returns org information for a given orgId
+    getOrg: (orgId: string) => OrgMemberInfo | undefined,
+    // returns org information for a given org by name
+    getOrgByName: (orgName: string) => OrgMemberInfo | undefined,
+}
+
+type AccessHelper = {
+    isRole: (orgId: string, role: string) => boolean
+    isAtLeastRole: (orgId: string, role: string) => boolean
+    hasPermission: (orgId: string, permission: string) => boolean
+    hasAllPermissions: (orgId: string, permissions: string[]) => boolean
+}
+
+type OrgMemberInfo = {
+    orgId: string,
+    orgName: string,
+    urlSafeOrgName: string
+    // The role of the user within this organization
+    userAssignedRole: string
+    userPermissions: string[]
+}
+```
+
+### Get current user information
+
+```
+authClient.getAuthenticationInfoOrNull(forceRefresh?: boolean): Promise<AuthenticationInfo | null>
+```
+
+If the user is logged in, this method returns authentication information about
+them, including their access token, user metadata, and, for B2B applications,
+organization information. See
+[AuthenticationInfo schema](/getting-started/frontend-integration/javascript) for
+the full schema. Otherwise, this method returns null.
+
+The promise will generally resolve immediately, _without making an external
+request_, unless our current access token is stale in which case it will fetch a
+new one.
+
+If **forceRefresh** is true, this method will always fetch a new token. The
+default is false.
+
+### Example Usage
+
+You can see a full list of method on the client in our
+[reference](/reference/frontend/javascript). Here's an example which creates
+signup/login/logout buttons that change based on whether the user is logged in
+or not.
+
+```js
+<div id="display-when-logged-out">
+    <button id="signup">Sign Up</button>
+    <button id="login">Login</button>
+</div>
+<div id="display-when-logged-in">
+    <button id="account">Account</button>
+    <button id="logout">Logout</button>
+</div>
+
+<script>
+    const client = PropelAuth.createClient({
+        authUrl: "https://auth.yourdomain.com", // Change me
+        enableBackgroundTokenRefresh: true,
+    });
+
+    document.getElementById("signup").onclick = client.redirectToSignupPage;
+    document.getElementById("login").onclick = client.redirectToLoginPage;
+    document.getElementById("account").onclick = client.redirectToAccountPage;
+    document.getElementById("logout").onclick = client.logout;
+
+    client.addLoggedInChangeObserver((isLoggedIn) => {
+        if (isLoggedIn) {
+            document.getElementById("display-when-logged-in").style.display = "revert";
+            document.getElementById("display-when-logged-out").style.display = "none";
+        } else {
+            document.getElementById("display-when-logged-in").style.display = "none";
+            document.getElementById("display-when-logged-out").style.display = "revert";
+        }
+    });
+</script>
+```
+
+You can test by going to your **Auth URL** and signing up. After logging in, you
+will see the Account and Logout buttons.
+
+<Note>
+**Troubleshooting**
+
+If you have any issues seeing the logged-in user, check the FAQ.
+
+</Note>
+
+### Making an authenticated HTTP request
+
+There are a lot of ways to make HTTP requests in Javascript. You could use the
+[Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch),
+[XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest),
+or a library like [axios](https://www.npmjs.com/package/axios)
+
+Whichever you choose, to make an `authenticated` request on behalf of your user,
+you'll need to provide an access token. Access tokens are available from
+[getAuthenticationInfoOrNull](/reference/frontend/javascript/#get-current-user-information).
+You provide it in the request in the `Authorization` header, like so:
+
+```
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+With the Fetch API, this looks like:
+
+```js
+function whoAmI(accessToken) {
+  return fetch("/whoami", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+}
+```
+
+### Next Steps
+
+Done with your frontend? Next you can
+[integrate your backend](/getting-started/backend-integration/overview).

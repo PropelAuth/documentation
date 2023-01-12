@@ -1,0 +1,181 @@
+---
+title: "Python Backend Integration"
+description:
+  "PropelAuth's Python library provides all the building blocks you need to add
+  authentication to any Python backend. For most Python frameworks, like
+  FastAPI, Django, and Flask, we have built out libraries specifically for them,
+  and they will provide a more first-class experience than this library."
+---
+
+For the full Node Library Reference, click [here](/reference/backend/node).
+
+### Quick example
+
+The following example creates a route which can only be accessed from logged-in
+users.
+
+```js
+from propelauth_py import init_base_auth
+
+auth = init_base_auth("YOUR_AUTH_URL", #
+                      "YOUR_API_KEY") #
+
+auth_header = # get authorization header in the form `Bearer {TOKEN}`
+try:
+   user = auth.validate_access_token_and_get_user(auth_header)
+   print("Logged in as", user.user_id)
+except UnauthorizedException:
+   print("Invalid access token")
+
+```
+
+### How it works
+
+The front-end receives an [access token](/overview-and-concpets/access-tokens).
+This access token is provided in an `Authorization` header when an HTTP request
+is made.
+
+PropelAuth provides you with metadata that you use to validate the access token
+and figure out who it belongs to. The complexity of fetching the metadata and
+validating the tokens is hidden in the
+[Python library](/reference/backend/python).
+
+### Installation
+
+In your Node app, install the **@propelauth/node** library.
+
+```bash
+$ pip install propelauth_py
+```
+
+### Initialize
+
+**initBaseAuth** performs a one-time initialization of the library. It will
+verify your `apiKey` is correct and fetch the metadata needed to verify access
+tokens in
+[validateAccessTokenAndGetUser](/getting-started/backend-integration/python/#validate-access-token-and-get-user)
+and
+[validateAccessTokenAndGetUserWithOrgInfo](/getting-started/backend-integration/python/#validate-access-token-and-get-user-with-org).
+
+```js
+from propelauth_py import init_base_auth
+
+auth = init_base_auth("YOUR_AUTH_URL", #
+                      "YOUR_API_KEY") #
+```
+
+### Protect API routes
+
+### User
+
+A user returned by
+[validateAccessTokenAndGetUser](/getting-started/backend-integration/python/#validate-access-token-and-get-user)
+and
+[validateAccessTokenAndGetUserWithOrgInfo](/getting-started/backend-integration/python/#validate-access-token-and-get-user-with-org).
+
+| Property             | Description                                                                              |
+| -------------------- | ---------------------------------------------------------------------------------------- |
+| userId               | The id of the user                                                                       |
+| orgIdToOrgMemberInfo | A dictionary of org ids to metadata about the org. Includes all orgs that the user is in |
+| legacyUserId         | The original ID of the user, if the user was migrated from an external source            |
+
+The values of **orgIdToOrgMemberInfo** are **OrgMemberInfo**'s, with the
+following fields/functions:
+
+| OrgMemberInfo                                          | fields/properties                                                                                                                                                                                                                  | Description |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| org_id                                                 | The id of the org                                                                                                                                                                                                                  |
+| org_name                                               | The name of the org                                                                                                                                                                                                                |
+| user_assigned_role                                     | The user's role within the organization. See [Roles and Permissions](/overview/roles) for more details.                                                                                                               |
+| user_is_role(role: str): bool                          | Returns True if the user's role within the organization matches the `role` passed in                                                                                                                                               |
+| user_is_at_least_role(role: str): bool                 | Returns True if the user's role within the organization is at least the `role` passed in. If the hierarchy of roles is Owner => Admin => Member, specifying "Admin" will return True for Admins and Owners, but False for Members. |
+| user_has_permission(permission: str): bool             | Return True if the user has a specific permission. The users' permissions are derived from their role within this organization.                                                                                                    |
+| user_has_all_permissions(permissions: List[str]): bool | Return True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.                                                                                            |
+
+#### validate_access_token_and_get_user
+
+This function takes in the `Authorization` HTTP header and verifies the request
+was made by a valid user. It expects the header to be in the format
+`Bearer ACCESS_TOKEN`. If the Authorization HTTP header is malformed or doesn't
+contain a valid [access token](/overview/access-tokens), an
+`UnauthorizedException` is thrown.
+
+```js
+auth_header = # get authorization header in the form `Bearer {TOKEN}`
+try:
+   user = auth.validate_access_token_and_get_user(auth_header)
+   print("Logged in as", user.user_id)
+except UnauthorizedException:
+   print("Invalid access token")
+
+```
+
+### validate_access_token_and_get_user_with_org
+
+This function will verify that a request was made by a valid user AND that user
+is in an organization.
+
+| Argument                  | Description                                                                                                                                                                                                                                                                            |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Authorization HTTP Header | It expects the header to be in the format `Bearer ACCESS_TOKEN`. If the `Authorization` HTTP header is malformed or doesn't contain a valid access token, an `UnauthorizedException` is thrown.                                                                                        |
+| Required Org Info         | An object with optional fields `orgId` and `orgName`. This function will make sure the user who made the request is a member of an organization with the specified `orgId` and `orgName`. If the user is NOT a member of the specified organization, a `ForbiddenException` is thrown. |
+
+The return value has a user and a `org_member_info` containing the following
+properties:
+
+| OrgMemberInfo                                          | fields/properties                                                                                                                                                                                                                  | Description |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| org_id                                                 | The id of the org                                                                                                                                                                                                                  |
+| org_name                                               | The name of the org                                                                                                                                                                                                                |
+| user_assigned_role                                     | The user's role within the organization. See [Roles and Permissions](/overview/roles) for more details.                                                                                                               |
+| user_is_role(role: str): bool                          | Returns True if the user's role within the organization matches the `role` passed in                                                                                                                                               |
+| user_is_at_least_role(role: str): bool                 | Returns True if the user's role within the organization is at least the `role` passed in. If the hierarchy of roles is Owner => Admin => Member, specifying "Admin" will return True for Admins and Owners, but False for Members. |
+| user_has_permission(permission: str): bool             | Return True if the user has a specific permission. The users' permissions are derived from their role within this organization.                                                                                                    |
+| user_has_all_permissions(permissions: List[str]): bool | Return True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.                                                                                            |
+
+### Roles and Permissions
+
+A user has a **Role** within an organization. By default, the available roles
+are **Owner**, **Admin**, or **Member**, but these can be configured. These
+roles are also hierarchical, so Owner > Admin > Member.
+
+Roles allow you to control what different users can do within your product. If
+you want to check a user's role, you can use
+**validateAccessTokenAndGetUserWithOrgInfoWithExactRole** or
+**validateAccessTokenAndGetUserWithOrgInfoWithMinimumRole**.
+
+Permissions are arbitrary strings associated with a role. For example,
+**can_view_billing**, **ProductA::CanCreate**, and **ReadOnly** are all valid
+permissions. The PropelAuth dashboard allows you to set up these permissions.
+
+You can use **requireOrgMemberWithPermission** or
+**requireOrgMemberWithAllPermissions** to check for a given permission.
+
+All of these functions, just like **requireOrgMember**, can also take in
+**orgIdExtractor**, and will set both **req.user** and **req.org** on a valid
+request.
+
+### API calls
+
+In addition to protecting API routes, you can make requests to PropelAuth to
+fetch more information about your users or organizations. You can also create
+new users, update user metadata, and more.
+
+```js
+// Example
+const usersResponse = await fetchUsersByQuery({
+  emailOrUsername: "@example.com",
+  orderBy: "LAST_ACTIVE_AT_DESC",
+});
+for (const user of userResponse.users) {
+  console.log("Found user " + user);
+}
+```
+
+See [Python Library Reference](/reference/backend/python) for more information
+on available functionality.
+
+### Next Steps
+
+Done with your backend? Next you can
+[deploy to production](/getting-started/deploy-to-prod).

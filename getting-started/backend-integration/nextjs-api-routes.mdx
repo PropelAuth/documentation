@@ -1,0 +1,328 @@
+---
+title: "Next.js Backend Integration"
+description:
+  "PropelAuth offers an end-to-end managed user authentication library for
+  seamless integration into your Next.js application. This guide will show you
+  how to connect the PropelAuth library to your API using Next.js."
+---
+
+For the full Next.js Library Reference, click [here](/reference/backend/nextjs).
+
+## What are API Routes?
+
+API routes provide a solution to build your API with Next.js.
+
+Any file inside the folder `pages/api` is mapped to `/api/*` and will be treated
+as an API endpoint instead of a page. They are server-side only bundles and
+won't increase your client-side bundle size.
+
+What's great is that these APIs can be completely managed by services like
+[Vercel](https://vercel.com/). As a result of PropelAuth's middleware, it is
+possible to determine whether a user is logged in on the fly, with no need to go
+to a database.
+
+Next.js API routes support **express** compatible middleware, so we will use the
+**@propelauth/express** library.
+
+## How it works
+
+PropelAuth provides you with metadata that you use to validate the access token
+and figure out who it belongs to. The complexity of fetching the metadata and
+validating the tokens is hidden in the
+[Next.js library](/reference/backend/nextjs).
+
+The front-end receives an [access token](/overview-and-concpets/access-tokens).
+This access token is provided in an Authorization header when an HTTP request is
+made.
+
+## Installation
+
+<CodeGroup>
+
+```bash npm
+$ npm install --save @propelauth/express
+```
+
+```bash yarn
+$ yarn add @propelauth/express
+```
+
+</CodeGroup>
+
+## Initialize
+
+To initialize the PropelAuth library in `lib/propelauth.js`, enter the code
+below:
+
+```js
+import { initAuth } from "@propelauth/express";
+
+const propelauth = initAuth({
+  debugMode: true, // If true, error messages returned to the user will be detailed. It's useful for debugging, but a good idea to turn off in production.
+  authUrl: "YOUR_AUTH_URL", // The base URL where your authentication pages are hosted. You can find your Auth URL under the Backend Integration section for your project at https://app.propelauth.com.
+  apiKey: "YOUR_API_KEY", // You can manage your api keys under the Backend Integration section for your project.
+  manualTokenVerificationMetadata: {
+    verifierKey: "YOUR_VERIFER_KEY", // You can find your Verifier Key under the Backend Integration section for your project at https://app.propelauth.com.
+    issuer: "YOUR_ISSUER_URL", // You can find your issuer URL under the Backend Integration section for your project at https://app.propelauth.com.
+  },
+});
+```
+
+You can then import what you need from **propelauth** in your routes:
+
+```js
+import { requireUser, requireOrgMember } from "../../lib/propelauth";
+```
+
+## Running middleware in a NextJS API route
+
+The full details are available in the
+[official docs](https://nextjs.org/docs/api-routes/request-helpers#connectexpress-middleware-support).
+
+Nevertheless, an important thing to know is that you can create this helper
+function:
+
+```js
+// Helper method to wait for a middleware to execute before continuing
+// And to throw an error when an error happens in a middleware
+export function runMiddleware(req, res, fn) {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result) => {
+      if (result instanceof Error) {
+        return reject(result);
+      }
+
+      return resolve(result);
+    });
+  });
+}
+```
+
+Now you can use the `runMiddleware` helper function to call middleware within
+your routes as shown in the code below:
+
+```js
+async function handler(req, res) {
+  // Run the middleware
+  await runMiddleware(req, res, YOUR_MIDDLEWARE);
+
+  // Rest of the API logic
+  res.json({ message: "Hello Everyone!" });
+}
+```
+
+## Protect API routes
+
+### requireUser
+
+An Express middleware that will verify the request was made by a valid user.
+Specifically, it will:
+
+1. Check that a valid access token was provided. If not, the request is rejected
+   with a `401` status code.
+2. Set **user** on the **Request** with the user's information.
+
+```js
+import { requireUser } from "../../lib/propelauth";
+
+async function handler(req, res) {
+  // Verifies that a request was made with a valid access token
+  await runMiddleware(req, res, requireUser);
+
+  // req.user is now set from our requireUser middleware
+  res.status(200).json({ message: "Hello user with ID " + req.user.userId });
+}
+```
+
+The **user** object looks like:
+
+| Property             | Description                                                                              |
+| -------------------- | ---------------------------------------------------------------------------------------- |
+| userId               | The id of the user                                                                       |
+| orgIdToOrgMemberInfo | A dictionary of org ids to metadata about the org. Includes all orgs that the user is in |
+| legacyUserId         | The original ID of the user, if the user was migrated from an external source            |
+
+The values of **orgIdToOrgMemberInfo** are **OrgMemberInfo**'s, with the
+following fields/functions:
+
+| OrgMemberInfo                                     | fields/properties                                                                                                                                                                                                                  | Description |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| org_id                                            | The id of the org                                                                                                                                                                                                                  |
+| org_name                                          | The name of the org                                                                                                                                                                                                                |
+| urlSafeOrgName                                    | A URL-safe version of the name of the org                                                                                                                                                                                          |
+| assignedRole(): string                            | The user's role within the organization. See [Roles and Permissions](/overview/roles) for more details.                                                                                                               |
+| permissions(): string[]                           | The user's permissions within the organization. See [Roles and Permissions](/overview/roles)                                                                                                                          |
+| isRole(role: string): boolean                     | Returns True if the user's role within the organization matches the `role` passed in                                                                                                                                               |
+| isAtLeastRole(role: string): boolean              | Returns True if the user's role within the organization is at least the `role` passed in. If the hierarchy of roles is Owner => Admin => Member, specifying "Admin" will return True for Admins and Owners, but False for Members. |
+| hasPermission(permission: string): boolean        | Return True if the user has a specific permission. The users' permissions are derived from their role within this organization.                                                                                                    |
+| hasAllPermissions(permissions: string[]): boolean | Return True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.                                                                                            |
+
+### optionalUser
+
+Similar to
+[requireUser](/getting-started/backend-integration/nextjs/#require-user), except
+if an access token is missing or invalid, the request is allowed to continue,
+but **user** on the **Request** will be **undefined**.
+
+```js
+import { optionalUser } from "../../lib/propelauth";
+
+async function handler(req, res) {
+  await runMiddleware(req, res, optionalUser);
+
+  if (req.user) {
+    res.status(200).json({ message: "Hello user with ID " + req.user.userId });
+  } else {
+    res.status(200).json({ message: "Hello anonymous" });
+  }
+}
+```
+
+### requireOrgMember
+
+An Express middleware that will verify the request was made by a valid user that
+belongs to a specific organization.
+
+```js
+import { requireOrgMember } from "../../lib/propelauth";
+
+const requireUserInOrgByQueryParam = requireOrgMember({
+  // Tell our middleware that the orgId comes from `req.query`
+  orgIdExtractor: (req) => req.query.orgId,
+});
+
+async function handler(req, res) {
+  await runMiddleware(req, res, requireUserInOrgByQueryParam);
+
+  // requireAdminInOrg automatically sets req.org
+  res.status(200).json({ message: "You are in " + req.org.orgName });
+}
+```
+
+| Argument        | Description                                                                                                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| current_user    | The result of require_user                                                                                                                                                      |
+| required_org_id | The id of an organization. This function will check that the current user is a member of this org. Typically, this is passed in from the frontend as a query or path parameter. |
+
+Specifically, it will:
+
+```js
+import { requireOrgMember } from "../../lib/propelauth";
+
+const requireUserInOrgByQueryParam = requireOrgMember({
+  // Tell our middleware that the orgId comes from `req.query`
+  orgIdExtractor: (req) => req.query.orgId,
+});
+
+async function handler(req, res) {
+  await runMiddleware(req, res, requireUserInOrgByQueryParam);
+
+  // requireAdminInOrg automatically sets req.org
+  res.status(200).json({ message: "You are in " + req.org.orgName });
+}
+```
+
+Specifically, it will:
+
+1. Check that a valid access token was provided. If not, the request is rejected
+   with a `401` status code.
+2. Set **user** on the **Request** with the user's information. See
+   [requireUser](/getting-started/backend-integration/nextjs#require-user) for
+   what the **user** object looks like.
+3. Find an **id** for an organization within the request. By default, it will
+   check **Request.params.orgId** (a path parameter named **orgId**).
+4. Check that the user is a member of that organization. If not, the request is
+   rejected with a `403` status code.
+5. Set **org** on the **Request** with the organization's information for this
+   user.
+
+## Roles and Permissions
+
+A user has a **Role** within an organization. By default, the available roles
+are **Owner**, **Admin**, or **Member**, but these can be configured. These
+roles are also hierarchical, so Owner > Admin > Member.
+
+Roles allow you to control what different users can do within your product. If
+you want to check a user's role, you can use `requireOrgMemberWithExactRole` or
+`requireOrgMemberWithMinimumRole`.
+
+<CodeGroup>
+
+```js requireOrgMemberWithExactRole
+// Assuming a Role structure of Owner => Admin => Member
+async function handler(req, res) {
+  await runMiddleware(
+    req,
+    res,
+    requireOrgMemberWithExactRole({ role: "Admin" })
+  );
+
+  res
+    .status(200)
+    .json({ message: "You are in an Admin of " + req.org.orgName });
+}
+```
+
+```js requireOrgMemberWithMinimumRole
+async function handler(req, res) {
+  await runMiddleware(
+    req,
+    res,
+    requireOrgMemberWithMinimumRole({ minimumRequiredRole: "Admin" })
+  );
+
+  res
+    .status(200)
+    .json({ message: "You are in an Admin or Owner of " + req.org.orgName });
+}
+```
+
+</CodeGroup>
+
+Permissions are arbitrary strings associated with a role. For example,
+**can_view_billing**, **ProductA::CanCreate**, and **ReadOnly** are all valid
+permissions. The PropelAuth dashboard allows you to set up these permissions.
+
+You can use **requireOrgMemberWithPermission** or
+**requireOrgMemberWithAllPermissions** to check for a given permission.
+
+```js
+async function handler(req, res) {
+  await runMiddleware(
+    req,
+    res,
+    requireOrgMemberWithPermission({ permission: "can_view_billing" })
+  );
+
+  // view billing
+}
+```
+
+All of these functions, just like **requireOrgMember**, can also take in
+**orgIdExtractor**, and will set both **req.user** and **req.org** on a valid
+request.
+
+## API calls
+
+In addition to protecting API routes, you can make requests to PropelAuth to
+fetch more information about your users or organizations. You can also create
+new users, update user metadata, and more.
+
+```js
+// Example
+const usersResponse = await fetchUsersByQuery({
+  emailOrUsername: "@example.com",
+  orderBy: "LAST_ACTIVE_AT_DESC",
+});
+for (const user of userResponse.users) {
+  console.log("Found user " + user);
+}
+```
+
+See [Next.js Library Reference](/reference/backend/next.js) for more information
+on available functionality.
+
+## Next Steps
+
+Done with your backend? Next you can
+[deploy to production](/getting-started/deploy-to-prod).

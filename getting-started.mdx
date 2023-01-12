@@ -1,0 +1,95 @@
+---
+title: "Configure your project"
+description:
+  "This guide will walk you through how to configure the ideal auth experience
+  for your end users, including login options like SSO and magic links."
+---
+
+A project encompasses all the authentication for your application. To get
+started, click here to sign up and create your project.
+
+### Create your project
+
+All you need to start is a name. Once you've created your project, a test
+environment is created.
+
+![an example dark mode theme](/images/configure-1.png)
+
+You start off with a default logo, color scheme, and the option of either
+password or passwordless authentication. At this point, you can fully test what
+your end users will experience, transactional emails included. The dashboard has
+a link to your signup/login pages. After logging in, you'll also see your
+account page where your users can enroll in 2FA and change their settings.
+
+Let's continue by configuring the look and feel of these pages.
+
+### Hosted authentication pages
+
+Click **Hosted Auth Pages** in the sidebar after creating your project to
+configure the look and feel of your entire authentication experience.
+
+![a user configuring hosted auth pages](/images/configure-2.gif)
+
+This will configure every UI (account, login, signup, forgot password, etc) and
+email that we send.
+
+### Social login / SSO _(optional)_
+
+Social login / SSO allows your users to login using their existing social
+network accounts (e.g. Google, Github, Microsoft). It makes signing up simpler
+for your users, as they don't have to remember a password.
+
+Enabling social logins with PropelAuth is a breeze since the majority of the
+work is done by your hosted authentication pages. If a user signs up with a
+social provider after signing up with email, their accounts will automatically
+be linked.
+
+Instructions for enabling Social login are dependent on the specific social
+network you want to integrate with.
+[Click here for a full list of providers with instructions](/reference/social-login).
+
+![a user configuring google social login](/images/configure-3.gif)
+
+### Organizations / B2B Support / SAML
+
+PropelAuth allows your users to create and manage
+[organizations](/overview/organizations).
+
+They can also invite their coworkers to these organizations and manage their
+coworkers' roles. Our libraries allow you to access organization information.
+
+This can be disabled in Organization Settings section of your dashboard. This is
+also where you can enable/disable [SAML](/overview/saml).
+
+### User Schema
+
+There are a few more options to customize the user experience. They can be found
+under **User Schema** in the sidebar.
+
+Enabling an extra field has a few effects:
+
+- Your signup page will now also ask for that field (except for profile picture,
+  where we start them off with a default).
+
+![enable name](/images/configure-4.png)
+
+- Users that sign in via passwordless login (which only asks for email address),
+  will be asked to complete their account when they first sign up.
+- Existing users will be asked to fill in that field when they next sign up.
+- Your users can update those fields on your hosted account pages.
+
+### Passwordless / Magic Links
+
+By default, we allow users to sign up via password or passwordless logins. You
+can read more about it
+[here](https://www.propelauth.com/post/passwordless-support). The **Project
+Settings** section of your project allows you to configure this.
+
+### Next step: Integration
+
+Congrats! You have fully configured your authentication experience. Right now,
+after you sign up and confirm your email, you will be redirected to the Account
+page. This is only temporary.
+
+Once you integrate your frontend, you will instead be redirected to your
+application.
