@@ -1,0 +1,73 @@
+---
+title: "Roles (RBAC) and Permissions"
+sidebarTitle: "Roles (RBAC)"
+description:
+  "RBAC, short for role based access control, is a method where you assign each
+  user a role. You can then determine what they have access to based on their
+  role."
+---
+
+By default, PropelAuth provides you with three roles:
+
+- Owner
+- Admin
+- Member
+
+Importantly, these roles apply only within the context of an organization. One
+of your users can be an Owner of organization A and a Member of organization B.
+Those roles dictate permissions within the organization - not globally.
+
+### Can I change the default roles?
+
+Yes. In your dashboard, under **Roles and Permissions**, you can create roles
+that make sense for your product.
+
+![custom roles](/images/roles-1.png)
+
+### How do users get assigned roles?
+
+PropelAuth enables your end users to manage their own roles via their org
+management hosted page.
+
+![org management page](/images/roles-2.png)
+
+You can also manage your users roles yourself in the PropelAuth dashboard or via
+our APIs.
+
+### What can I do with roles?
+
+PropelAuth's libraries treat these roles as a first-class concept on both the
+frontend and backend. You can then easily:
+
+- Reject an HTTP request if the user is not at least an **Admin** in this
+  organization
+- Conditionally render the frontend based on the user's role in an organization
+- Limit who can send organization invitations based on their role
+
+### What are permissions?
+
+Permissions are arbitrary strings associated with a role. For example,
+**can_view_billing**, **ProductA::CanCreate**, and **ReadOnly** are all valid
+permissions.
+
+![manage permissions](/images/roles-3.png)
+
+These permissions are associated with your roles. A user with the role **Admin**
+will also have all the permissions associated with the role **Admin**. You can
+then easily:
+
+- Reject an HTTP request if the user does not have the **can_view_billing**
+  permission.
+- Conditionally render the frontend based on the user's permissions.
+
+### What is the difference between roles and permissions?
+
+Roles and permissions both enable you to check what a user can and cannot do
+within your product. Your users will directly interact with their role (e.g. by
+inviting a coworker as an Admin within their organization). Your users will NOT
+directly interact with their permissions. A users' permissions are derived from
+their role.
+
+One advantage of permissions over roles is it allows you to think about the
+concrete actions each role can do. Your codebase just has to check those
+concrete actions without worrying about the role.

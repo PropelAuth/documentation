@@ -1,0 +1,234 @@
+---
+title: "FastAPI Backend Integration"
+description:
+  "PropelAuth offers an end-to-end managed user authentication library for
+  seamless integration into your FastAPI application. This guide will show you
+  how to connect the PropelAuth library to your backend."
+---
+
+For the full FastAPI Library Reference, click
+[here](/reference/backend/fastapi).
+
+### Quick example
+
+The following example creates a route which can only be accessed from logged-in
+users.
+
+```js
+from fastapi import FastAPI, Depends
+from propelauth_fastapi import init_auth, User
+
+app = FastAPI()
+auth = init_auth("YOUR_AUTH_URL", #
+                 "YOUR_API_KEY") #
+
+@app.get("/")
+async def root(current_user: User = Depends(auth.require_user)):
+    return {"message": f"Hello {current_user.user_id}"}
+```
+
+### How it works
+
+The front-end receives an [access token](/overview-and-concpets/access-tokens).
+This access token is provided in an Authorization header when an HTTP request is
+made.
+
+PropelAuth provides you with metadata that you use to validate the access token
+and figure out who it belongs to. The complexity of fetching the metadata and
+validating the tokens is hidden in the
+[FastApi library](/reference/backend/fastapi).
+
+### Installation
+
+```bash
+$ pip install propelauth_fastapi
+```
+
+### Initialize
+
+**initAuth** performs a one-time initialization of the library. It will verify
+your `apiKey` is correct and fetch the metadata needed to verify access tokens
+in [requireUser](/getting-started/backend-integration/fastapi/#require-user),
+[optionalUser](/getting-started/backend-integration/fastapi/#optional-user), or
+[requireOrgMember](/getting-started/backend-integration/fastapi/#require-org-member).
+
+```js
+from propelauth_fastapi import init_auth
+
+auth = init_auth("YOUR_AUTH_URL", #
+                 "YOUR_API_KEY") #
+```
+
+### Protect API routes
+
+#### User
+
+A user returned by
+[require_user](/getting-started/backend-integration/fastapi/#require-user) or
+[optional_user]().
+
+| Property             | Description                                                                              |
+| -------------------- | ---------------------------------------------------------------------------------------- |
+| userId               | The id of the user                                                                       |
+| orgIdToOrgMemberInfo | A dictionary of org ids to metadata about the org. Includes all orgs that the user is in |
+| legacyUserId         | The original ID of the user, if the user was migrated from an external source            |
+
+The values of **orgIdToOrgMemberInfo** are **OrgMemberInfo**'s.
+
+### OrgMemberInfo
+
+| OrgMemberInfo                                          | fields/properties                                                                                                                                                                                                                  | Description |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| org_id                                                 | The id of the org                                                                                                                                                                                                                  |
+| org_name                                               | The name of the org                                                                                                                                                                                                                |
+| user_assigned_role                                     | The user's role within the organization. See [Roles and Permissions](/overview/roles) for more details.                                                                                                               |
+| user_is_role(role: str): bool                          | Returns True if the user's role within the organization matches the `role` passed in                                                                                                                                               |
+| user_is_at_least_role(role: str): bool                 | Returns True if the user's role within the organization is at least the `role` passed in. If the hierarchy of roles is Owner => Admin => Member, specifying "Admin" will return True for Admins and Owners, but False for Members. |
+| user_has_permission(permission: str): bool             | Return True if the user has a specific permission. The users' permissions are derived from their role within this organization.                                                                                                    |
+| user_has_all_permissions(permissions: List[str]): bool | Return True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.                                                                                            |
+
+#### requireUser
+
+A dependency that will verify the request was made by a valid user. If a valid
+access token is provided, it will return that user's information (including
+fields like a user_id). If not, the request is rejected with a `401` status
+code.
+
+```js
+from fastapi import FastAPI, Depends
+from propelauth_fastapi import init_auth, User
+
+app = FastAPI()
+auth = init_auth("AUTH_URL", "API_KEY")
+
+@app.get("/")
+async def root(current_user: User = Depends(auth.require_user)):
+    return {"message": f"Hello {current_user.user_id}"}
+```
+
+#### optionalUser
+
+Similar to
+[requireUser](/getting-started/backend-integration/fastapi/#require-user), except
+if an access token is missing or invalid, the request is allowed to continue,
+but the dependency will be None.
+
+```js
+from typing import Optional
+
+from fastapi import FastAPI, Depends
+from propelauth_fastapi import init_auth, User
+
+app = FastAPI()
+auth = init_auth("AUTH_URL", "API_KEY")
+
+@app.get("/api/whoami_optional")
+async def whoami_optional(current_user: Optional[User] = Depends(auth.optional_user)):
+    if current_user:
+        return {"user_id": current_user.user_id}
+    return {}
+
+```
+
+#### requireOrgMember
+
+A function that will verify that a user belongs to a specific organization.
+
+```js
+from fastapi import FastAPI, Depends
+from propelauth_fastapi import init_auth, User
+
+app = FastAPI()
+auth = init_auth("AUTH_URL", "API_KEY")
+
+@app.get("/api/org/{org_id}/check")
+async def admin_only(org_id: str, current_user: User = Depends(auth.require_user)):
+    org = auth.require_org_member(current_user, org_id)
+    return {"message": f"You are in {org.org_name}"}
+```
+
+| Argument        | Description                                                                                                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| current_user    | The result of require_user                                                                                                                                                      |
+| required_org_id | The id of an organization. This function will check that the current user is a member of this org. Typically, this is passed in from the frontend as a query or path parameter. |
+
+Specifically, it will:
+
+1. Check that a valid access token was provided. If not, the request is rejected
+   with a `403` status code.
+2. Return the organization's information for this user.
+
+The returned organization is an **OrgMemberInfo**
+
+### Roles and Permissions
+
+A user has a **Role** within an organization. By default, the available roles
+are **Owner**, **Admin**, or**Member**, but these can be configured. These roles
+are also hierarchical, so Owner > Admin > Member.
+
+Roles allow you to control what different users can do within your product. If
+you want to check a user's role, you can use **requireOrgMemberWithExactRole**
+or **requireOrgMemberWithMinimumRole**.
+
+```js
+## Assuming a Role structure of Owner => Admin => Member
+
+@app.get("/api/org/{org_id}/admin_only")
+async def admin_only(org_id: str, current_user: User = Depends(auth.require_user)):
+    org = auth.require_org_member_with_exact_role(current_user, org_id, "Admin")
+    return {"message": f"You are an Admin of {org.org_name}"}
+
+@app.get("/api/org/{org_id}/admin_or_owner")
+async def admin_or_owner(org_id: str, current_user: User = Depends(auth.require_user)):
+    org = auth.require_org_member_with_minimum_role(current_user, org_id, "Admin")
+    return {"message": f"You are an Admin or Owner of {org.org_name}"}
+```
+
+Permissions are arbitrary strings associated with a role. For example,
+**can_view_billing**, **ProductA::CanCreate**, and **ReadOnly** are all valid
+permissions. The PropelAuth dashboard allows you to set up these permissions.
+
+You can use **requireOrgMemberWithPermission** or
+**requireOrgMemberWithAllPermissions** to check for a given permission.
+
+```js
+@app.get("/api/org/{org_id}/billing")
+async def billing(org_id: str, current_user: User = Depends(auth.require_user)):
+    org = auth.require_org_member_with_permission(current_user, org_id, "can_view_billing")
+    pass
+```
+
+### Usage with API docs
+
+FastAPIs built in documentation will automatically add this button when you are
+using either `require_user` or `optional_user`.
+
+![API docs authorze button](/images/authorize_button.png)
+
+You can obtain an access token either from the frontend or by navigating to
+`${YOUR_AUTH_URL}/api/v1/refresh_token`.
+
+### API calls
+
+In addition to protecting API routes, you can make requests to PropelAuth to
+fetch more information about your users or organizations. You can also create
+new users, update user metadata, and more.
+
+```js
+// Example
+const usersResponse = await fetchUsersByQuery({
+  emailOrUsername: "@example.com",
+  orderBy: "LAST_ACTIVE_AT_DESC",
+});
+for (const user of userResponse.users) {
+  console.log("Found user " + user);
+}
+```
+
+See [FastAPI Library Reference](/reference/backend/fastapi) for more information
+on available functionality.
+
+### Next Steps
+
+Done with your backend? Next you can
+[deploy to production](/getting-started/deploy-to-prod).

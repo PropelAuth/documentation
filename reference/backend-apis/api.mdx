@@ -1,0 +1,31 @@
+---
+title: "Backend API Reference"
+sidebarTitle: "Overview"
+---
+
+<Note>
+  You should prefer to use a library over the API directly. If a library for
+  your language doesn't exist yet, please reach out to support@propelauth.com
+  and we'll be happy to help.
+</Note>
+
+### Authentication
+
+PropelAuth uses API keys for the backend API. You can manage your API key(s)
+under the **Backend Integration** section of your project at
+https://app.propelauth.com.
+
+PropelAuth expects the API key in an Authorization header like the following:
+
+```
+Authorization: Bearer YOUR_API_KEY
+```
+
+### Domain
+
+PropelAuth uses a different domain for each application. Your application, for
+example, will be hosted at `https://auth.yourdomain.com`. An HTTP Request of
+/api/v1/example should be `https://auth.yourdomain.com/api/v1/example` in that
+case.
+
+You can set your domain under the **Go Live** section of your project.

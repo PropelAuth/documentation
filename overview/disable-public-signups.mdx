@@ -1,0 +1,29 @@
+---
+title: "Disable public signups"
+description:
+  "When you are in the early stages of your business, you might want to onboard
+  customers manually instead of having open signups."
+---
+
+PropelAuth already makes it easy for you to sign up users and their coworkers,
+but this is actually a case where you don't want that. The only users you want
+are ones you explicitly choose and no one else. Maybe these are only people on
+your waitlist, or maybe these are friends and family, or maybe it's people that
+you've given a demo to and are really excited about what you are building.
+
+To disable signups, go to the **Project Setting** section of your
+[project](https://auth.propelauth.com/signup) and uncheck **Allow public user
+signups**.
+
+![](/images/allow_public_signups.png)
+
+This will do a few obvious things, like removing the user facing signup page and
+any links to it.
+
+It will also do a few subtle things, like if you enabled SSO (e.g. a "Login with
+Google" button), it will still allow users to login, but only if a verified
+account already exists with a matching email address.
+
+Users will only be allowed to log in if you explicitly allow them to - which you
+can do via our admin dashboard. This way you can have full control over who can
+access your product.

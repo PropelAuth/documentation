@@ -1,0 +1,182 @@
+{
+  "name": "PropelAuth",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
+  "api": {
+    "auth": {
+      "method": "bearer"
+    }
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#2AC885",
+    "light": "#80DFB7",
+    "dark": "#1F7E53",
+    "ultraLight": "#D5F5E8",
+    "ultraDark": "#27543B"
+  },
+  "topbarCtaButton": {
+    "name": "Get started",
+    "url": "https://auth.propelauth.com/signup"
+  },
+  "topbarLinks": [
+    {
+      "name": "Contact us",
+      "url": "support@propelauth.com"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "Example Apps",
+      "icon": "memo-pad",
+      "url": "example-apps"
+    },
+    {
+      "name": "Full Reference",
+      "icon": "square-terminal",
+      "url": "reference"
+    },
+    {
+      "name": "Blog",
+      "icon": "newspaper",
+      "url": "https://www.propelauth.com/blog"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Overview & Concepts",
+      "pages": [
+        "overview",
+        "overview/organizations",
+        "overview/roles",
+        "overview/saml",
+        "overview/user-schema",
+        "overview/2fa",
+        "overview/disable-public-signups",
+        "overview/slack-notifications",
+        "overview/webhooks",
+        "overview/migrate-existing-users",
+        "overview/access-tokens",
+        "overview/emails",
+        "overview/faq"
+      ]
+    },
+    {
+      "group": "Getting Started",
+      "pages": [
+        "getting-started",
+        {
+          "group": "Integrate your frontend",
+          "pages": [
+            "getting-started/frontend-integration",
+            "getting-started/frontend-integration/react",
+            "getting-started/frontend-integration/nextjs",
+            "getting-started/frontend-integration/webflow",
+            "getting-started/frontend-integration/javascript"
+          ]
+        },
+        {
+          "group": "Integrate your backend",
+          "pages": [
+            "getting-started/backend-integration",
+            "getting-started/backend-integration/actix",
+            "getting-started/backend-integration/axum",
+            "getting-started/backend-integration/django",
+            "getting-started/backend-integration/express",
+            "getting-started/backend-integration/fastapi",
+            "getting-started/backend-integration/flask",
+            "getting-started/backend-integration/nextjs-api-routes",
+            "getting-started/backend-integration/node",
+            "getting-started/backend-integration/python",
+            "getting-started/backend-integration/rust"
+          ]
+        },
+        "getting-started/deploy-to-prod"
+      ]
+    },
+    {
+      "group": "Example Apps",
+      "pages": ["example-apps/apps"]
+    },
+    {
+      "group": "Full Reference",
+      "pages": [
+        "reference",
+        {
+          "group": "Frontend",
+          "pages": [
+            "reference/frontend-apis/js",
+            "reference/frontend-apis/react",
+            "reference/frontend-apis/nextjs"
+          ]
+        },
+        {
+          "group": "Backend",
+          "pages": [
+            {
+              "group": "API",
+              "pages": [
+                "reference/backend-apis/api",
+                "reference/backend-apis/api/fetch-id",
+                "reference/backend-apis/api/fetch-email",
+                "reference/backend-apis/api/fetch-username",
+                "reference/backend-apis/api/batch-ids",
+                "reference/backend-apis/api/batch-emails",
+                "reference/backend-apis/api/batch-usernames",
+                "reference/backend-apis/api/search-users",
+                "reference/backend-apis/api/fetch-org-users",
+                "reference/backend-apis/api/create-user",
+                "reference/backend-apis/api/migrate-user",
+                "reference/backend-apis/api/magic-link",
+                "reference/backend-apis/api/update-user-email",
+                "reference/backend-apis/api/update-user-metadata",
+                "reference/backend-apis/api/delete-user",
+                "reference/backend-apis/api/disable-user",
+                "reference/backend-apis/api/enable-user",
+                "reference/backend-apis/api/fetch-organization",
+                "reference/backend-apis/api/fetch-all-organizations",
+                "reference/backend-apis/api/create-organization",
+                "reference/backend-apis/api/update-org-metadata",
+                "reference/backend-apis/api/add-user",
+                "reference/backend-apis/api/allow-organization",
+                "reference/backend-apis/api/disallow",
+                "reference/backend-apis/api/fetch-access-token",
+                "reference/backend-apis/api/error-codes"
+              ]
+            },
+            "reference/backend-apis/actix",
+            "reference/backend-apis/axum",
+            "reference/backend-apis/django",
+            "reference/backend-apis/express",
+            "reference/backend-apis/fastapi",
+            "reference/backend-apis/flask",
+            "reference/backend-apis/nextjs",
+            "reference/backend-apis/node",
+            "reference/backend-apis/python",
+            "reference/backend-apis/rust"
+          ]
+        },
+        {
+          "group": "SSO / Social Login",
+          "pages": [
+            "reference/social-login",
+            "reference/social-login/google",
+            "reference/social-login/github",
+            "reference/social-login/microsoft",
+            "reference/social-login/slack",
+            "reference/social-login/linkedin"
+          ]
+        }
+      ]
+    }
+  ],
+  "footerSocials": {
+    "twitter": "https://twitter.com/propelauth",
+    "linkedin": "https://www.linkedin.com/company/propelauth/",
+    "github": "https://github.com/propelauth",
+    "medium": "https://medium.com/@PropelAuth",
+    "website": "https://www.propelauth.com/"
+  }
+}

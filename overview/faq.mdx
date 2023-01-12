@@ -1,0 +1,72 @@
+---
+title: "FAQ"
+description: "Frequently asked questions"
+---
+
+### What is my test environment for?
+
+Your test environment enables you to test your integration locally without
+messing with production data.
+
+Your test environment is set up to allow requests from localhost, so you can
+develop locally, whereas your production environment allows requests only from
+your domain.
+
+### What is the full list of use cases handled by the hosted authentication pages?
+
+These are the pages that are exposed to your end users. You can see how they
+look when you style them on our [demo site](https://demo.propelauth.com/).
+
+- Signup (password, passwordless, and social)
+- Login (password, passwordless, social, and SAML)
+- Onboarding - Ask users to specify additional information like username before
+  they are fully set up
+- Email confirmation pages (confirm my email/resend email confirmation)
+- Forgotten password pages (I forgot my password/update my forgotten password)
+- Update account information
+- Enable/Disable 2FA
+- Upload profile picture
+- Update password, email, user metadata
+- Social login OAuth redirect pages
+- Create / join organizations
+- Manage organizations (invite new users, manage user's roles within an org,
+  remove users from org)
+- Display pending organization invitations (and accept/reject them)
+- [SAML](/overview/saml) setup via wizards
+- [Testing the SAML connection](/overview/saml)
+- Security features like user lockout and breached password detection
+
+Are we missing a feature that's important to you? Please email us at
+support@propelauth.com.
+
+### What happens if I want to switch auth providers in the future?
+
+No problem. We can provide a full export of your user data upon request.
+
+### Can I migrate from another provider?
+
+Absolutely! See our guide about migrations
+[here](/overview/migrate-existing-users). Since every provider is
+different, we can also manually help with the migration process. Get in touch at
+support@propelauth.com.
+
+### I logged in to my test environment but my frontend doesn't say I'm logged in
+
+For privacy reasons, some browsers will restrict sending cookies across domains.
+In your production environment, this isn't an issue because you have a custom
+domain (`https://auth.yourdomain.com`).
+
+This can be an issue for your test environment which sends requests from
+localhost to your test environment (e.g. `https://yourid.propelauthtest.com`).
+Resolving this is different in each browser.
+
+In Firefox, for example, if you have enabled **Strict** Enhanced Tracking
+Protection, you'll need to disable it just for localhost by clicking the shield
+next to the url like this:
+
+![](/images/faq.png)
+
+<Note>
+  This is only applicable locally for some configurations of some browsers. Your
+  end users will **not** need to do this.
+</Note>

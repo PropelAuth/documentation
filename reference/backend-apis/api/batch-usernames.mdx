@@ -1,0 +1,25 @@
+---
+title: "Batch fetch users by usernames"
+api: "POST https://{auth_url}/api/backend/v1/user/usernames"
+---
+
+### Path Parameters
+
+<ParamField path="auth_url" type="string" required>
+  The domain for your application
+</ParamField>
+
+### JSON Body Parameters
+
+<ParamField body="user_ids">The user ids to look up</ParamField>
+
+### Query Parameters
+
+<ParamField query="include_orgs" default="false">
+  Whether or not to include the user's organization information in the response.
+  Default false
+</ParamField>
+
+Successful response is the same as
+[Batch fetch users by ids](/reference/backend-integration/api/batch-ids), but the keys are
+matching usernames.

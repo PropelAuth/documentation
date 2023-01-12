@@ -1,0 +1,31 @@
+---
+title: "Github - Social login (SSO) configuration"
+sidebarTitle: "Github"
+---
+
+Enabling `Sign in with Github` only requires two fields: **Client ID** and
+**Client secret**. Both of these are provided by Github, and these steps will
+help you create them.
+
+The official Github guide is
+[here](https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app).
+
+<Note>
+  Users that sign up via Google look the same as users that sign up via any
+  other method. Your code will handle both automatically.
+</Note>
+
+### Steps
+
+1. Follow the
+   [official Github guide to create an OAuth app](https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app)
+2. Under **Authorized callback URL**, enter PropelAuth's provided URL. You can
+   find this on the **Social Logins** section for your
+   [PropelAuth project](https://auth.propelauth.com/signup).
+3. Note down the **Client ID** and **Client secret** you are provided.
+4. On the **Social Logins** section for your
+   [PropelAuth project](https://auth.propelauth.com/signup), enter your Client
+   ID and Client **secret**. Click enable and save.
+
+When you go to your hosted authentication pages, you should see the
+`Sign in with Google` button.

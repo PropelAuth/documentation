@@ -1,0 +1,215 @@
+---
+title: "Webflow - Integrate your frontend"
+sidebarTitle: "Webflow"
+description: "A great thing about having a hosted set of UIs is it is compatible with any
+frontend, including services like Webflow."
+---
+
+Whether you are starting with Webflow and plan to move to another framework
+(e.g. React/Next.js) or if you are building something like documentation in
+Webflow and want to include dynamic authenticated content, PropelAuth can help.
+
+### Minimal example
+
+The following example will display a different message for logged-in users vs
+logged out. We'll go into more detail about how it works and show more advanced
+examples down below.
+
+```js
+<script src="https://www.unpkg.com/@propelauth/javascript@2.0.0/dist/javascript.min.js"
+        integrity="sha384-CnMW/GT96q1vxl3xq1fIbUrmXpDIsXVtY+/FpJW+rMSCgjlOWpbVfs5G0dg2bMN5"
+        crossorigin="anonymous"></script>
+<script>
+    const client = PropelAuth.createClient({
+        authUrl: "YOUR_AUTH_URL", // Your auth URL can be found in your PropelAuth dashboard. You will have a different URL for your test and production environment, so you may want to store it in an ENV variable.
+        enableBackgroundTokenRefresh: true, // PropelAuth uses short-lived tokens for security reasons. Enabling this feature will automatically refresh those tokens in the background. See technical details for more info.
+    });
+
+    client.getAuthenticationInfoOrNull().then(authInfo => {
+        const element = document.getElementById("text")
+        if (authInfo) {
+            element.innerText = "You are logged in as " + authInfo.user.email // User contains other metadata like userId
+        } else {
+            element.innerText = "You are not logged in"
+        }
+    }
+</script>
+```
+
+### Technial details
+
+When a user logs in via your hosted pages, a secure, http-only cookie is
+created. This cookie allows PropelAuth to identify logged-in users. In
+production, we require you use a custom domain to avoid third-party cookie
+issues for your users. Browsers like Safari will block cookies across domains,
+which is why we include custom domains even in our free plan.
+
+Afterwards, your frontend can make a request to PropelAuth to determine if the
+current user is logged in and get their information.
+
+![auth generic](/images/auth-generic-1.png)
+
+On top of user information, your frontend will get an
+[access token](/overview/access-tokens) for that user. These tokens
+are JWTs, which we've written about For more information on JWTs, view our blog
+[here](https://www.propelauth.com/post/jwts-explained-with-code-examples).
+
+Later on, when your frontend makes requests to your backend, it will include an
+access token, which your backend can validate and determine whose token it is.
+This validation is done entirely on your backend and doesn't need to make any
+requests to PropelAuth.
+
+The access token is short-lived, and our libraries will refresh the token both
+periodically and when the user switches to your tab or reconnects to the
+internet.
+
+### Configure
+
+Go to your [PropelAuth project](https://auth.propelauth.com/signup) and click
+**Frontend Integration** in the sidebar. You will see:
+
+- **Auth URL** - This is where your authentication pages are hosted, and you
+  will need this for the setup step.
+- **Test Environment** - This is where you test. In our case, we'll select
+  Webflow and enter our subdomain.
+- **Login Redirect Path** - After a user logs in, they will be redirected here.
+- **Logout Redirect Path** - After a user logs out, they will be redirected
+  here.
+
+### Installation
+
+Add the following custom code to the `Inside <head>` tag of your page.
+
+```js
+<script
+  src="https://www.unpkg.com/@propelauth/javascript@2.0.0/dist/javascript.min.js"
+  integrity="sha384-CnMW/GT96q1vxl3xq1fIbUrmXpDIsXVtY+/FpJW+rMSCgjlOWpbVfs5G0dg2bMN5"
+  crossorigin="anonymous"
+></script>
+```
+
+then a global `PropelAuth` object will be created, and you can call
+`createClient` from it:
+
+```js
+<script>
+    PropelAuth.createClient({...});
+</script>
+```
+
+### createClient
+
+`createClient` creates an authentication client which manages your access token,
+fetches user information, and provides other useful authentication functions.
+
+The client also refreshes auth information when a user switches focus to your
+tab or reconnects (if they were offline).
+
+```js
+const client = createClient({
+  authUrl: "REPLACE_ME", // The base URL where your authentication pages are hosted. You can find this under the Frontend Integration section for your project.
+  enableBackgroundTokenRefresh: true, // If true, periodically refresh the access token in the background. This helps ensure you always have a valid token ready to go. Default true.
+});
+```
+
+### Usage
+
+[getAuthenticationInfoOrNull](/reference/frontend/javascript) will return user
+metadata and the current user's organizations.
+
+You can see a full list of methods on the client in our
+[reference](/reference/frontend/javascript). Here's an example which creates
+signup/login/logout buttons that change based on whether the user is logged in
+or not.
+
+We start with two different divs - one with id `display-when-logged-in` and one
+with id `display-when-logged-out`.
+
+![display when logged in display when logged in](/images/display-when-logged-in.png)
+
+![display when logged in display when logged out](/images/display-when-logged-out.png)
+
+Each element that needs an interaction also has a name, for example, here is an
+image with the id `profile-picture`.
+
+![profile picture id](/images/profile-picture.png)
+
+Finally, we can use custom code to hook up all these elements:
+
+```js
+<script>
+    const client = PropelAuth.createClient({
+        authUrl: "https://auth.yourdomain.com", // Change me
+        enableBackgroundTokenRefresh: true,
+    });
+
+    // Set up each element to go to a PropelAuth hosted page or logout
+    document.getElementById("signup").onclick = client.redirectToSignupPage;
+    document.getElementById("login").onclick = client.redirectToLoginPage;
+    document.getElementById("profile-picture").onclick = client.redirectToAccountPage;
+    document.getElementById("logout").onclick = client.logout;
+
+    // Update the page based on the auth information we fetch from PropelAuth
+    function updatePage() {
+        client.getAuthenticationInfoOrNull().then(authInfo => {
+            if (authInfo) {
+                document.getElementById("profile-picture").src = authInfo.user.pictureUrl;
+                document.getElementById("display-when-logged-in").style.display = "revert";
+                document.getElementById("display-when-logged-out").style.display = "none";
+            } else {
+                document.getElementById("display-when-logged-in").style.display = "none";
+                document.getElementById("display-when-logged-out").style.display = "revert";
+            }
+        })
+    }
+
+    // Whenever our user logs in or out, update the page
+    client.addLoggedInChangeObserver(updatePage);
+</script>
+```
+
+Here's what an example application looks like. Note that all we did was create
+the 2 divs, 3 buttons, and 1 image. The rest is our hosted pages.
+
+![webflow demo app](/images/webflow_demo.gif)
+
+<Note>
+**Troubleshooting**
+
+If you have any issues seeing the logged-in user, check the FAQ.
+
+</Note>
+
+### Making an authenticated HTTP request
+
+There are a lot of ways to make HTTP requests in Javascript. You could use the
+[Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch),
+[XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest),
+or a library like [axios](https://www.npmjs.com/package/axios).
+
+Whichever you choose, to make an **authenticated** request on behalf of your
+user, you'll need to provide an access token. Access tokens are available from
+getAuthenticationInfoOrNull. You provide it in the request in the
+`Authorization` header, like so:
+
+```
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+With the Fetch API, this looks like:
+
+```js
+function whoAmI(accessToken) {
+  return fetch("/whoami", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+}
+```
+
+### Next Steps
+
+Done with your frontend? Next you can
+[integrate your backend](/getting-started/backend-integration/overview).

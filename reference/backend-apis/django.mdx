@@ -1,0 +1,594 @@
+---
+title: "Django Rest Framework Library Reference"
+sidebarTitle: "Django Rest Framework"
+---
+
+### Installation
+
+```bash
+$ pip install propelauth-django-rest-framework
+```
+
+### Initialize
+
+**init_auth** performs a one-time initialization of the library. It will verify
+your `api_key` is correct and fetch the metadata needed to verify access tokens
+in [IsUserAuthenticated](/reference/backend/django/#is-user-authenticated),
+[AllowAny](/reference/backend/django/#allow-any), and
+[IsUserInOrg](/reference/backend/django/#is-user-in-org).
+
+```js
+from propelauth_django_rest_framework import init_auth
+
+auth = init_auth("YOUR_AUTH_URL", #
+
+                 "YOUR_API_KEY") #
+```
+
+### Protect API routes
+
+#### IsUserAuthenticated
+
+A permission that will verify the request was made by a valid user.
+Specifically, it will:
+
+1. Check that a valid access token was provided. If not, the request is rejected
+   with a `401` status code.
+2. Set **request.propelauth_user** with the user's information.
+
+```js
+from propelauth_django_rest_framework import init_auth, current_user
+
+auth = init_auth("YOUR_AUTH_URL", "YOUR_API_KEY")
+
+@api_view(['GET'])
+@permission_classes([auth.IsUserAuthenticated])
+def whoami(request):
+   return HttpResponse(request.propelauth_user.user_id)
+```
+
+or you can use it in class-based views:
+
+```js
+class WhoAmIView(APIView):
+   permission_classes = [auth.IsUserAuthenticated]
+
+   def get(self, request):
+      return HttpResponse(request.propelauth_user.user_id)
+```
+
+#### AllowAny
+
+Similar to IsUserAuthenticated, except if an access token is missing or invalid,
+the request is allowed to continue, but request.propelauth_user will be None.
+
+Note that this will still set **request.propelauth_user** if a valid access
+token is provided.
+
+```js
+class OptionalUserView(APIView):
+    permission_classes = [auth.AllowAny]
+
+    def get(self, request):
+        if request.propelauth_user is None:
+            return HttpResponse("none")
+        return HttpResponse(request.propelauth_user.user_id)
+```
+
+#### request.propelauth_user
+
+A per-request value that contains user information for the user making the
+request. It's set by one of **IsUserAuthenticated**, **AllowAny**, or any
+organization checking like **IsUserInOrg**.
+
+| Property                  | Description                                                                              |
+| ------------------------- | ---------------------------------------------------------------------------------------- |
+| user_id                   | The id of the user                                                                       |
+| org_id_to_org_member_info | A dictionary of org ids to metadata about the org. Includes all orgs that the user is in |
+| legacy_user_id            | The original ID of the user, if the user was migrated from an external source            |
+
+The values of **org_id_to_org_member_info** are OrgMemberInfo's, with the
+following fields/functions:
+
+| OrgMemberInfo fields/properties                        | Description                                                                                                                                                                                                                      |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| org_id                                                 | The id of the org                                                                                                                                                                                                                |
+| org_name                                               | The name of the org                                                                                                                                                                                                              |
+| user_assigned_role                                     | The user's role within the organization. See Roles and Permissions for more details.                                                                                                                                             |
+| user_is_role(role: str): bool                          | Returns True if the user's role within the organization matches the role passed in                                                                                                                                               |
+| user_is_at_least_role(role: str): bool                 | Returns True if the user's role within the organization is at least the role passed in. If the hierarchy of roles is Owner => Admin => Member, specifying "Admin" will return True for Admins and Owners, but False for Members. |
+| user_has_permission(permission: str): bool             | Return True if the user has a specific permission. The users' permissions are derived from their role within this organization.                                                                                                  |
+| user_has_all_permissions(permissions: List[str]): bool | Return True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.                                                                                          |
+
+#### IsUserInOrg
+
+A function that returns a Django permission that will verify the request was
+made by a valid user that belongs to a specific organization.
+
+| IsUserInOrg Argument | Description                                                                                                                                                                                               |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| req_to_org_id        | A function that takes in the request and outputs the org_id to require the user to be a member of. If none is specified, it will check for a path param org_id by checking request.GET.get('org_id', ''). |
+
+```js
+@api_view(['GET'])
+@permission_classes([auth.IsUserInOrg()])
+def org_membership(request):
+   message = f"You are in {request.propelauth_org.org_name}"
+   return HttpResponse(message)
+```
+
+Specifically, it will:
+
+1. Check that a valid access token was provided. If not, the request is rejected
+   with a `401` status code.
+2. Set **request.propelauth_user** with the user's information.
+3. Find an id for an organization within the request. By default, it will check
+   for a path parameter org_id.
+4. Check that the user is a member of that organization. If not, the request is
+   rejected with a 403 status code.
+5. Set **request.propelauth_org** (scoped to the current request) with the
+   organization's information for this user.
+
+### Roles and Permissions
+
+A user has a Role within an organization. By default, the available roles are
+Owner, Admin, or Member, but these can be configured. These roles are also
+hierarchical, so Owner > Admin > Member.
+
+Roles allow you to control what different users can do within your product. If
+you want to check a user's role, you can use auth.IsUserInOrgWithRole or
+auth.IsUserInOrgWithMinimumRole.
+
+## Assuming a Role structure of Owner => Admin => Member
+
+```js
+@api_view(['GET'])
+@permission_classes([auth.IsUserInOrgWithRole("Admin")])
+def admin_only(request):
+   message = f"You are an Admin of {request.propelauth_org.org_name}"
+   return HttpResponse(message)
+
+@api_view(['GET'])
+@permission_classes([auth.IsUserInOrgWithMinimumRole("Admin")])
+def admin_or_owner(request):
+   message = f"You are an Admin or Owner of {request.propelauth_org.org_name}"
+   return HttpResponse(message)
+```
+
+Permissions are arbitrary strings associated with a role. For example,
+can_view_billing, ProductA::CanCreate, and ReadOnly are all valid permissions.
+The PropelAuth dashboard allows you to set up these permissions.
+
+You can use **auth.IsUserInOrgWithPermission** or
+**auth.IsUserInOrgWithAllPermissions** to check for a given permission.
+
+```js
+@api_view(['GET'])
+@permission_classes([auth.IsUserInOrgWithPermission("can_view_billing")])
+def billing_req(request):
+   pass
+```
+
+All of these functions, just like IsUserInOrg, will also take in req_to_org_id,
+and will set both request.propelauth_user and request.propelauth_org on a valid
+request.
+
+#### request.propelauth_org
+
+A per-request value that contains org information for the user making the
+request.
+
+| Property                                               | Description                                                                                                                                                                                                                      |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| org_id                                                 | The id of the org                                                                                                                                                                                                                |
+| org_name                                               | The name of the org                                                                                                                                                                                                              |
+| user_assigned_role                                     | The user's role within the organization. See Roles and Permissions for more details.                                                                                                                                             |
+| user_is_role(role: str): bool                          | Returns True if the user's role within the organization matches the role passed in                                                                                                                                               |
+| user_is_at_least_role(role: str): bool                 | Returns True if the user's role within the organization is at least the role passed in. If the hierarchy of roles is Owner => Admin => Member, specifying "Admin" will return True for Admins and Owners, but False for Members. |
+| user_has_permission(permission: str): bool             | Return True if the user has a specific permission. The users' permissions are derived from their role within this organization.                                                                                                  |
+| user_has_all_permissions(permissions: List[str]): bool | Return True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.                                                                                          |
+
+### Fetch user metadata by email
+
+```js
+# auth object somes from init_auth
+auth.fetch_user_metadata_by_email(email, include_orgs=False)
+```
+
+Successful response is the same as fetch_user_metadata_by_user_id, expect it
+takes an email as an argument.
+
+### Fetch user metadata by username¶
+
+```js
+# auth object somes from init_auth
+auth.fetch_user_metadata_by_username(email, include_orgs=False)
+```
+
+Successful response is the same as **fetch_user_metadata_by_user_id**, expect it
+takes a username as an argument.
+
+### Batch fetch users by ids
+
+```js
+# auth object somes from init_auth
+user_id_to_metadata = auth.fetch_batch_user_metadata_by_user_ids([
+    "1be238f3-5908-4c51-b3bf-e53dd763047e",
+    "beb00acf-6e48-435d-8388-3758607ec01b",
+    "941c99e5-3530-4475-bd0f-bbc5d06603c3"
+], include_orgs=False)
+```
+
+`user_id_to_metadata` will store a dictionary response as shown below:
+
+<Note>
+  Any IDs that don't have a match are not returned. Duplicate users are only
+  returned once.
+</Note>
+
+```json
+{
+  "1be238f3-5908-4c51-b3bf-e53dd763047e": {
+    "user_id": "e9d3520f-836e-403c-82c2-09843517e1ce",
+    "email": "user@example.com",
+    "email_confirmed": true,
+    "has_password": true,
+
+    "username": "example", // Optional: Only returned if you have the field enabled as part of your user schema
+    "first_name": "first", // Optional: Only returned if you have the field enabled as part of your user schema
+    "last_name": "last", // Optional: Only returned if you have the field enabled as part of your user schema
+    "picture_url": "https://...", // Optional: Only returned if you have the field enabled as part of your user schema
+    "locked": false, // Optional: Only returned if you have the field enabled as part of your user schema
+
+    "enabled": true,
+    "mfa_enabled": false,
+    "created_at": 1645131680,
+    "last_active_at": 1650654711,
+
+    // Only returned if include_orgs = true
+    "org_id_to_org_info": { // Includes all organizations that the user is a member of
+      "2ef0e1fc-234f-4dc0-a50c-35adb1bbb7e4": {
+        "org_id": "2ef0e1fc-234f-4dc0-a50c-35adb1bbb7e4",
+        "org_name": "ExampleOrganization",
+        "user_role": "Owner"
+      }
+    },
+
+    // Only returned if user was migrated from an external system
+    "legacy_user_id": "507f191e810c19729de860ea"
+  },
+  "beb00acf-6e48-435d-8388-3758607ec01b": {
+    //...
+  }
+}
+```
+
+### Batch fetch users by emails
+
+```js
+# auth object somes from init_auth
+auth.fetch_batch_user_metadata_by_emails(["a@example.com", "b@example.com"], include_orgs=True)
+```
+
+Successful response is the same as Batch fetch users by ids, but the keys are
+matching email addresses.
+
+### Batch fetch users by usernames
+
+```js
+# auth object somes from init_auth
+auth.fetch_batch_user_metadata_by_usernames(["usera", "userb", "userc"], include_orgs=True)
+```
+
+Successful response is the same as Batch fetch users by ids, but the keys are
+matching usernames.
+
+### Search for users
+
+```js
+# auth object somes from init_auth
+auth.fetch_users_by_query(page_size=10, page_number=0, order_by=UserQueryOrderBy.CREATED_AT_ASC,
+                          email_or_username=None, include_orgs=False)
+```
+
+| Argument          | Description                                                                                                                          |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| page_size         | The number of results to return at a time. Must be between 1 and 100, default 10.                                                    |
+| page_number U     | sed to page over results                                                                                                             |
+| order_by          | How to order the results. See UserQueryOrderBy for options                                                                           |
+| email_or_username | Searches for partial matches within email addresses or usernames. port would match a user with email address support@propelauth.com. |
+| include_orgs      | Whether or not to include the user's organization information in the response. Default false                                         |
+
+Successful response:
+
+```json
+{
+    "total_users": 103,
+    "current_page": 0,
+    "page_size": 10,
+    "has_more_results": true,
+    "users": [{
+        // See
+ for example users
+    }, {
+        // There will be 10 users in this response
+    }]
+}
+```
+
+### Fetch users in organization
+
+```js
+# auth object somes from init_auth
+auth.fetch_users_in_org(org_id, page_size=10, page_number=0, include_orgs=False)
+```
+
+| Argument     | Description                                                                                  |
+| ------------ | -------------------------------------------------------------------------------------------- |
+| org_id       | The organization to fetch users for                                                          |
+| page_size    | The number of results to return at a time. Must be between 1 and 100, default 10.            |
+| page_number  | Used to page over results                                                                    |
+| include_orgs | Whether or not to include the user's organization information in the response. Default false |
+
+Successful response:
+
+```json
+{
+    "total_users": 43,
+    "current_page": 0,
+    "page_size": 10,
+    "has_more_results": true,
+    "users": [{
+        // See
+ for example users
+    }, {
+        // There will be 10 users in this response, all in the specified organization
+    }]
+}
+```
+
+### Create User
+
+```js
+# auth object somes from init_auth
+auth.create_user(email, email_confirmed=False, send_email_to_confirm_email_address=True,
+                 password=None, username=None, first_name=None, last_name=None)
+```
+
+| Argument                            | Description                                                                                                                                                |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| email                               | The user's email address                                                                                                                                   |
+| email_confirmed                     | Whether the email address should start off as already confirmed. If false, the user is required to confirm the email address before they sign in.          |
+| send_email_to_confirm_email_address | Whether we should send an email immediately to confirm the user's email address. If false, the user will get a confirmation email when they first sign in. |
+| password                            | Optional password. If unset, the user can set it themselves via their account page                                                                         |
+| username                            | Optional username. Can only be used if username is enabled in your user schema                                                                             |
+| first_name                          | Optional first name. Can only be used if name is enabled in your user schema                                                                               |
+| last_name                           | Optional last name. Can only be used if name is enabled in your user schema                                                                                |
+
+Successful response:
+
+```json
+{
+  "user_id": "b5f667fb-e51a-49c6-a396-711e62948689"
+}
+```
+
+### Migrate User from External Source
+
+Similar to Create User, but for cases where you already have a user stored in an
+external system. You can, for example, pass in a password hash for an existing
+user, and they will be able to login with their same password. It is also
+possible to provide an existing identifier, and we will store and return it
+along with our future identifiers, allowing you to link them.
+
+```js
+# auth object somes from init_auth
+auth.migrate_user_from_external_source(email, email_confirmed,
+                                       existing_user_id=None, existing_password_hash=None,
+                                       existing_mfa_base32_encoded_secret=None,
+                                       enabled=None, first_name=None, last_name=None, username=None)
+```
+
+| Argument                           | Description                                                                                                                                                                                                    |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| email                              | The user's email address                                                                                                                                                                                       |
+| email_confirmed                    | Whether the email address should start off as already confirmed. If false, the user is required to confirm the email address before they sign in.                                                              |
+| existing_user_id                   | (Optional) The user's ID in the existing system. This ID will be stored on the user as a legacy_user_id and it is present everywhere user_id's are (e.g. fetching user metadata or validating a user's token). |
+| existing_password_hash             | (Optional) The user's hashed password. We support both bcrypt and argon2 password hashes.                                                                                                                      |
+| existing_mfa_base32_encoded_secret | (Optional) The user's MFA secret, base32 encoded. If specified the user will have MFA enabled by default.                                                                                                      |
+| enabled                            | (Optional) Whether or not the user can login                                                                                                                                                                   |
+| username                           | Optional username. Can only be used if username is enabled in your user schema                                                                                                                                 |
+| first_name                         | Optional first name. Can only be used if name is enabled in your user schema                                                                                                                                   |
+| last_name                          | Optional last name. Can only be used if name is enabled in your user schema                                                                                                                                    |
+
+Successful response:
+
+```json
+{
+  "user_id": "b5f667fb-e51a-49c6-a396-711e62948689"
+}
+```
+
+### Create magic link
+
+Creates a magic link that a user can use to log in. Use this API if you'd prefer
+to send the magic link to the customer yourself, otherwise, we have **Create
+User** which will email them directly.
+
+```js
+# auth object somes from init_auth
+auth.create_magic_link(email, redirect_to_url=None, expires_in_hours=None, create_new_user_if_one_doesnt_exist=None)
+```
+
+| Argument                            | Description                                                                                                                                                                                   |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| email                               | The user's email address                                                                                                                                                                      |
+| redirect_to_url                     | (Optional) Where to redirect the user after they login. If unspecified, will use the login redirect path specified in your dashboard.                                                         |
+| expires_in_hours                    | (Optional) How many hours should the link be valid for?                                                                                                                                       |
+| create_new_user_if_one_doesnt_exist | (Optional) If true, this will create a new user if one matching the provided email address doesn't exist. If false, the request will fail if no user with that email exists. Default is true. |
+
+Successful response:
+
+```json
+{
+  "url": "https://auth.yourdomain.com/..."
+}
+```
+
+### Update User Email
+
+```js
+# auth object somes from init_auth
+# Returns true if it was successful, false if the user was not found
+auth.update_user_email(user_id, new_email, require_email_confirmation)
+```
+
+| Argument                   | Description                                                                                                                                                                                           |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| new_email                  | New email address for this user                                                                                                                                                                       |
+| require_email_confirmation | Whether the new email address requires confirmation. If true, an email will be sent to the new email address to confirm. If false, the users email address will be updated and confirmed immediately. |
+
+### Update User Metadata
+
+```js
+# auth object somes from init_auth
+# Returns true if it was successful, false if the user was not found
+auth.update_user_metadata(user_id, username=None, first_name=None, last_name=None)
+```
+
+| Argument   | Description                                                                    |
+| ---------- | ------------------------------------------------------------------------------ |
+| username   | Optional username. Can only be used if username is enabled in your user schema |
+| first_name | Optional first name. Can only be used if name is enabled in your user schema   |
+| last_name  | Optional last name. Can only be used if name is enabled in your user schema    |
+
+### Delete user
+
+```js
+# auth object somes from init_auth
+# Returns true if it was successful, false if the user was not found
+auth.delete_user(user_id)
+```
+
+### Disable user
+
+If successful, the user is logged out and unable to log back in.
+
+```js
+# auth object somes from init_auth
+# Returns true if it was successful, false if the user was not found
+auth.disable_user(user_id)
+```
+
+### Enable user
+
+If successful, the user is able to log back in again.
+
+```js
+# auth object somes from init_auth
+# Returns true if it was successful, false if the user was not found
+auth.enable_user(user_id)
+```
+
+### Fetch an organization
+
+```js
+# auth object somes from init_auth
+org = auth.fetch_org(org_id)
+```
+
+Successful response:
+
+```json
+{
+    "org_id": "d488996d-8ccc-4101-b5f2-131f5f09ddb6"
+    "name": "OneOfYourCustomers"
+}
+```
+
+### Fetch all organizations
+
+```js
+# auth object somes from init_auth
+auth.fetch_org_by_query(page_size=10, page_number=0, order_by=OrgQueryOrderBy.CREATED_AT_ASC)
+```
+
+| Argument    | Description                                                                       |
+| ----------- | --------------------------------------------------------------------------------- |
+| page_size   | The number of results to return at a time. Must be between 1 and 100, default 10. |
+| page_number | Used to page over results                                                         |
+| order_by    | How to order the results. See OrgQueryOrderBy for options                         |
+
+Successful response:
+
+```json
+{
+  "total_orgs": 21,
+  "current_page": 0,
+  "page_size": 10,
+  "has_more_results": true,
+  "orgs": [
+    {
+      "org_id": "d488996d-8ccc-4101-b5f2-131f5f09ddb6",
+      "name": "OneOfYourCustomers"
+    },
+    {
+      // There will be 10 orgs in this response
+    }
+  ]
+}
+```
+
+### Create Organization
+
+```js
+# auth object somes from init_auth
+auth.create_org(name)
+```
+
+| Argument | Description             |
+| -------- | ----------------------- |
+| name     | The organization's name |
+
+Successful response:
+
+```json
+{
+  "org_id": "d488996d-8ccc-4101-b5f2-131f5f09ddb6"
+}
+```
+
+### Add user to organization
+
+```js
+# auth object somes from init_auth
+auth.add_user_to_org(user_id, org_id, role)
+```
+
+| Argument | Description                                           |
+| -------- | ----------------------------------------------------- |
+| user_id  | The user's ID                                         |
+| org_id   | The org's ID                                          |
+| role     | The role of the user in that organization, e.g. Admin |
+
+Successful response:
+
+```json
+{}
+```
+
+### Allow organization to set up SAML connection
+
+```js
+# auth object somes from init_auth
+# Returns true if it was successful, false if the org was not found
+auth.allow_org_to_setup_saml_connection(org_id)
+```
+
+### Disallow organization to set up SAML connection
+
+```js
+# auth object somes from init_auth
+# Returns true if it was successful, false if the org was not found
+auth.disallow_org_to_setup_saml_connection(org_id)
+```

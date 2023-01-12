@@ -1,0 +1,68 @@
+---
+title: "Migrate User from external source"
+api: "POST https://{auth_url}/api/backend/v1/migrate_user/"
+---
+
+Similar to [Create User](/reference/backend-integration/api/create-user), but for cases where
+you already have a user. You can, for example, pass in a password hash for an
+existing user, and they will be able to login with their same password. It is
+also possible to provide an existing identifier, and we will store and return it
+along with our future identifiers, allowing you to link them.
+
+### Path Parameters
+
+<ParamField path="auth_url" type="string" required>
+  The domain for your application
+</ParamField>
+
+### JSON Body Parameters
+
+<ParamField body="email">The user's email address</ParamField>
+
+<ParamField body="email_confirmed">
+  Whether the email address should start off as already confirmed. If false, the
+  user is required to confirm the email address before they sign in.
+</ParamField>
+
+<ParamField body="existing_user_id">
+  (Optional) The user's ID in the existing system. This ID will be stored on the
+  user as a `legacy_user_id` and it is present everywhere user_id's are (e.g.
+  fetching user metadata or validating a user's token).
+</ParamField>
+
+<ParamField body="existing_password_hash">
+  (Optional) The user's hashed password. We support both bcrypt and argon2
+  password hashes.
+</ParamField>
+
+<ParamField body="existing_mfa_base32_encoded_secret">
+  (Optional) The user's MFA secret, base32 encoded. If specified the user will
+  have MFA enabled by default.
+</ParamField>
+
+<ParamField body="enabled">
+  (Optional) Whether or not the user can login
+</ParamField>
+
+<ParamField body="username">
+  Optional username. Can only be used if username is enabled in your user schema
+</ParamField>
+
+<ParamField body="first_name">
+  Optional first name. Can only be used if name is enabled in your user schema
+</ParamField>
+
+<ParamField body="last_name" >
+Optional last name. Can only be used if name is enabled in your user schema
+
+</ParamField>
+
+<ResponseExample>
+
+```json
+{
+  "user_id": "b5f667fb-e51a-49c6-a396-711e62948689"
+}
+```
+
+</ResponseExample>

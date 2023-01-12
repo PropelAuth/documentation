@@ -1,0 +1,50 @@
+---
+title: "LinkedIn - Social login (SSO) configuration"
+sidebarTitle: "LinkedIn"
+---
+
+Enabling `Sign in with LinkedIn` only requires two fields: **Client ID** and
+**Client secret**. Both of these are provided by LinkedIn, and these steps will
+help you create them.
+
+<Note>
+  Users that sign up via LinkedIn look the same as users that sign up via any
+  other method. Your code will handle both automatically.
+</Note>
+
+### Step-by-step Instructions
+
+Start by going to https://www.linkedin.com/developers/apps
+
+If you don't have one already, click **Create An App** and follow the
+instructions to create one.
+
+![click create an app](/images/linkedin_00.png)
+
+![configure app](/images/linkedin_01.png)
+
+3. After creating an App, click **Products** and select **Sign In With
+   LinkedIn**. This will configure your product with the correct permissions to
+   log users in.
+
+![sign in with linkedin](/images/linkedin_02.png)
+
+4. Next, click **Auth** and you will see your Client ID and Client Secret.
+
+![locate client_id and client_secret](/images/linkedin_03.png)
+
+5. Back in your [PropelAuth project](https://app.propelauth.com/), under
+   **Social Logins**, you enter your Client ID and Client Secret for LinkedIn.
+
+![add client_id and secret here](/images/linkedin_04.png)
+
+6. After entering those values, note the callback URLs that PropelAuth provides.
+   PropelAuth handles the OAuth flow on your behalf, so all we have to do is
+   tell LinkedIn to allow these callback URLs.
+
+7. Under **Redirect URLs**, enter PropelAuth's provided URL(s).
+
+![redirect_urls](/images/linkedin_05.png)
+
+And that's it! When you go to your hosted authentication pages, you should see
+the `Sign in with LinkedIn` button.

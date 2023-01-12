@@ -1,0 +1,63 @@
+---
+title: "SAML"
+description:
+  "PropelAuth's SAML SSO support allows your end users to connect their
+  organizations directly to however they manage employees internally."
+---
+
+As an example, lets say you have a customer "Acme Co". Acme's IT team uses
+OneLogin as their identity provider, meaning that all employees at the company
+have an account with OneLogin. New employees are onboarded to OneLogin and
+exiting employees are removed.
+
+A SAML connection between your product and Acme allows Acme's IT team to specify
+which users have access to your product. They could give everyone at the company
+access, specify teams like only the engineering team, or even pick specific
+people to give access.
+
+Here's an example where Acme gives a user access to Figma directly from
+OneLogin.
+
+![user being added to figma](/images/saml-1.png)
+
+PropelAuth's SAML support extends our [hosted UIs](https://demo.propelauth.com/)
+with a full set of UIs to enable your users to setup SAML connections with you.
+Your users select the identity provider they use:
+
+![user selecting an IDP](/images/saml-2.png)
+
+And then are guided through the process of setting up a SAML connection with
+step-by-step instructions:
+
+![saml wizard](/images/saml-3.png)
+
+Once the connection is set up, your users can test the connection to make sure
+it is working:
+
+![testing a saml connection](/images/saml-4.png)
+
+This SAML connection is tied to an organization, meaning that any user that logs
+in via Acme's SAML connection will automatically be added to Acme's
+organization.
+
+### Working with SAML
+
+So far, we've seen that your users can set up a SAML connection and easily
+onboard/offboard their users to an organization within your product. But what do
+you need to do to interact with SAML?
+
+Pretty much nothing - SAML is an implementation detail of how an organization
+manages their users within your product. Some organizations will set up SAML
+while others will use our other supported methods like inviting coworkers
+manually or allowing anyone with a matching email domain (e.g. @acme.com) to
+join. Any code you write that deals with organizations will work, regardless of
+the method that organization uses to manage its members.
+
+### Controlling who can set up SAML
+
+With the click of a button, you can allow all of your organizations to set up
+SAML connections with you. However, you may not want that if you consider SAML
+to be an enterprise/paid feature.
+
+You can select which organizations can use SAML either in your dashboard or
+programmatically via our APIs.

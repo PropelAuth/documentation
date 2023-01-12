@@ -1,0 +1,28 @@
+---
+title: "Add user to organization"
+api: "POST https://{auth_url}/api/backend/v1/org/add_user"
+---
+
+### Path Parameters
+
+<ParamField path="auth_url" type="string" required>
+  The domain for your application
+</ParamField>
+
+### JSON Body Parameters
+
+<ParamField body="user_id	">The user's ID</ParamField>
+
+<ParamField body="org_id">The org's ID</ParamField>
+
+<ParamField body="role">
+  The role of the user in that organization, e.g. Admin
+</ParamField>
+
+<ResponseExample>
+
+```json
+{}
+```
+
+</ResponseExample>

@@ -1,0 +1,399 @@
+---
+title: "Next.js Frontend Integration"
+sidebarTitle: "Next.js"
+description:
+  "This guide will show you how PropelAuth makes it easy to integrate your full
+  hosted authentication service into your Next.js application."
+---
+
+For the full Next.js Library Reference, click
+[here](/reference/frontend/nextjs).
+
+### Quick example
+
+The following example will display a different message for logged-in users vs
+logged out. We'll go into more detail about how it works and show more advanced
+examples below.
+
+<CodeGroup>
+
+```jsx pages/_app.jsx
+import { AuthProvider } from "@propelauth/react";
+
+const MyApp = ({ Component, pageProps }) => {
+  return (
+    <AuthProvider authUrl={process.env.NEXT_PUBLIC_PROPELAUTH_AUTH_URL}> // Your auth URL can be found in your PropelAuth dashboard. We are using an ENV variable because you will have a different URL for your test and production environment.
+      <Component {...pageProps} />
+    </AuthProvider>
+  );
+};
+
+export default MyApp;
+```
+
+```js pages/index.js
+import { withAuthInfo } from "@propelauth/react";
+
+const IndexPage = withAuthInfo((props) => {
+  // isLoggedIn and user are injected automatically from withAuthInfo
+  if (props.isLoggedIn) {
+    return <div>You are logged in as {props.user.email}</div>;
+  } else {
+    return <div>You are not logged in</div>;
+  }
+});
+
+export default IndexPage;
+```
+
+</CodeGroup>
+
+### How it works
+
+![auth overview](/images/react-1.png)
+
+When a user visits your frontend application, your frontend can make a request
+to PropelAuth to determine if the current user is logged in. If the user is
+logged in, you will receive a JSON Web Token (JWT)
+[access token](/overview/access-tokens) and the user’s metadata.
+For more information on JWTs, view our blog
+[here](https://www.propelauth.com/post/jwts-explained-with-code-examples). Once
+you have the user’s access token, your backend can validate and identify the
+token’s owner. This validation is done entirely on your backend and does not
+need to make any requests to PropelAuth. Access tokens are short-lived, and our
+libraries will refresh them both periodically and when the user switches tabs or
+reconnects to the internet.
+
+![auth frontend](/images/react-2.png)
+
+A secure HTTP-only cookie is created once a user logs into your hosted
+authentication page. This cookie allows PropelAuth to identify logged-in users.
+In your production environment, we require you use a custom domain to avoid
+third-party cookie issues for your users. Browsers like Safari, for example,
+will block cookies across domains. For this reason, we include custom domains in
+all of our [plans](https://www.propelauth.com/pricing).
+
+### Configure
+
+Go to your [PropelAuth project](https://auth.propelauth.com/signup) and click
+**Frontend Integration** in the sidebar. You will see:
+
+- **Port** - The port your app runs on locally. The default for React is 3000.
+  After entering `3000`, your test environment will allow requests from
+  `http://localhost:3000`.
+- **Login Redirect Path** - After a user logs in, they will be redirected here.
+  For example,`/` will redirect them to `http://localhost:3000/`.
+- **Logout Redirect Path** - After a user logs out, they will be redirected
+  here.
+- **Auth URL** - This is where your authentication pages are hosted, and you
+  will need this for the setup step.
+
+### Installation
+
+In your Next.js app, install the **@propelauth/react** library.
+
+<CodeGroup>
+
+```bash npm
+$ npm install --save @propelauth/react
+```
+
+```bash yarn
+$ yarn add @propelauth/react
+```
+
+</CodeGroup>
+
+### Set up AuthProvider
+
+**AuthProvider** is the provider of a
+[React context](https://reactjs.org/docs/context.html) that manages the current
+user's [access token](/overview/access-tokens) and metadata. You
+cannot use the other hooks without it. **AuthProvider** manages authentication
+information and all other components fetches from it.
+
+It is recommended to put the **AuthProvider** context at the top level of your
+application, so it never unmounts.
+
+```js
+import { AuthProvider } from "@propelauth/react";
+
+const MyApp = ({ Component, pageProps }) => {
+  return (
+    <AuthProvider authUrl={process.env.NEXT_PUBLIC_PROPELAUTH_AUTH_URL}> // Your auth URL can be found in your PropelAuth dashboard. We are using an ENV variable because you will have a different URL for your test and production environment. 
+      <Component {...pageProps} />
+    </AuthProvider>
+  );
+};
+```
+
+### RequiredAuthProvider
+
+If your entire application requires a user to be logged in, you can instead use
+**RequiredAuthProvider**.
+
+```js
+import { RequiredAuthProvider, RedirectToLogin } from "@propelauth/react";
+
+const MyApp = ({ Component, pageProps }) => {
+  return (
+    <RequiredAuthProvider
+      authUrl={process.env.NEXT_PUBLIC_AUTH_URL}
+      displayWhileLoading={<Loading />}
+      displayIfLoggedOut={<RedirectToLogin />}
+    >
+      <Component {...pageProps} />
+    </RequiredAuthProvider>
+  );
+};
+
+export default MyApp;
+```
+
+RequiredAuthProvider has two additional props:
+
+1. **displayWhileLoading**: A React element to display while the AuthProvider is
+   fetching auth information. Defaults to an empty element
+2. **displayIfLoggedOut**: A React eleent to display if the current user is
+   logged out. Defaults to [RedirectToLogin](/reference/frontend/nextjs)
+
+### Get current user information
+
+There are three options for getting the current user's information:
+
+<CodeGroup>
+
+```js withAuthInfo
+import { withAuthInfo } from "@propelauth/react";
+
+function MinimalExample(props) {
+  // isLoggedIn and user are injected automatically from withAuthInfo below
+  if (props.isLoggedIn) {
+    return <div>You are logged in as {props.user.email}</div>;
+  } else {
+    return <div>You are not logged in</div>;
+  }
+}
+
+// A React Higher-Order Component that provides common values like isLoggedIn and accessToken. These values are injected into the props of your component.
+export default withAuthInfo(MinimalExample);
+```
+
+```js withRequiredAuthInfo
+import { withRequiredAuthInfo } from "@propelauth/react";
+
+function MinimalExample(props) {
+  // user is injected automatically from withRequiredAuthInfo below
+  return <div>You are logged in as {props.user.email}</div>;
+}
+
+export default withRequiredAuthInfo(MinimalExample); // A React Higher-Order Component that provides common values like isLoggedIn and accessToken. These values are injected into the props of your component.
+```
+
+```js useAuthInfo
+import { useAuthInfo } from "@propelauth/react";
+
+function MinimalExample() {
+  const authInfo = useAuthInfo();
+
+  // Unlike the higher order functions, we need to check the loading case now
+  if (authInfo.loading) {
+    return <div>Loading...</div>;
+  } else if (authInfo.isLoggedIn) {
+    return <div>You are logged in as {props.user.email}</div>;
+  } else {
+    return <div>You are not logged in</div>;
+  }
+}
+
+export default MinimalExample;
+```
+
+</CodeGroup>
+
+<Note>
+**When is an external API call made?**
+
+The AuthProvider context manages all external API requests. The functions
+withAuthInfo, withRequiredAuthInfo, and useAuthInfo only extract information
+from requests without making their own requests. For this reason, you can (and
+should) add as many of these functions as you need.
+
+</Note>
+
+### withAuthInfo
+
+```js
+withAuthInfo(Component, {
+  displayWhileLoading: <div>Loading...</div>, // A React element to display while the AuthProvider is fetching auth information. Defaults to an empty element
+});
+```
+
+The code example above will inject the following props into Component:
+
+| Prop                                                    | Description                                                                                    |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| [accessToken](/overview/access-tokens)     | If user is logged in, this string can access your APIs on behalf of the user. Otherwise, null. |
+| isLoggedIn                                              | Returns user logged in status                                                                  |
+| [orgHelper](/reference/frontend/nextjs#orghelper)       | An object with useful functions for managing organizations                                     |
+| [accessHelper](/reference/frontend/nextjs#accesshelper) | An object with useful functions for accessing role and permissions (RBAC)                      |
+| [user](/reference/frontend/nextjs#the-user-object)      | If user is logged in, this contains metadata about them. Otherwise, null                       |
+
+### withRequiredAuthInfo
+
+```js
+withRequiredAuthInfo(Component, {
+  displayWhileLoading: <div>Loading...</div>, // A React element to display while the AuthProvider is fetching auth information. Defaults to an empty element
+  displayIfLoggedOut: <div>You are logged out</div>, // A React element to display if the current user is logged out. Defaults to <RedirectToLogin />
+});
+```
+
+This is identical to withAuthInfo, except Component is only rendered if the user
+is logged in. You are guaranteed that isLoggedIn is true and the accessToken is
+not null.
+
+### useAuthInfo
+
+```js
+function Component() {
+  const authInfo = useAuthInfo();
+  // ...rest of the component
+}
+```
+
+A [React hook](https://reactjs.org/docs/hooks-intro.html) which gets auth
+information. authInfo contains:
+
+| Key                                                     | Description                                                                                                                   |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| loading                                                 | True if the AuthProvider is still fetching auth information. This will only happen once when the application is first loaded. |
+| [accessToken](/overview/access-tokens)     | If user is logged in, this string can access your APIs on behalf of the user. Otherwise, null.                                |
+| isLoggedIn                                              | Returns user logged in status                                                                                                 |
+| [orgHelper](/reference/frontend/nextjs#orghelper)       | An object with useful functions for managing organizations                                                                    |
+| [accessHelper](/reference/frontend/nextjs#accesshelper) | An object with useful functions for accessing role and permissions (RBAC)                                                     |
+| [user](/reference/frontend/nextjs#the-user-object)      | If user is logged in, this contains metadata about them. Otherwise, null                                                      |
+
+### Other utilities
+
+- **useLogoutFunction** - Returns a function for logging out the current user.
+
+- **useRedirectFunctions** - Returns a set of functions to redirect the user to
+  different pages (e.g. signup, login).
+
+For a complete list of utilities, see the
+[Next.js Library Reference](/reference/frontend/nextjs). Alternatively, our
+guides will walk you through the process of creating an entire application end
+to end.
+
+### Organizations
+
+The **orgHelper**, provided by **withAuthInfo**, **withRequiredAuthInfo**, or
+**useAuthInfo**, helps manage the current user's organization information with
+ease. It's an object which has the following functions (types included):
+
+```js
+type OrgHelper = {
+    // returns all orgs that the user is a member of
+    getOrgs: () => OrgMemberInfo[],
+    // returns all org ids that the user is a member of
+    getOrgIds: () => string[],
+    // returns org information for a given orgId
+    getOrg: (orgId: string) => OrgMemberInfo | undefined,
+    // returns org information for a given org by name
+    getOrgByName: (orgName: string) => OrgMemberInfo | undefined,
+}
+
+type OrgMemberInfo = {
+    orgId: string,
+    orgName: string,
+    urlSafeOrgName: string
+    // The role of the user within this organization
+    userAssignedRole: string
+    userPermissions: string[]
+}
+```
+
+### Roles and Permissions
+
+Your users will have a role in an organization. By default, these roles are
+Owner, Admin, and Member - but you can configure them. Each role can have
+permissions associated with them. See
+[roles and permissions](/overview/roles) for more details.
+
+The **accessHelper**, provided by **withAuthInfo**, **withRequiredAuthInfo**, or
+**useAuthInfo**, helps check the current user's role and permission(s) within a
+specific organization.
+
+```js
+type AccessHelper = {
+    isRole: (orgId: string, role: string) => boolean
+    isAtLeastRole: (orgId: string, role: string) => boolean
+    hasPermission: (orgId: string, permission: string) => boolean
+    hasAllPermissions: (orgId: string, permissions: string[]) => boolean
+}
+```
+
+### Active Organization
+
+Since users can be in more than one organization, one common use case is to pick
+a single organization that your user is currently operating within.
+
+Commonly, developers use localStorage, a path parameter, or subdomain (e.g.
+https://CUSTOMER.yourproduct.com or https://app.yourproduct.com/CUSTOMER) to
+indicate which organization the user is currently operating within.
+
+The **AuthProvider** and **RequiredAuthProvider** optionally take in a
+**getActiveOrgFn** which enables you to select the currently active
+organization, like so:
+
+```js
+// Get the active org from a path parameter grabbed from our router
+<AuthProvider authUrl={AUTH_URL} getActiveOrgFn={() => router.query.orgName}>
+```
+
+- **useActiveOrg** allows you to fetch the active organization later on. It will
+  also verify that the current user is actually in that organization.
+
+```js
+function OrgName() {
+  const org = useActiveOrg();
+  return <div>{org.orgName}</div>;
+}
+```
+
+### Making an authenticated HTTP request
+
+For authenticated requests on behalf of your user, you must provide an access
+token. There are many of ways to make HTTP requests in Javascript. You could use
+the
+[Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch),
+[XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest),
+or a library like [axios](https://www.npmjs.com/package/axios).
+
+Just like isLoggedIn and user, the access token is available from withAuthInfo.
+You provide it in the request in the `Authorization` header, like so:
+
+`Authorization: Bearer YOUR_ACCESS_TOKEN`
+
+Code sample of the Authorization with the Fetch API:
+
+```js
+function whoAmI(accessToken) {
+  return fetch("/whoami", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+}
+```
+
+### Examples
+
+For detailed examples, please see
+[Next.js Library Reference Examples](/reference/frontend/nextjs).
+
+### Next Steps
+
+Done with your frontend? Next you can
+[integrate your backend](/getting-started/backend-integration/overview).
