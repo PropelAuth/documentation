@@ -29,6 +29,11 @@
   ],
   "anchors": [
     {
+      "name": "Getting Started Guide",
+      "icon": "lightbulb",
+      "url": "getting-started"
+    },
+    {
       "name": "Example Apps",
       "icon": "memo-pad",
       "url": "example-apps"
@@ -58,6 +63,7 @@
         "overview/slack-notifications",
         "overview/webhooks",
         "overview/migrate-existing-users",
+        "overview/how-our-auth-works",
         "overview/access-tokens",
         "overview/emails",
         "overview/faq"
@@ -66,7 +72,7 @@
     {
       "group": "Getting Started",
       "pages": [
-        "getting-started",
+        "getting-started/begin",
         {
           "group": "Integrate your frontend",
           "pages": [
@@ -104,7 +110,7 @@
     {
       "group": "Full Reference",
       "pages": [
-        "reference",
+        "reference/overview",
         {
           "group": "Frontend",
           "pages": [

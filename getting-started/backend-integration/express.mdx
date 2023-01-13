@@ -1,24 +1,22 @@
 ---
 title: "Express Backend Integration"
-description:
-  "PropelAuth offers an end-to-end managed user authentication library for
-  seamless integration into your Express application. This guide will show you
-  how to connect the PropelAuth library to your backend."
+sidebarTitle: "Express"
+description: "This guide will show you how to add authentication and authorization to your Django Rest Framework app."
 ---
 
-For the full Express Library Reference, click
-[here](/reference/backend-apis/express).
+For the full Express Library Reference, click [here](/reference/backend-apis/express).
 
-### Quick example
+## Quick example
 
-The following example creates a route which can only be accessed from logged-in
-users.
+The following example creates a route which can only be accessed from logged-in users.
 
 ```js
 const propelAuth = require("@propelauth/express");
 const { requireUser } = propelAuth.initAuth({
-  authUrl: "YOUR_AUTH_URL", // The base URL where your authentication pages are hosted. You can find your Auth URL under the Backend Integration section for your project at https://app.propelauth.com.
-  apiKey: "YOUR_API_KEY", // You can manage your api keys under the Backend Integration section for your project.
+  // You can find your Auth URL and API key under the Backend Integration
+  //   section for your project at https://app.propelauth.com.
+  authUrl: "YOUR_AUTH_URL",
+  apiKey: "YOUR_API_KEY",
 });
 
 // requireUser is a middleware which validates the access token
@@ -27,18 +25,11 @@ app.get("/hello", requireUser, (req, res) => {
 });
 ```
 
-### How it works
+## How it works
 
-The front-end receives an [access token](/overview-and-concpets/access-tokens).
-This access token is provided in an Authorization header when an HTTP request is
-made.
+For a detailed description of what's going on under the hood, see [here](/overview/how-our-auth-works).
 
-PropelAuth provides you with metadata that you use to validate the access token
-and figure out who it belongs to. The complexity of fetching the metadata and
-validating the tokens is hidden in the
-[express library](/reference/backend-apis/express).
-
-### Installation
+## Installation
 
 In your Express app, install the @propelauth/express library.
 
@@ -54,28 +45,30 @@ $ yarn add @propelauth/express
 
 </CodeGroup>
 
-### Initialize
+## Initialize
 
 Create a new file with the following code. In the code, **initAuth** performs a
 one-time initialization of the library. It will verify your `apiKey` is correct
 and fetch the metadata needed to verify access tokens in
-[requireUser](/getting-started/backend-integration/express#require-user),
-[optionalUser](/getting-started/backend-integration/express#optional-user), or
-[requireOrgMember](/getting-started/backend-integration/express#require-org-member).
+[requireUser](#require-user), [optionalUser](#optional-user), or [requireOrgMember](#require-org-member).
 
 ```js
 // propelauth.js
 const propelAuth = require("@propelauth/express");
 module.exports = propelAuth.initAuth({
-  debugMode: true, // If true, error messages returned to the user will be detailed. It's useful for debugging, but a good idea to turn off in production.
-  authUrl: "https://auth.yourdomain.com", // The base URL where your authentication pages are hosted. You can find this under the Backend Integration section for your project at https://app.propelauth.com.
-  apiKey: "YOUR_API_KEY", // You can manage your api keys under the Backend Integration section for your project.
+  // If true, error messages returned to the user will be detailed.
+  // It's useful for debugging, but a good idea to turn off in production.
+  debugMode: true,
+  // You can find your Auth URL and API key under the Backend Integration
+  //   section for your project at https://app.propelauth.com.
+  authUrl: "https://auth.yourdomain.com",
+  apiKey: "YOUR_API_KEY",
 });
 ```
 
-### Protect API routes
+## Protect API routes
 
-#### requireUser
+### requireUser
 
 An Express middleware that will verify the request was made by a valid user.
 Specifically, it will:
@@ -111,7 +104,7 @@ following fields/functions:
 | user_has_permission(permission: str): bool             | Return True if the user has a specific permission. The users' permissions are derived from their role within this organization.                                                                                                    |
 | user_has_all_permissions(permissions: List[str]): bool | Return True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.                                                                                            |
 
-#### optionalUser
+### optionalUser
 
 Similar to
 [requireUser](/getting-started/backend-integration/express/#require-user), except
@@ -128,10 +121,12 @@ app.get("/hello", optionalUser, (req, res) => {
 });
 ```
 
-#### requireOrgMember
+### requireOrgMember
 
 An Express middleware that will verify the request was made by a valid user that
 belongs to a specific organization.
+
+<CodeGroup>
 
 ```js Basic example
 // By default, requireOrgMember checks for orgId as a path parameter
@@ -152,6 +147,8 @@ app.get("/hello", requireOrgInQuery, (req, res) => {
 });
 ```
 
+</CodeGroup>
+
 Specifically, it will:
 
 1. Check that a valid access token was provided. If not, the request is rejected
@@ -165,10 +162,10 @@ Specifically, it will:
 5. Set **org** on the **Request** with the organization's information for this
    user.
 
-### Roles and Permissions
+## Roles and Permissions
 
 A user has a **Role** within an organization. By default, the available roles
-are **Owner**, **Admin**, or**Member**, but these can be configured. These roles
+are **Owner**, **Admin**, or **Member**, but these can be configured. These roles
 are also hierarchical, so Owner > Admin > Member.
 
 Roles allow you to control what different users can do within your product. If
@@ -216,7 +213,7 @@ All of these functions, just like requireOrgMember, can also take in
 **orgIdExtractor**, and will set both **req.user** and **req.org** on a valid
 request.
 
-### API calls
+## API calls
 
 In addition to protecting API routes, you can make requests to PropelAuth to
 fetch more information about your users or organizations. You can also create
@@ -236,7 +233,7 @@ for (const user of userResponse.users) {
 See [Express Library Reference](/reference/backend-apis/express) for more information
 on available functionality.
 
-### Next Steps
+## Next Steps
 
 Done with your backend? Next you can
 [deploy to production](/getting-started/deploy-to-prod).

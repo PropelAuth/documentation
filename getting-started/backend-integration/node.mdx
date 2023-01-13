@@ -1,14 +1,12 @@
 ---
 title: "Node Backend Integration"
-description:
-  "PropelAuth's Node library provides all the building blocks you need to add
-  authentication to any Node backend. For some Node frameworks, like Express, we
-  have built out libraries specifically for them."
+sidebarTitle: "Node"
+description: "This guide will show you how to add authentication and authorization to your Node app."
 ---
 
 For the full Node Library Reference, click [here](/reference/backend-apis/node).
 
-### Quick example
+## Quick example
 
 The following example validates an Authorization HTTP header was sent from a
 logged-in user.
@@ -16,34 +14,29 @@ logged-in user.
 ```js
 const propelAuth = require("@propelauth/node");
 const { validateAccessTokenAndGetUser } = propelAuth.initBaseAuth({
-  authUrl: "YOUR_AUTH_URL", // The base URL where your authentication pages are hosted. You can find your Auth URL under the Backend Integration section for your project at https://app.propelauth.com.
-  apiKey: "YOUR_API_KEY", // You can manage your api keys under the Backend Integration section for your project.
+  // You can find your Auth URL and API key under the Backend Integration
+  //   section for your project at https://app.propelauth.com.
+  authUrl: "YOUR_AUTH_URL",
+  apiKey: "YOUR_API_KEY",
 });
 
 const authorizationHeader = // Get the Authorization header from an HTTP request
-  validateAccessTokenAndGetUser(authorizationHeader).then(
-    (user) => {
-      console.log(`Got request from user ${user.userId}`);
-    },
-    (err) => {
-      // You can return a 401, or continue the request knowing it wasn't sent from a logged-in user
-      console.log(`Unauthorized request ${err}`);
-    }
-  );
+validateAccessTokenAndGetUser(authorizationHeader).then(
+  (user) => {
+    console.log(`Got request from user ${user.userId}`);
+  },
+  (err) => {
+    // You can return a 401, or continue the request knowing it wasn't sent from a logged-in user
+    console.log(`Unauthorized request ${err}`);
+  }
+);
 ```
 
-### How it works
+## How it works
 
-The front-end receives an [access token](/overview-and-concpets/access-tokens).
-This access token is provided in an Authorization header when an HTTP request is
-made.
+For a detailed description of what's going on under the hood, see [here](/overview/how-our-auth-works).
 
-PropelAuth provides you with metadata that you use to validate the access token
-and figure out who it belongs to. The complexity of fetching the metadata and
-validating the tokens is hidden in the
-[Next.js library](/reference/backend-apis/nextjs).
-
-### Installation
+## Installation
 
 In your Node app, install the **@propelauth/node** library.
 
@@ -59,27 +52,28 @@ $ yarn add @propelauth/node
 
 </CodeGroup>
 
-### Initialize
+## Initialize
 
-Create a new file with the following code. In the code, **initBaseAuth**
-performs a one-time initialization of the library. It will verify your `apiKey`
-is correct and fetch the metadata needed to verify access tokens in
-[validateAccessTokenAndGetUser](/getting-started/backend-integration/node/#validate-access-token-and-get-user)
-and
-[validateAccessTokenAndGetUserWithOrgInfo](/getting-started/backend-integration/node/#validate-access-token-and-get-user-with-org-info).
+In a new file, add the following:
 
 ```js
 // propelauth.js
 const propelAuth = require("@propelauth/node");
 module.exports = propelAuth.initBaseAuth({
-  authUrl: "https://auth.yourdomain.com", // The base URL where your authentication pages are hosted. You can find this under the Backend Integration section for your project at https://app.propelauth.com.
-  apiKey: "YOUR_API_KEY", // You can manage your api keys under the Backend Integration section for your project.
+  authUrl: "https://auth.yourdomain.com",
+  apiKey: "YOUR_API_KEY",
 });
 ```
 
-### Protect API routes
+**initBaseAuth** performs a one-time initialization of the library. It will verify your `apiKey`
+is correct and fetch the metadata needed to verify access tokens in
+[validateAccessTokenAndGetUser](#validate-access-token-and-get-user)
+and
+[validateAccessTokenAndGetUserWithOrgInfo](#validate-access-token-and-get-user-with-org-info).
 
-#### validateAccessTokenAndGetUser
+## Protect API routes
+
+### validateAccessTokenAndGetUser
 
 This function takes in the `Authorization` HTTP header and verifies the request
 was made by a valid user. It expects the header to be in the format
@@ -111,8 +105,8 @@ following fields/functions:
 
 | OrgMemberInfo                                     | fields/properties                                                                                                                                                                                                                  | Description |
 | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| org_id                                            | The id of the org                                                                                                                                                                                                                  |
-| org_name                                          | The name of the org                                                                                                                                                                                                                |
+| orgId                                             | The id of the org                                                                                                                                                                                                                  |
+| orgName                                           | The name of the org                                                                                                                                                                                                                |
 | urlSafeOrgName                                    | A URL-safe version of the name of the org                                                                                                                                                                                          |
 | assignedRole(): string                            | The user's role within the organization. See [Roles and Permissions](/overview/roles) for more details.                                                                                                               |
 | permissions(): string[]                           | The user's permissions within the organization. See [Roles and Permissions](/overview/roles)                                                                                                                          |
@@ -143,7 +137,7 @@ It returns an object with two fields:
 You can see the structure of the `user` and `orgMemberInfo` objects above:
 **validateAccessTokenAndGetUser**.
 
-### Roles and Permissions
+## Roles and Permissions
 
 A user has a **Role** within an organization. By default, the available roles
 are **Owner**, **Admin**, or **Member**, but these can be configured. These
@@ -158,14 +152,11 @@ Permissions are arbitrary strings associated with a role. For example,
 **can_view_billing**, **ProductA::CanCreate**, and **ReadOnly** are all valid
 permissions. The PropelAuth dashboard allows you to set up these permissions.
 
-You can use **requireOrgMemberWithPermission** or
-**requireOrgMemberWithAllPermissions** to check for a given permission.
+You can use **validateAccessTokenAndGetUserWithOrgInfoWithPermission** or **validateAccessTokenAndGetUserWithOrgInfoWithAllPermissions** to check for a given permission.
 
-All of these functions, just like **requireOrgMember**, can also take in
-**orgIdExtractor**, and will set both **req.user** and **req.org** on a valid
-request.
+All of these functions, just like **validateAccessTokenAndGetUserWithOrgInfo**, will take in an authorization header and an organization ID. The last parameter is either a role, permission, or list of permissions depending on the function.
 
-### API calls
+## API calls
 
 In addition to protecting API routes, you can make requests to PropelAuth to
 fetch more information about your users or organizations. You can also create
@@ -185,7 +176,7 @@ for (const user of userResponse.users) {
 See [Node Library Reference](/reference/backend-apis/node) for more information on
 available functionality.
 
-### Next Steps
+## Next Steps
 
 Done with your backend? Next you can
 [deploy to production](/getting-started/deploy-to-prod).

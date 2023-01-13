@@ -2,7 +2,7 @@
 title: "Cloudflare Workers"
 description:
   "PropelAuth's Cloudflare Worker library provides all the building blocks you need to add
-  authentication"
+  authentication and authorization to your Cloudflare Workers"
 ---
 
 For the full Library Reference, click [here](/reference/backend-apis/cloudflare).
@@ -28,31 +28,26 @@ KEY`
 });
 
 export default {
-	async fetch(
-		request: Request,
-		env: Env,
-		ctx: ExecutionContext
-	): Promise<Response> {
-		try {
-			const user = await validateAuthHeaderAndGetUser(request.headers.get("authorization"))
-		    return Response.json(user)
-		} catch (e) {
-			const error = handleError(e, {logError: true, returnDetailedErrorToUser: true})
-			return new Response(error.message, {status: error.status})
-		}
-	},
+  async fetch(
+    request: Request,
+    env: Env,
+    ctx: ExecutionContext
+  ): Promise<Response> {
+    try {
+      const authHeader = request.headers.get("authorization")
+      const user = await validateAuthHeaderAndGetUser(authHeader)
+      return Response.json(user)
+    } catch (e) {
+      const error = handleError(e, {logError: true, returnDetailedErrorToUser: true})
+      return new Response(error.message, {status: error.status})
+    }
+  },
 };
 ```
 
-### How it works
+## How it works
 
-The front-end receives an [access token](/overview-and-concpets/access-tokens).
-This access token is provided in an Authorization header when an HTTP request is
-made.
-
-PropelAuth provides you with metadata that you use to validate the access token
-and figure out who it belongs to. The complexity of
-validating the tokens is hidden in validation functions in this library.
+For a detailed description of what's going on under the hood, see [here](/overview/how-our-auth-works).
 
 ## Installation
 
@@ -72,7 +67,7 @@ $ yarn add @propelauth/cloudflare-worker
 
 ## Initialize
 
-To initialize the library, call `initAuth`. You can either do this in a separate file and export it, or in your worker directly.
+To initialize the library, call `initAuth`.
 
 ```js
 import {initAuth} from '@propelauth/cloudflare-worker'
@@ -90,9 +85,9 @@ KEY`
 });
 ```
 
-### Protect API routes
+## Protect API routes
 
-#### validateAuthHeaderAndGetUser
+### validateAuthHeaderAndGetUser
 
 This function takes in the `Authorization` HTTP header and verifies the request
 was made by a valid user. It expects the header to be in the format
@@ -103,9 +98,10 @@ contain a valid [access token](/overview/access-tokens), an
 ```js
 let user;
 try {
-    user = await validateAuthHeaderAndGetUser(request.headers.get("authorization"))
+    const authHeader = request.headers.get("authorization")
+    user = await validateAuthHeaderAndGetUser(authHeader)
 } catch (e) {
-    const error = handleError(e, {logError: true, returnDetailedErrorToUser: true})
+    const error = handleError(e)
     return new Response(error.message, {status: error.status})
 }
 ```
@@ -121,8 +117,8 @@ The **user** object looks like:
 The values of **orgIdToOrgMemberInfo** are **OrgMemberInfo**'s, with the
 following fields/functions:
 
-| OrgMemberInfo                                     | fields/properties                                                                                                                                                                                                                  | Description |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| OrgMemberInfo fields/properties                   | Description |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | org_id                                            | The id of the org                                                                                                                                                                                                                  |
 | org_name                                          | The name of the org                                                                                                                                                                                                                |
 | urlSafeOrgName                                    | A URL-safe version of the name of the org                                                                                                                                                                                          |
@@ -153,6 +149,21 @@ It returns an object with two fields:
 ```
 
 You can see the structure of the `user` and `orgMemberInfo` objects above.
+
+```js
+const { searchParams } = new URL(request.url)
+const orgId = searchParams.get('org')
+const authHeader = request.headers.get("authorization")
+
+try {
+  const {user, orgMemberInfo} = await validateAuthHeaderAndGetUserWithOrgInfo(
+    authHeader, {orgId: orgId}
+  )
+} catch (e) {
+  const error = handleError(e)
+  return new Response(error.message, {status: error.status})
+}
+```
 
 ## Roles and Permissions
 

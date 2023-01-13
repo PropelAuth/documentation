@@ -1,0 +1,29 @@
+---
+title: "How our authentication works"
+description:
+  "When a user visits your frontend application, your frontend can make a request
+   to PropelAuth to determine if the current user is logged in."
+---
+
+![auth overview](/images/react-1.png)
+
+When a user visits your frontend application, your frontend can make a request
+to PropelAuth to determine if the current user is logged in. If the user is
+logged in, you will receive a JSON Web Token (JWT)
+[access token](/overview/access-tokens) and the user’s metadata.
+For more information on JWTs, view our blog
+[here](https://www.propelauth.com/post/jwts-explained-with-code-examples). Once
+you have the user’s access token, your backend can validate and identify the
+token’s owner. This validation is done entirely on your backend and does not
+need to make any requests to PropelAuth. Access tokens are short-lived, and our
+libraries will refresh them both periodically and when the user switches tabs or
+reconnects to the internet.
+
+![auth frontend](/images/react-2.png)
+
+A secure HTTP-only cookie is created once a user logs into your hosted
+authentication page. This cookie allows PropelAuth to identify logged-in users.
+In your production environment, we require you use a custom domain to avoid
+third-party cookie issues for your users. Browsers like Safari, for example,
+will block cookies across domains. For this reason, we include custom domains in
+all of our [plans](https://www.propelauth.com/pricing).

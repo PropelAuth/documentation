@@ -35,32 +35,9 @@ client.getAuthenticationInfoOrNull().then((authInfo) => {
 });
 ```
 
-## Technial details
+## How it works
 
-When a user logs in via your hosted pages, a secure, http-only cookie is
-created. This cookie allows PropelAuth to identify logged-in users. In
-production, we require you use a custom domain to avoid third-party cookie
-issues for your users. Browsers like Safari will block cookies across domains,
-which is why we include custom domains even in our free plan.
-
-Afterwards, your frontend can make a request to PropelAuth to determine if the
-current user is logged in and get their information.
-
-![auth generic](/images/auth-generic-1.png)
-
-On top of user information, your frontend will get an
-[access token](/overview/access-tokens) for that user. These tokens
-are JWTs, which we've written about For more information on JWTs, view our blog
-[here](https://www.propelauth.com/post/jwts-explained-with-code-examples).
-
-Later on, when your frontend makes requests to your backend, it will include an
-access token, which your backend can validate and determine whose token it is.
-This validation is done entirely on your backend and doesn't need to make any
-requests to PropelAuth.
-
-The access token is short-lived, and our libraries will refresh the token both
-periodically and when the user switches to your tab or reconnects to the
-internet.
+For a detailed description of what's going on under the hood, see [here](/overview/how-our-auth-works).
 
 ## Configure
 
@@ -223,7 +200,7 @@ authClient.getAuthenticationInfoOrNull(forceRefresh?: boolean): Promise<Authenti
 If the user is logged in, this method returns authentication information about
 them, including their access token, user metadata, and, for B2B applications,
 organization information. See
-[AuthenticationInfo schema](#authenticationinfo-and-user-metadata) for
+[AuthenticationInfo schema](#authentication-info-and-user-metadata) for
 the full schema. Otherwise, this method returns null.
 
 The promise will generally resolve immediately, _without making an external
