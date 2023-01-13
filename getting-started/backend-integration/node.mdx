@@ -103,8 +103,8 @@ The **user** object looks like:
 The values of **orgIdToOrgMemberInfo** are **OrgMemberInfo**'s, with the
 following fields/functions:
 
-| OrgMemberInfo                                     | fields/properties                                                                                                                                                                                                                  | Description |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| Field | Description |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | orgId                                             | The id of the org                                                                                                                                                                                                                  |
 | orgName                                           | The name of the org                                                                                                                                                                                                                |
 | urlSafeOrgName                                    | A URL-safe version of the name of the org                                                                                                                                                                                          |
@@ -112,8 +112,8 @@ following fields/functions:
 | permissions(): string[]                           | The user's permissions within the organization. See [Roles and Permissions](/overview/roles)                                                                                                                          |
 | isRole(role: string): boolean                     | Returns True if the user's role within the organization matches the `role` passed in                                                                                                                                               |
 | isAtLeastRole(role: string): boolean              | Returns True if the user's role within the organization is at least the `role` passed in. If the hierarchy of roles is Owner => Admin => Member, specifying "Admin" will return True for Admins and Owners, but False for Members. |
-| hasPermission(permission: string): boolean        | Return True if the user has a specific permission. The users' permissions are derived from their role within this organization.                                                                                                    |
-| hasAllPermissions(permissions: string[]): boolean | Return True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.                                                                                            |
+| hasPermission(permission: string): boolean        | Returns True if the user has a specific permission. The users' permissions are derived from their role within this organization.                                                                                                    |
+| hasAllPermissions(permissions: string[]): boolean | Returns True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.                                                                                            |
 
 ### validateAccessTokenAndGetUserWithOrgInfo
 

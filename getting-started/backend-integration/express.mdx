@@ -47,9 +47,8 @@ $ yarn add @propelauth/express
 
 ## Initialize
 
-Create a new file with the following code. In the code, **initAuth** performs a
-one-time initialization of the library. It will verify your `apiKey` is correct
-and fetch the metadata needed to verify access tokens in
+initAuth performs a one-time initialization of the library. It will verify your
+`apiKey` is correct and fetch the metadata needed to verify access tokens in
 [requireUser](#require-user), [optionalUser](#optional-user), or [requireOrgMember](#require-org-member).
 
 ```js
@@ -94,20 +93,22 @@ The **user** object looks like:
 The values of **orgIdToOrgMemberInfo** are **OrgMemberInfo**'s, with the
 following fields/functions:
 
-| OrgMemberInfo                                          | fields/properties                                                                                                                                                                                                                  | Description |
-| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| org_id                                                 | The id of the org                                                                                                                                                                                                                  |
-| org_name                                               | The name of the org                                                                                                                                                                                                                |
-| user_assigned_role                                     | The user's role within the organization. See [Roles and Permissions](/overview/roles) for more details.                                                                                                               |
-| user_is_role(role: str): bool                          | Returns True if the user's role within the organization matches the `role` passed in                                                                                                                                               |
-| user_is_at_least_role(role: str): bool                 | Returns True if the user's role within the organization is at least the `role` passed in. If the hierarchy of roles is Owner => Admin => Member, specifying "Admin" will return True for Admins and Owners, but False for Members. |
-| user_has_permission(permission: str): bool             | Return True if the user has a specific permission. The users' permissions are derived from their role within this organization.                                                                                                    |
-| user_has_all_permissions(permissions: List[str]): bool | Return True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.                                                                                            |
+| Field | Description |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| orgId                                             | The id of the org                                                                                                                                                                                                                  |
+| orgName                                           | The name of the org                                                                                                                                                                                                                |
+| urlSafeOrgName                                    | A URL-safe version of the name of the org                                                                                                                                                                                          |
+| assignedRole(): string                            | The user's role within the organization. See [Roles and Permissions](/overview/roles) for more details.                                                                                                               |
+| permissions(): string[]                           | The user's permissions within the organization. See [Roles and Permissions](/overview/roles)                                                                                                                          |
+| isRole(role: string): boolean                     | Returns True if the user's role within the organization matches the `role` passed in                                                                                                                                               |
+| isAtLeastRole(role: string): boolean              | Returns True if the user's role within the organization is at least the `role` passed in. If the hierarchy of roles is Owner => Admin => Member, specifying "Admin" will return True for Admins and Owners, but False for Members. |
+| hasPermission(permission: string): boolean        | Returns True if the user has a specific permission. The users' permissions are derived from their role within this organization.                                                                                                    |
+| hasAllPermissions(permissions: string[]): boolean | Returns True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.                                                                                            |
 
 ### optionalUser
 
 Similar to
-[requireUser](/getting-started/backend-integration/express/#require-user), except
+[requireUser](#require-user), except
 if an access token is missing or invalid, the request is allowed to continue,
 but **user** on the **Request** will be **undefined**.
 
@@ -153,7 +154,7 @@ Specifically, it will:
 
 1. Check that a valid access token was provided. If not, the request is rejected
    with a `401` status code.
-2. Set **user** on the **Request** with the user's information. See requireUser
+2. Set **user** on the **Request** with the user's information. See [requireUser](#require-user)
    for what the **user** object looks like.
 3. Find an id for an organization within the request. By default, it will check
    **Request.params.orgId** (a path parameter named **orgId**).
@@ -169,8 +170,8 @@ are **Owner**, **Admin**, or **Member**, but these can be configured. These role
 are also hierarchical, so Owner > Admin > Member.
 
 Roles allow you to control what different users can do within your product. If
-you want to check a user's role, you can use **requireOrgMemberWithExactRole**
-or **requireOrgMemberWithMinimumRole**.
+you want to check a user's role, you can use `requireOrgMemberWithExactRole` or
+`requireOrgMemberWithMinimumRole`.
 
 ```js
 // Assuming a Role structure of Owner => Admin => Member
@@ -209,7 +210,7 @@ app.get(
 );
 ```
 
-All of these functions, just like requireOrgMember, can also take in
+All of these functions, just like [requireOrgMember](#require-org-member), can also take in
 **orgIdExtractor**, and will set both **req.user** and **req.org** on a valid
 request.
 
