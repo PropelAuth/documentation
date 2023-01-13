@@ -51,6 +51,8 @@ initAuth performs a one-time initialization of the library. It will verify your
 `apiKey` is correct and fetch the metadata needed to verify access tokens in
 [requireUser](#require-user), [optionalUser](#optional-user), or [requireOrgMember](#require-org-member).
 
+We recommend calling this in a new file and exporting the result.
+
 ```js
 // propelauth.js
 const propelAuth = require("@propelauth/express");
@@ -63,6 +65,12 @@ module.exports = propelAuth.initAuth({
   authUrl: "https://auth.yourdomain.com",
   apiKey: "YOUR_API_KEY",
 });
+```
+
+And then importing just what you need:
+
+```js
+const { requireUser } = require("./propelauth");
 ```
 
 ## Protect API routes

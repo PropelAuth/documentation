@@ -225,11 +225,12 @@ Successful response is the same as [Fetch user metadata by id](#fetch-user-metad
 function fetchBatchUserMetadataByUserIds(userIds: string[], includeOrgs?: boolean): Promise<{ [userId: string]: UserMetadata }>
 ```
 
-Successful response:
 
-!!! note ""
-
+<Note>
     Any IDs that don't have a match are not returned. Duplicate users are only returned once.
+</Note>
+
+Successful response:
 
 ```js
 {

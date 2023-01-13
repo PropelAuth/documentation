@@ -158,14 +158,15 @@ Specifically, it will:
 1. Check that a valid access token was provided. If not, the request is rejected
    with a `401` status code.
 2. Set
-   [request.propelauth_user](/getting-started/backend-integration/django/#request-propelauth-user)
+   [request.propelauth_user](#request-propelauth-user)
+   (scoped to the current request)
    with the user's information.
 3. Find an id for an organization within the request. By default, it will check
    for a path parameter **org_id**.
 4. Check that the user is a member of that organization. If not, the request is
    rejected with a `403` status code.
 5. Set
-   [request.propelauth_org](/getting-started/backend-integration/django/#request-propelauth-org)
+   [request.propelauth_org](#request-propelauth-org)
    (scoped to the current request) with the organization's information for this
    user.
 
@@ -227,9 +228,9 @@ def billing_req(request):
 
 All of these functions, just like IsUserInOrg, will also take in
 **req_to_org_id**, and will set both
-[request.propelauth_user](/getting-started/backend-integration/django/#request-propelauth-user)
+[request.propelauth_user](#request-propelauth-user)
 and
-[request.propelauth_org](/getting-started/backend-integration/django/#request-propelauth-org)
+[request.propelauth_org](#request-propelauth-org)
 on a valid request.
 
 ## API calls

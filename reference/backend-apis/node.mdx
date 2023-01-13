@@ -151,14 +151,14 @@ is either a role, permission, or list of permissions depending on the function.
 ## Fetch user metadata by id
 
 <CodeGroup>
-    ```ts Type
-    function fetchUserMetadataByUserId(userId: string, includeOrgs?: boolean): Promise<UserMetadata | null>
-    ```
+```ts Type
+function fetchUserMetadataByUserId(userId: string, includeOrgs?: boolean): Promise<UserMetadata | null>
+```
 
-    ```ts Example
-    const userMetadata = await fetchUserMetadataByUserId(user.userId);
-    console.log({"userId": userMetadata.userId, "email": userMetadata.email, "lastActiveAt": userMetadata.lastActiveAt});
-    ```
+```ts Example
+const userMetadata = await fetchUserMetadataByUserId(user.userId);
+console.log({"userId": userMetadata.userId, "email": userMetadata.email, "lastActiveAt": userMetadata.lastActiveAt});
+```
 </CodeGroup>
 
 Successful response (**UserMetadata**):
@@ -200,19 +200,19 @@ Successful response (**UserMetadata**):
 ## Fetch user metadata by email
 
 <CodeGroup>
-    ```ts Type
-    function fetchUserMetadataByEmail(email: string, includeOrgs?: boolean): Promise<UserMetadata | null>
-    ```
+```ts Type
+function fetchUserMetadataByEmail(email: string, includeOrgs?: boolean): Promise<UserMetadata | null>
+```
 
-    ```ts Example
-    const email = await db.fetchEmailFromAnalytics()
-    const userMetadata = await fetchUserMetadataByEmail(email)
-    if (userMetadata) {
+```ts Example
+const email = await db.fetchEmailFromAnalytics()
+const userMetadata = await fetchUserMetadataByEmail(email)
+if (userMetadata) {
     console.log("Found user " + userMetadata)
 } else {
     console.log("No user found")
 }
-    ```
+```
 </CodeGroup>
 
 Successful response is the same as [Fetch user metadata by id](#fetch-user-metadata-by-id).
@@ -220,14 +220,14 @@ Successful response is the same as [Fetch user metadata by id](#fetch-user-metad
 ## Fetch user metadata by username
 
 <CodeGroup>
-    ```ts Type
-    function fetchUserMetadataByUsername(username: string, includeOrgs?: boolean): Promise<UserMetadata | null>
-    ```
+```ts Type
+function fetchUserMetadataByUsername(username: string, includeOrgs?: boolean): Promise<UserMetadata | null>
+```
 
-    ```ts Example
-    const userMetadata = await fetchUserMetadataByUsername("username");
-    console.log({"userId": userMetadata.userId, "pictureUrl": userMetadata.pictureUrl});
-    ```
+```ts Example
+const userMetadata = await fetchUserMetadataByUsername("username");
+console.log({"userId": userMetadata.userId, "pictureUrl": userMetadata.pictureUrl});
+```
 </CodeGroup>
 
 Successful response is the same as [Fetch user metadata by id](#fetch-user-metadata-by-id).
@@ -238,11 +238,11 @@ Successful response is the same as [Fetch user metadata by id](#fetch-user-metad
 function fetchBatchUserMetadataByUserIds(userIds: string[], includeOrgs?: boolean): Promise<{ [userId: string]: UserMetadata }>
 ```
 
-Successful response:
-
-!!! note ""
-
+<Note>
     Any IDs that don't have a match are not returned. Duplicate users are only returned once.
+</Note>
+
+Successful response:
 
 ```js
 {
