@@ -39,6 +39,11 @@
       "url": "example-apps"
     },
     {
+      "name": "Component Library",
+      "icon": "code",
+      "url": "component-library"
+    },
+    {
       "name": "Full Reference",
       "icon": "square-terminal",
       "url": "reference"
@@ -106,6 +111,37 @@
     {
       "group": "Example Apps",
       "pages": ["example-apps/apps"]
+    },
+    {
+      "group": "Component Library",
+      "pages": [
+        "component-library/overview",
+        {
+          "group": "Getting Started",
+          "pages": [
+            "component-library/getting-started/usage",
+            "component-library/getting-started/examples"
+          ]
+        },
+        {
+          "group": "Components",
+          "pages": [
+            "component-library/components/login",
+            "component-library/components/signup"
+          ]
+        },
+        {
+          "group": "Elements",
+          "pages": [
+            "component-library/elements/container",
+            "component-library/elements/button"
+          ]
+        },
+        {
+          "group": "Adapter Libraries",
+          "pages": ["component-library/adapter-libraries/mui"]
+        }
+      ]
     },
     {
       "group": "Full Reference",
@@ -189,7 +225,7 @@
   },
   "analytics": {
     "amplitude": {
-        "apiKey": "df4703100596a0e25b85de9b4630369f"
+      "apiKey": "df4703100596a0e25b85de9b4630369f"
     }
   }
 }

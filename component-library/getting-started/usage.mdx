@@ -1,0 +1,68 @@
+---
+title: "Usage"
+description: "This section shows you how to install and use the PropelAuth component library in your application."
+---
+
+## Installation
+
+To get started, you'll first need to install the PropelAuth [React](https://github.com/PropelAuth/react) library. You'll also need a set of underlying elements for the component library to use. This could be our official [Base Elements](https://github.com/PropelAuth/base-elements) or an Adapter Library like [MUI](/component-library/adapter-libraries/mui).
+
+```shell
+npm install @propelauth/react @propelauth/base-elements
+```
+
+## Usage
+
+The following code snippet demonstrates a simple React application that uses the [Login](/component-library/components/Login) component to log in users and direct them to the dashboard.
+
+```jsx
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
+import { Login } from "@propelauth/react";
+
+export default function App() {
+  const navigate = useNavigate();
+
+  return (
+    <div>
+      <Login onSuccess={() => navigate("/dashboard")} />
+    </div>
+  );
+}
+```
+
+## Customization
+
+Every component can be deeply customized with the _appearance_ prop. The appearance prop is an object that lets you specify component-level options, as well as apply styles and classes to elements in a component. You can even completely override elements if you'd like.
+
+Let's use the appearance prop to customize the Login component from the example above. To do this, we can use the appearance prop
+
+```jsx
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
+import { Login } from "@propelauth/react";
+
+export default function App() {
+  const navigate = useNavigate();
+
+  const loginAppearance = {
+    options: {
+      headerContent: "Sign In",
+      divider: false
+    },
+    elements: {
+      Container: { backgroundColor: "#000000" }
+      SubmitButton: 'custom-class'
+    }
+  }
+
+  return (
+    <div>
+      <Login
+        onSuccess={() => navigate("/dashboard")}
+        appearance={loginAppearance}
+      />
+    </div>
+  );
+}
+```
