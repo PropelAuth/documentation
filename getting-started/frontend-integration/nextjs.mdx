@@ -140,7 +140,7 @@ RequiredAuthProvider has two additional props:
 
 1. **displayWhileLoading**: A React element to display while the AuthProvider is
 fetching auth information. Defaults to an empty element
-2. **displayIfLoggedOut**: A React eleent to display if the current user is
+2. **displayIfLoggedOut**: A React element to display if the current user is
 logged out. Defaults to [RedirectToLogin](/reference/frontend-apis/nextjs#redirect-to-login)
 
 ## Get current user information
@@ -185,8 +185,8 @@ The following props are injected to the underlying component:
 | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
 | [accessToken](/overview/access-tokens)    | If user is logged in, this string can be passed in and validated by your backend. Otherwise, null. |
 | isLoggedIn                                             | Returns user logged in status                                                                  |
-| [orgHelper](/reference/frontend-apis/nextjs#orghelper)       | A class with useful functions for managing organizations                                     |
-| [accessHelper](/reference/frontend-apis/nextjs#accesshelper) | A class with useful functions for accessing role and permissions (RBAC)                      |
+| [orgHelper](/reference/frontend-apis/nextjs#org-helper)       | A class with useful functions for managing organizations                                     |
+| [accessHelper](/reference/frontend-apis/nextjs#access-helper) | A class with useful functions for accessing role and permissions (RBAC)                      |
 | [user](/reference/frontend-apis/nextjs#the-user-object)      | If user is logged in, this contains metadata about them. Otherwise, null                       |
 
 ### withRequiredAuthInfo
@@ -251,8 +251,8 @@ information. authInfo contains:
 | loading                                                | True if the AuthProvider is still fetching auth information. This will only happen once when the application is first loaded. |
 | [accessToken](/overview/access-tokens)    | If user is logged in, this string can be passed in and validated by your backend. Otherwise, null. |
 | isLoggedIn                                             | Returns user logged in status                                                                  |
-| [orgHelper](/reference/frontend-apis/nextjs#orghelper)       | A class with useful functions for managing organizations                                     |
-| [accessHelper](/reference/frontend-apis/nextjs#accesshelper) | A class with useful functions for accessing role and permissions (RBAC)                      |
+| [orgHelper](/reference/frontend-apis/nextjs#org-helper)       | A class with useful functions for managing organizations                                     |
+| [accessHelper](/reference/frontend-apis/nextjs#access-helper) | A class with useful functions for accessing role and permissions (RBAC)                      |
 | [user](/reference/frontend-apis/nextjs#the-user-object)      | If user is logged in, this contains metadata about them. Otherwise, null                       |
 
 <Note>

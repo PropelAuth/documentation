@@ -46,7 +46,7 @@ from it:
 
 ### createClient
 
-Creates an authentication client which manages your access token, fetches user
+Creates an authentication client which manages your user's [access token](/overview/access-tokens), fetches user
 information, and provides other useful authentication functions.
 
 The client also refreshes auth information when a user switches focus to your
@@ -54,8 +54,13 @@ tab or reconnects (if they were offline).
 
 ```js
 const authClient = createClient({
-  authUrl: "https://auth.yourdomain.com", // The base URL where your authentication pages are hosted. You can find this under the Frontend Integration section for your project.
-  enableBackgroundTokenRefresh: true, // If true, periodically refresh the access token in the background. This helps ensure you always have a valid token ready to go. Default true.
+  // The base URL where your authentication pages are hosted.
+  // You can find this under the Frontend Integration section for your project.
+  authUrl: "https://auth.yourdomain.com",
+
+  // If true, periodically refresh the access token in the background.
+  // This helps ensure you always have a valid token ready to go. Default true.
+  enableBackgroundTokenRefresh: true,
 });
 ```
 
@@ -63,7 +68,7 @@ const authClient = createClient({
 
 There are a few key types that this library uses, here are their signatures:
 
-```js
+```ts
 type AuthenticationInfo = {
     // An access token for the current logged in user
     accessToken: string,
@@ -111,7 +116,7 @@ type User = {
 
 Here are more types that you can find in the AuthenticationInfo object
 
-```js
+```ts
 type OrgHelper = {
     // returns all orgs that the user is a member of
     getOrgs: () => OrgMemberInfo[],
@@ -142,14 +147,14 @@ type OrgMemberInfo = {
 
 ### Get current user information
 
-```
+```ts
 authClient.getAuthenticationInfoOrNull(forceRefresh?: boolean): Promise<AuthenticationInfo | null>
 ```
 
 If the user is logged in, this method returns authentication information about
 them, including their access token, user metadata, and, for B2B applications,
 organization information. See
-[AuthenticationInfo schema](/reference/frontend-apis/javascript/#authentication-info-and-user-metadata)
+[AuthenticationInfo schema](#authentication-info-and-user-metadata)
 for the full schema. Otherwise, this method returns null.
 
 The promise will generally resolve immediately, without making an external
@@ -163,18 +168,19 @@ default is false.
 
 Logs the current user out.
 
-```
+```ts
 authClient.logout(redirectAfterLogout: boolean): Promise<void>
 ```
 
 If **redirectAfterLogout** is true, redirect the user to the configured logout
 URL. This is configured in the **Frontend Integration** section of your project.
 
-Redirect to signup page¶ Redirects the user to the signup hosted authentication
-page.
+### Redirect to signup page
 
-```js
-authClient.redirectToSignupPage(options?: RedirectToLoginOptions)
+Redirects the user to the signup page.
+
+```ts
+authClient.redirectToSignupPage(options?: RedirectToSignupOptions)
 
 export interface RedirectToSignupOptions {
     // This must be a full URL and can only be a URL for a domain you have verified
@@ -184,9 +190,9 @@ export interface RedirectToSignupOptions {
 
 ### Redirect to login page
 
-Redirects the user to the login hosted authentication page.
+Redirects the user to the login page.
 
-```
+```ts
 authClient.redirectToLoginPage(options?: RedirectToLoginOptions)
 
 export interface RedirectToLoginOptions {
@@ -197,27 +203,27 @@ export interface RedirectToLoginOptions {
 
 ### Redirect to account page
 
-Redirects the user to the account hosted authentication page, where they can
+Redirects the user to the account page, where they can
 view/modify their user information.
 
-```
+```ts
 authClient.redirectToAccountPage()
 ```
 
 ### Redirect to create org page
 
-Redirects the user to the hosted authentication page where they can create
+Redirects the user to the page where they can create
 organizations.
 
-```
+```ts
 authClient.redirectToCreateOrgPage()
 ```
 
 ### Redirect to org page
 
-Redirects the user to an organization management hosted authentication page.
+Redirects the user to an organization management page.
 
-```
+```ts
 authClient.redirectToOrgPage(orgId?: string)
 ```
 
@@ -228,7 +234,7 @@ specified, a default is chosen deterministically.
 
 Adds or removes an observer which is called whenever the user logs in or out.
 
-```
+```ts
 authClient.addLoggedInChangeObserver(observer: (isLoggedIn: boolean) => void)
 authClient.removeLoggedInChangeObserver(observer: (isLoggedIn: boolean) => void)
 ```
@@ -237,6 +243,6 @@ authClient.removeLoggedInChangeObserver(observer: (isLoggedIn: boolean) => void)
 
 Cleanup the auth client.
 
-```
+```ts
 authClient.destroy()
 ```
