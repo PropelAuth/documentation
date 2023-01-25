@@ -1,0 +1,128 @@
+---
+title: "Customization"
+description: "This section shows you how you can customize Components and Elements with the Appearance object."
+---
+
+## Appearance object
+
+Every component can be deeply customized with the _Appearance_ object. The Appearance object lets you specify options, as well as apply styles and classes to elements in a component. You can even completely override elements if you'd like.
+
+You can pass an Appearance object to an individual component, or pass it in to the `ComponentLibraryProvider` to customize elements globally. Let's look at an example of a Signup component that's customized with the `appearance` prop:
+
+```jsx
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
+import { Signup } from "@propelauth/react";
+
+export default function SignupPage() {
+  const navigate = useNavigate();
+
+  const signupAppearance = {
+    options: {
+      divider: false,
+      submitButtonText: "Enter the Dungeon",
+    },
+    elements: {
+      Container: { backgroundColor: "gray" },
+      SubmitButton: "custom-class",
+    },
+  };
+
+  return (
+    <div>
+      <Signup
+        onSignupCompleted={() => navigate("/dashboard")}
+        onRedirectToLogin={() => navigate("/login")}
+        appearance={signupAppearance}
+      />
+    </div>
+  );
+}
+```
+
+Each component has a unique appearance prop that maps to the options and elements available for that component. For example, here's the full `SignupAppearance` type which shows all options and elements that you can use to customize the [Signup](/component-library/components/signup) component:
+
+```typescript
+type ElementAppearance<T> =
+  | null
+  | string
+  | CSSProperties
+  | (props: T) => JSX.Element;
+
+type SignupAppearance = {
+  options?: {
+    displayLogo?: boolean;
+    divider?: ReactNode | boolean;
+    submitButtonText?: ReactNode;
+  };
+  elements?: {
+    Container?: ElementAppearance<ContainerProps>;
+    Logo?: ElementAppearance<ImageProps>;
+    Header?: ElementAppearance<H3Props>;
+    Divider?: ElementAppearance<DividerProps>;
+    FirstNameLabel?: ElementAppearance<LabelProps>;
+    FirstNameInput?: ElementAppearance<InputProps>;
+    LastNameLabel?: ElementAppearance<LabelProps>;
+    LastNameInput?: ElementAppearance<InputProps>;
+    UsernameLabel?: ElementAppearance<LabelProps>;
+    UsernameInput?: ElementAppearance<InputProps>;
+    EmailLabel?: ElementAppearance<LabelProps>;
+    EmailInput?: ElementAppearance<InputProps>;
+    PasswordLabel?: ElementAppearance<LabelProps>;
+    PasswordInput?: ElementAppearance<InputProps>;
+    SocialButton?: ElementAppearance<ButtonProps>;
+    SubmitButton?: ElementAppearance<ButtonProps>;
+    RedirectToLoginLink?: ElementAppearance<ButtonProps>;
+    RedirectToPasswordlessLoginButton?: ElementAppearance<ButtonProps>;
+    RedirectToSSOLoginButton?: ElementAppearance<ButtonProps>;
+    ErrorMessage?: ElementAppearance<AlertProps>;
+  };
+};
+```
+
+## Customizing elements
+
+You can customize elements in a variety of ways. If the value of an element is a string, that string will be applied as a class name to the element. If it's an object containing CSS properties, those CSS properties will get applied as inline styles. If the value is a React component, that component will override the existing element. Lastly, if the value is null, it won't render the element.
+
+```jsx
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
+import { Signup, InputProps } from "@propelauth/react";
+
+export default function SignupPage() {
+  const navigate = useNavigate();
+
+  const signupAppearance = {
+    elements: {
+      // CSS properties
+      Container: {
+        backgroundColor: "gray",
+        border: "1px solid #000",
+      },
+
+      // Custom class
+      SubmitButton: "blue-btn",
+
+      // Hide with null
+      EmailLabel: null,
+
+      // Override component
+      EmailInput: CustomInput,
+    },
+  };
+
+  return (
+    <div>
+      <Signup
+        onSignupCompleted={() => navigate("/dashboard")}
+        onRedirectToLogin={() => navigate("/login")}
+        appearance={signupAppearance}
+      />
+    </div>
+  );
+}
+
+function CustomInput(props: InputProps) {
+  return <input {...props} id={"custom-input"} />;
+}
+```

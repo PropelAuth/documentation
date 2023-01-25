@@ -1,0 +1,281 @@
+---
+title: "LoginManager"
+description: "Manage the login process with a single component."
+---
+
+The LoginManager component manages all of the components related to the login process—including login, email confirmation, two-factor verification, account completion, updating passwords, and creating organizations. You can deeply customize the appearance and behavior of the LoginManager component with [props](#props).
+
+## Usage
+
+The following code snippet is a minimal example of how to use the LoginManager component. Here, we pass in functions that will be invoked when the login process is complete (`onLoginCompleted`), or when a user clicks "Sign Up" (`onRedirectToSignup`) or "Forgot Password" (`onRedirectToSignup`).
+
+```jsx
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
+import { LoginManager } from "@propelauth/react";
+
+export default function LoginPage() {
+  const navigate = useNavigate();
+
+  return (
+    <div>
+      <LoginManager
+        onLoginCompleted={() => navigate("/dashboard")}
+        onRedirectToSignup={() => navigate("/signup")}
+        onRedirectToForgotPassword={() => navigate("/forgot-password")}
+      />
+    </div>
+  );
+}
+```
+
+Now let's style the inner components of the LoginManager—we can do this by passing in an appearance object for each inner component as a prop. The appearance object lets you apply styles and classes to elements in a component, or even completely override those elements.
+
+```jsx
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
+import { LoginManager } from "@propelauth/react";
+import { CustomCodeInput } from "./custom-components";
+
+export default function LoginPage() {
+  const navigate = useNavigate();
+
+  const loginAppearance = {
+    options: {
+      divider: false,
+    },
+    elements: {
+      Container: { backgroundColor: "#eee" },
+      SubmitButton: "btn-blue",
+    },
+  };
+
+  const verifyMfaAppearance = {
+    options: {
+      submitButtonText: "Verify",
+    },
+    elements: {
+      Container: { backgroundColor: "#eee" },
+      CodeInput: CustomCodeInput,
+      SubmitButton: "btn-yellow",
+    },
+  };
+
+  const completeAccountAppearance = {
+    elements: {
+      UsernameLabel: "custom-label",
+      UsernameInput: "custom-input",
+      SubmitButton: "btn-green",
+    },
+  };
+
+  return (
+    <div>
+      <LoginManager
+        onLoginCompleted={() => navigate("/dashboard")}
+        onRedirectToSignup={() => navigate("/signup")}
+        onRedirectToForgotPassword={() => navigate("/forgot-password")}
+        loginAppearance={loginAppearance}
+        verifyMfaAppearance={verifyMfaAppearance}
+        completeAccountAppearance={completeAccountAppearance}
+      />
+    </div>
+  );
+}
+```
+
+## Props
+
+<ParamField path="onLoginCompleted" type="VoidFunction" required>
+  Function that gets invoked when the user completes the login process.
+</ParamField>
+
+<ParamField path="onRedirectToSignup" type="VoidFunction">
+  Function that redirects the user to Signup.
+</ParamField>
+
+<ParamField path="onRedirectToForgotPassword" type="VoidFunction">
+  Function that redirects the user to Forgot Password.
+</ParamField>
+
+<ParamField path="onRedirectToPasswordlessLogin" type="VoidFunction">
+  Function that redirects the user to Passwordless Login.
+</ParamField>
+
+<ParamField path="loginAppearance" type="LoginAppearance">
+  Appearance object for the `Login` component. View all options and elements for the `LoginAppearance` below. You can learn more about customizing components with the appearance object [here](/component-library/getting-started/customization).
+
+```typescript
+type LoginAppearance = {
+  options?: {
+    displayLogo?: boolean;
+    divider?: ReactNode | boolean;
+    submitButtonText?: ReactNode;
+  };
+  elements?: {
+    Progress?: ElementAppearance<ProgressProps>;
+    Container?: ElementAppearance<ContainerProps>;
+    Logo?: ElementAppearance<ImageProps>;
+    Header?: ElementAppearance<H3Props>;
+    Divider?: ElementAppearance<DividerProps>;
+    EmailLabel?: ElementAppearance<LabelProps>;
+    EmailInput?: ElementAppearance<InputProps>;
+    PasswordLabel?: ElementAppearance<LabelProps>;
+    PasswordInput?: ElementAppearance<InputProps>;
+    SocialButton?: ElementAppearance<ButtonProps>;
+    SubmitButton?: ElementAppearance<ButtonProps>;
+    RedirectToSignupLink?: ElementAppearance<ButtonProps>;
+    RedirectToForgotPasswordLink?: ElementAppearance<ButtonProps>;
+    RedirectToPasswordlessLoginButton?: ElementAppearance<ButtonProps>;
+    RedirectToSSOLoginButton?: ElementAppearance<ButtonProps>;
+    ErrorMessage?: ElementAppearance<AlertProps>;
+  };
+};
+```
+
+</ParamField>
+
+<ParamField path="confirmEmailAppearance" type="ConfirmEmailAppearance">
+  Appearance object for the `ConfirmEmail` component. View all options and elements for the `ConfirmEmailAppearance` below. You can learn more about customizing components with the appearance object [here](/component-library/getting-started/customization).
+
+```typescript
+type ConfirmEmailAppearance = {
+  options?: {
+    displayLogo?: boolean;
+    resendConfirmationButtonText?: ReactNode;
+  };
+  elements?: {
+    Container?: ElementAppearance<ContainerProps>;
+    Logo?: ElementAppearance<ImageProps>;
+    Header?: ElementAppearance<H3Props>;
+    ConfirmationText?: ElementAppearance<ParagraphProps>;
+    ResendConfirmationButton?: ElementAppearance<ButtonProps>;
+    SuccessMessage?: ElementAppearance<AlertProps>;
+    ErrorMessage?: ElementAppearance<AlertProps>;
+  };
+};
+```
+
+</ParamField>
+
+<ParamField path="verifyMfaAppearance" type="VerifyMfaAppearance">
+  Appearance object for the `VerifyMfa` component. View all options and elements for the `VerifyMfaAppearance` below. You can learn more about customizing components with the appearance object [here](/component-library/getting-started/customization).
+
+```typescript
+type VerifyMfaAppearance = {
+  options?: {
+    displayLogo?: boolean;
+    submitButtonText?: ReactNode;
+  };
+  elements?: {
+    Container?: ElementAppearance<ContainerProps>;
+    Logo?: ElementAppearance<ImageProps>;
+    Header?: ElementAppearance<H3Props>;
+    CodeLabel?: ElementAppearance<LabelProps>;
+    CodeInput?: ElementAppearance<InputProps>;
+    SubmitButton?: ElementAppearance<ButtonProps>;
+    CodeOrBackupToggle?: ElementAppearance<ButtonProps>;
+    ErrorMessage?: ElementAppearance<AlertProps>;
+  };
+};
+```
+
+</ParamField>
+
+<ParamField path="completeAccountAppearance" type="CompleteAccountAppearance">
+  Appearance object for the `CompleteAccount` component. View all options and elements for the `CompleteAccountAppearance` below. You can learn more about customizing components with the appearance object [here](/component-library/getting-started/customization).
+
+```typescript
+type CompleteAccountAppearance = {
+  options?: {
+    displayLogo?: boolean;
+    submitButtonText?: ReactNode;
+  };
+  elements?: {
+    Container?: ElementAppearance<ContainerProps>;
+    Logo?: ElementAppearance<ImageProps>;
+    Header?: ElementAppearance<H3Props>;
+    Content?: ElementAppearance<ParagraphProps>;
+    FirstNameLabel?: ElementAppearance<LabelProps>;
+    FirstNameInput?: ElementAppearance<InputProps>;
+    LastNameLabel?: ElementAppearance<LabelProps>;
+    LastNameInput?: ElementAppearance<InputProps>;
+    UsernameLabel?: ElementAppearance<LabelProps>;
+    UsernameInput?: ElementAppearance<InputProps>;
+    SubmitButton?: ElementAppearance<ButtonProps>;
+    ErrorMessage?: ElementAppearance<AlertProps>;
+  };
+};
+```
+
+</ParamField>
+
+<ParamField path="updatePasswordAppearance" type="UpdatePasswordAppearance">
+  Appearance object for the `UpdatePassword` component. View all options and elements for the `UpdatePasswordAppearance` below. You can learn more about customizing components with the appearance object [here](/component-library/getting-started/customization).
+
+```typescript
+type UpdatePasswordAppearance = {
+  options?: {
+    displayLogo?: boolean;
+    SubmitButtonText?: ReactNode;
+  };
+  elements?: {
+    Container?: ElementAppearance<ContainerProps>;
+    Header?: ElementAppearance<H3Props>;
+    Logo?: ElementAppearance<ImageProps>;
+    PasswordLabel?: ElementAppearance<LabelProps>;
+    PasswordInput?: ElementAppearance<InputProps>;
+    SubmitButton?: ElementAppearance<ButtonProps>;
+    ErrorMessage?: ElementAppearance<AlertProps>;
+  };
+};
+```
+
+</ParamField>
+
+<ParamField path="createOrgAppearance" type="CreateOrgAppearance">
+  Appearance object for the `CreateOrg` component. View all options and elements for the `CreateOrgAppearance` below. You can learn more about customizing components with the appearance object [here](/component-library/getting-started/customization).
+
+```typescript
+type CreateOrgAppearance = {
+  options?: {
+    divider?: ReactNode | boolean;
+    createOrgButtonText?: ReactNode;
+    joinOrgButtonText?: ReactNode;
+  };
+  elements?: {
+    Progress?: ElementAppearance<ProgressProps>;
+    Container?: ElementAppearance<ContainerProps>;
+    Header?: ElementAppearance<LabelProps>;
+    OrgNameLabel?: ElementAppearance<LabelProps>;
+    OrgNameInput?: ElementAppearance<InputProps>;
+    AutojoinByDomainCheckbox?: ElementAppearance<CheckboxProps>;
+    RestrictToDomainCheckbox?: ElementAppearance<CheckboxProps>;
+    CreateOrgButton?: ElementAppearance<ButtonProps>;
+    Divider?: ElementAppearance<DividerProps>;
+    JoinOrgLabel?: ElementAppearance<LabelProps>;
+    JoinOrgSelect?: ElementAppearance<SelectProps>;
+    JoinOrgButton?: ElementAppearance<ButtonProps>;
+    ErrorMessage?: ElementAppearance<AlertProps>;
+  };
+};
+```
+
+</ParamField>
+
+<ParamField path="loginStateOverride" type="LoginStateEnum">
+  Field that lets you override the login state to bring a component into view
+  (for testing purposes). View all options for the `LoginStateEnum` below.
+
+```typescript
+type LoginStateEnum =
+  | "LoginRequired"
+  | "TwoFactorRequired"
+  | "ConfirmEmailRequired"
+  | "UserMetadataRequired"
+  | "OrgCreationRequired"
+  | "UpdatePasswordRequired"
+  | "Finished";
+```
+
+</ParamField>

@@ -5,7 +5,7 @@ description: "This section shows you how to install and use the PropelAuth compo
 
 ## Installation
 
-To get started, you'll first need to install the PropelAuth [React](https://github.com/PropelAuth/react) library. You'll also need a set of underlying elements for the component library to use. This could be our official [Base Elements](https://github.com/PropelAuth/base-elements) or an Adapter Library like [MUI](/component-library/adapter-libraries/mui).
+To get started, you'll first need to install the [@PropelAuth/react](https://github.com/PropelAuth/react) library. You'll also need a set of underlying elements for the component library to use. This could be our official [Base Elements](https://github.com/PropelAuth/base-elements) or an Adapter Library like [MUI](/component-library/adapter-libraries/mui) (coming soon).
 
 ```shell
 npm install @propelauth/react @propelauth/base-elements
@@ -13,55 +13,39 @@ npm install @propelauth/react @propelauth/base-elements
 
 ## Usage
 
-The following code snippet demonstrates a simple React application that uses the [Login](/component-library/components/Login) component to log in users and direct them to the dashboard.
+Once installation is complete, you'll need to wrap your application with the `ComponentLibraryProvider`. Be sure to pass in the elements you'd like to use with the `elements` prop. You can also specify an `appearance` prop in the provider to apply [customizations](/component-library/getting-started/customization) to elements globally.
 
 ```jsx
-import * as React from "react";
-import { useNavigate } from "react-router-dom";
-import { Login } from "@propelauth/react";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import { AuthProvider, ComponentLibraryProvider } from "@propelauth/react";
+import { BaseElements } from "@propelauth/base-elements";
 
-export default function App() {
-  const navigate = useNavigate();
+const root = ReactDOM.createRoot(document.getElementById("root"));
 
-  return (
-    <div>
-      <Login onSuccess={() => navigate("/dashboard")} />
-    </div>
-  );
-}
+root.render(
+  <AuthProvider authUrl={process.env.REACT_APP_AUTH_URL}>
+    <ComponentLibraryProvider elements={BaseElements}>
+      <App />
+    </ComponentLibraryProvider>
+  </AuthProvider>
+);
 ```
 
-## Customization
-
-Every component can be deeply customized with the _appearance_ prop. The appearance prop is an object that lets you specify component-level options, as well as apply styles and classes to elements in a component. You can even completely override elements if you'd like.
-
-Let's use the appearance prop to customize the Login component from the example above. To do this, we can use the appearance prop
+Then, in our `App` component, we can use the [LoginManager](/component-library/components/login-manager) component to handle the login process and direct users to the dashboard after they log in.
 
 ```jsx
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { Login } from "@propelauth/react";
+import { LoginManager } from "@propelauth/react";
 
 export default function App() {
   const navigate = useNavigate();
 
-  const loginAppearance = {
-    options: {
-      headerContent: "Sign In",
-      divider: false
-    },
-    elements: {
-      Container: { backgroundColor: "#000000" }
-      SubmitButton: 'custom-class'
-    }
-  }
-
   return (
     <div>
-      <Login
-        onSuccess={() => navigate("/dashboard")}
-        appearance={loginAppearance}
-      />
+      <LoginManager onLoginCompleted={() => navigate("/dashboard")} />
     </div>
   );
 }

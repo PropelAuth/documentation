@@ -120,21 +120,17 @@
           "group": "Getting Started",
           "pages": [
             "component-library/getting-started/usage",
+            "component-library/getting-started/customization",
             "component-library/getting-started/examples"
           ]
         },
         {
           "group": "Components",
           "pages": [
-            "component-library/components/login",
-            "component-library/components/signup"
-          ]
-        },
-        {
-          "group": "Elements",
-          "pages": [
-            "component-library/elements/container",
-            "component-library/elements/button"
+            "component-library/components/login-manager",
+            "component-library/components/signup",
+            "component-library/components/login-passwordless",
+            "component-library/components/forgot-password"
           ]
         },
         {

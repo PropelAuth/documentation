@@ -1,6 +1,113 @@
 ---
 title: "Signup"
-description: "Coming soon."
+description: "Fully-featured signup with maximum customizability."
 ---
 
-Coming soon.
+The Signup component lets you sign up users however you want, from email and password to social accounts and magic links. You can deeply customize the appearance and behavior of the Signup component with [props](#props).
+
+## Usage
+
+The following code snippet is a minimal example of how to use the Signup component. Here, we pass in a function that will be invoked when the signup process is complete (`onSignupCompleted`).
+
+```jsx
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
+import { Signup } from "@propelauth/react";
+
+export default function LoginPage() {
+  const navigate = useNavigate();
+
+  return (
+    <div>
+      <Signup onSignupCompleted={() => navigate("/dashboard")} />
+    </div>
+  );
+}
+```
+
+Now let's customize the look and feel of the Signup component—we can do this by passing in an appearance object as a prop. The appearance object lets you apply styles and classes to elements in a component, or even completely override those elements.
+
+```jsx
+import * as React from "react";
+import { useNavigate } from "react-router-dom";
+import { Signup } from "@propelauth/react";
+import { CustomLabel, CustomInput } from "./custom-components";
+
+export default function SignupPage() {
+  const navigate = useNavigate();
+
+  const signupAppearance = {
+    options: {
+      divider: false,
+      submitButtonText: "Enter the Dungeon",
+    },
+    elements: {
+      Container: { backgroundColor: "#f8f8f8" },
+      EmailLabel: CustomLabel,
+      EmailInput: CustomInput,
+      SubmitButton: "btn-blue",
+    },
+  };
+
+  return (
+    <div>
+      <Signup
+        onSignupCompleted={() => navigate("/dashboard")}
+        onRedirectToLogin={() => navigate("/login")}
+        appearance={signupAppearance}
+      />
+    </div>
+  );
+}
+```
+
+## Props
+
+<ParamField path="onSignupCompleted" type="VoidFunction" required>
+  Function that gets invoked when the user completes the signup process.
+</ParamField>
+
+<ParamField path="onRedirectToLogin" type="VoidFunction">
+  Function that redirects the user to Login.
+</ParamField>
+
+<ParamField path="onRedirectToPasswordlessLogin" type="VoidFunction">
+  Function that redirects the user to Passwordless Login.
+</ParamField>
+
+<ParamField path="appearance" type="SignupAppearance">
+  Appearance object for the `Signup` component. View all options and elements for the `SignupAppearance` below. You can learn more about customizing components with the appearance object [here](/component-library/getting-started/customization).
+
+```typescript
+type SignupAppearance = {
+  options?: {
+    displayLogo?: boolean;
+    divider?: ReactNode | boolean;
+    submitButtonText?: ReactNode;
+  };
+  elements?: {
+    Container?: ElementAppearance<ContainerProps>;
+    Logo?: ElementAppearance<ImageProps>;
+    Header?: ElementAppearance<H3Props>;
+    Divider?: ElementAppearance<DividerProps>;
+    FirstNameLabel?: ElementAppearance<LabelProps>;
+    FirstNameInput?: ElementAppearance<InputProps>;
+    LastNameLabel?: ElementAppearance<LabelProps>;
+    LastNameInput?: ElementAppearance<InputProps>;
+    UsernameLabel?: ElementAppearance<LabelProps>;
+    UsernameInput?: ElementAppearance<InputProps>;
+    EmailLabel?: ElementAppearance<LabelProps>;
+    EmailInput?: ElementAppearance<InputProps>;
+    PasswordLabel?: ElementAppearance<LabelProps>;
+    PasswordInput?: ElementAppearance<InputProps>;
+    SocialButton?: ElementAppearance<ButtonProps>;
+    SubmitButton?: ElementAppearance<ButtonProps>;
+    RedirectToLoginLink?: ElementAppearance<ButtonProps>;
+    RedirectToPasswordlessLoginButton?: ElementAppearance<ButtonProps>;
+    RedirectToSSOLoginButton?: ElementAppearance<ButtonProps>;
+    ErrorMessage?: ElementAppearance<AlertProps>;
+  };
+};
+```
+
+</ParamField>
