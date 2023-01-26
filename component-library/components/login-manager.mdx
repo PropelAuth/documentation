@@ -11,18 +11,21 @@ The following code snippet is a minimal example of how to use the LoginManager c
 
 ```jsx
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 import { LoginManager } from "@propelauth/react";
 
 export default function LoginPage() {
-  const navigate = useNavigate();
+  function redirectToPage(page) {
+    // This is dependent on your framework
+    // For Next.js, you'll want router.push(page)
+    // for React Router, it's navigate(page)
+  }
 
   return (
     <div>
       <LoginManager
-        onLoginCompleted={() => navigate("/dashboard")}
-        onRedirectToSignup={() => navigate("/signup")}
-        onRedirectToForgotPassword={() => navigate("/forgot-password")}
+        onLoginCompleted={() => redirectToPage("/dashboard")}
+        onRedirectToSignup={() => redirectToPage("/signup")}
+        onRedirectToForgotPassword={() => redirectToPage("/forgot-password")}
       />
     </div>
   );
@@ -33,12 +36,15 @@ Now let's style the inner components of the LoginManager—we can do this by pas
 
 ```jsx
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 import { LoginManager } from "@propelauth/react";
 import { CustomCodeInput } from "./custom-components";
 
 export default function LoginPage() {
-  const navigate = useNavigate();
+  function redirectToPage(page) {
+    // This is dependent on your framework
+    // For Next.js, you'll want router.push(page)
+    // for React Router, it's navigate(page)
+  }
 
   const loginAppearance = {
     options: {
@@ -72,9 +78,9 @@ export default function LoginPage() {
   return (
     <div>
       <LoginManager
-        onLoginCompleted={() => navigate("/dashboard")}
-        onRedirectToSignup={() => navigate("/signup")}
-        onRedirectToForgotPassword={() => navigate("/forgot-password")}
+        onLoginCompleted={() => redirectToPage("/dashboard")}
+        onRedirectToSignup={() => redirectToPage("/signup")}
+        onRedirectToForgotPassword={() => redirectToPage("/forgot-password")}
         loginAppearance={loginAppearance}
         verifyMfaAppearance={verifyMfaAppearance}
         completeAccountAppearance={completeAccountAppearance}

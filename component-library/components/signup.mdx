@@ -11,15 +11,18 @@ The following code snippet is a minimal example of how to use the Signup compone
 
 ```jsx
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 import { Signup } from "@propelauth/react";
 
 export default function LoginPage() {
-  const navigate = useNavigate();
+  function redirectToPage(page) {
+    // This is dependent on your framework
+    // For Next.js, you'll want router.push(page)
+    // for React Router, it's navigate(page)
+  }
 
   return (
     <div>
-      <Signup onSignupCompleted={() => navigate("/dashboard")} />
+      <Signup onSignupCompleted={() => redirectToPage("/dashboard")} />
     </div>
   );
 }
@@ -29,12 +32,15 @@ Now let's customize the look and feel of the Signup component—we can do this b
 
 ```jsx
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 import { Signup } from "@propelauth/react";
 import { CustomLabel, CustomInput } from "./custom-components";
 
 export default function SignupPage() {
-  const navigate = useNavigate();
+  function redirectToPage(page) {
+    // This is dependent on your framework
+    // For Next.js, you'll want router.push(page)
+    // for React Router, it's navigate(page)
+  }
 
   const signupAppearance = {
     options: {
@@ -52,8 +58,8 @@ export default function SignupPage() {
   return (
     <div>
       <Signup
-        onSignupCompleted={() => navigate("/dashboard")}
-        onRedirectToLogin={() => navigate("/login")}
+        onSignupCompleted={() => redirectToPage("/dashboard")}
+        onRedirectToLogin={() => redirectToPage("/login")}
         appearance={signupAppearance}
       />
     </div>

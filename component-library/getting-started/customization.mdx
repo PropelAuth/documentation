@@ -11,11 +11,14 @@ You can pass an Appearance object to an individual component, or pass it in to t
 
 ```jsx
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 import { Signup } from "@propelauth/react";
 
 export default function SignupPage() {
-  const navigate = useNavigate();
+  function redirectToPage(page) {
+    // This is dependent on your framework
+    // For Next.js, you'll want router.push(page)
+    // for React Router, it's navigate(page)
+  }
 
   const signupAppearance = {
     options: {
@@ -31,8 +34,8 @@ export default function SignupPage() {
   return (
     <div>
       <Signup
-        onSignupCompleted={() => navigate("/dashboard")}
-        onRedirectToLogin={() => navigate("/login")}
+        onSignupCompleted={() => redirectToPage("/dashboard")}
+        onRedirectToLogin={() => redirectToPage("/login")}
         appearance={signupAppearance}
       />
     </div>
@@ -86,11 +89,14 @@ You can customize elements in a variety of ways. If the value of an element is a
 
 ```jsx
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 import { Signup, InputProps } from "@propelauth/react";
 
 export default function SignupPage() {
-  const navigate = useNavigate();
+  function redirectToPage(page) {
+    // This is dependent on your framework
+    // For Next.js, you'll want router.push(page)
+    // for React Router, it's navigate(page)
+  }
 
   const signupAppearance = {
     elements: {
@@ -114,8 +120,8 @@ export default function SignupPage() {
   return (
     <div>
       <Signup
-        onSignupCompleted={() => navigate("/dashboard")}
-        onRedirectToLogin={() => navigate("/login")}
+        onSignupCompleted={() => redirectToPage("/dashboard")}
+        onRedirectToLogin={() => redirectToPage("/login")}
         appearance={signupAppearance}
       />
     </div>
