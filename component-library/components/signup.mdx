@@ -71,14 +71,21 @@ export default function SignupPage() {
 
 <ParamField path="onSignupCompleted" type="VoidFunction" required>
   Function that gets invoked when the user completes the signup process.
+  Because there may be additional steps the user needs to take, like confirming their email,
+  you should redirect the user to your login component here, however, you can put whatever else you want here, like logging the signup to your analytics provider.
 </ParamField>
 
 <ParamField path="onRedirectToLogin" type="VoidFunction">
   Function that redirects the user to Login.
+  This is called when a user clicks "Already have an account? Log in" on your Signup page.
+  If you don't specify this function, we will hide that link.
 </ParamField>
 
 <ParamField path="onRedirectToPasswordlessLogin" type="VoidFunction">
   Function that redirects the user to Passwordless Login.
+  This is called when a user clicks "Sign in with Magic Link" on your Login page.
+  If you have passwordless login enabled (which is the default), you must specify this. Otherwise, users that click the
+  button won't be redirected anywhere.
 </ParamField>
 
 <ParamField path="appearance" type="SignupAppearance">

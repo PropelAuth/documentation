@@ -39,11 +39,6 @@
       "url": "example-apps"
     },
     {
-      "name": "Component Library",
-      "icon": "code",
-      "url": "component-library"
-    },
-    {
       "name": "Full Reference",
       "icon": "square-terminal",
       "url": "reference"
@@ -121,7 +116,6 @@
           "pages": [
             "component-library/getting-started/usage",
             "component-library/getting-started/customization",
-            "component-library/getting-started/examples"
           ]
         },
         {

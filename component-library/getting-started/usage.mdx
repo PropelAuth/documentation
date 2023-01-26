@@ -5,30 +5,30 @@ description: "This section shows you how to install and use the PropelAuth compo
 
 ## Installation
 
-To get started, you'll first need to install the [@PropelAuth/react](https://github.com/PropelAuth/react) library. You'll also need a set of underlying elements for the component library to use. This could be our official [Base Elements](https://github.com/PropelAuth/base-elements) or an Adapter Library like [MUI](/component-library/adapter-libraries/mui) (coming soon).
+To get started, you'll first need to install the component library branch of [@PropelAuth/react](https://github.com/PropelAuth/react) library. You'll also need a set of underlying elements for the component library to use. This could be our official [Base Elements](https://github.com/PropelAuth/base-elements) or an Adapter Library like [MUI](/component-library/adapter-libraries/mui) (coming soon).
 
 ```shell
-npm install @propelauth/react @propelauth/base-elements
+npm install @propelauth/react@2.1.0-beta.1 @propelauth/base-elements
 ```
 
 ## Usage
 
-Once installation is complete, you'll need to wrap your application with the `ComponentLibraryProvider`. Be sure to pass in the elements you'd like to use with the `elements` prop. You can also specify an `appearance` prop in the provider to apply [customizations](/component-library/getting-started/customization) to elements globally.
+Once installation is complete, you'll need to wrap your application with the `BetaComponentLibraryProvider`. Be sure to pass in the elements you'd like to use with the `elements` prop. You can also specify an `appearance` prop in the provider to apply [customizations](/component-library/getting-started/customization) to elements globally.
 
 ```jsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { AuthProvider, ComponentLibraryProvider } from "@propelauth/react";
+import { AuthProvider, BetaComponentLibraryProvider } from "@propelauth/react";
 import { BaseElements } from "@propelauth/base-elements";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <AuthProvider authUrl={process.env.REACT_APP_AUTH_URL}>
-    <ComponentLibraryProvider elements={BaseElements}>
+    <BetaComponentLibraryProvider elements={BaseElements}>
       <App />
-    </ComponentLibraryProvider>
+    </BetaComponentLibraryProvider>
   </AuthProvider>
 );
 ```
@@ -37,7 +37,6 @@ Then, in our `App` component, we can use the [LoginManager](/component-library/c
 
 ```jsx
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 import { LoginManager } from "@propelauth/react";
 
 export default function App() {

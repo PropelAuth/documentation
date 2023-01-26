@@ -7,7 +7,7 @@ description: "This section shows you how you can customize Components and Elemen
 
 Every component can be deeply customized with the _Appearance_ object. The Appearance object lets you specify options, as well as apply styles and classes to elements in a component. You can even completely override elements if you'd like.
 
-You can pass an Appearance object to an individual component, or pass it in to the `ComponentLibraryProvider` to customize elements globally. Let's look at an example of a Signup component that's customized with the `appearance` prop:
+You can pass an Appearance object to an individual component, or pass it in to the `BetaComponentLibraryProvider` to customize elements globally. Let's look at an example of a Signup component that's customized with the `appearance` prop:
 
 ```jsx
 import * as React from "react";
@@ -87,6 +87,8 @@ type SignupAppearance = {
 
 You can customize elements in a variety of ways. If the value of an element is a string, that string will be applied as a class name to the element. If it's an object containing CSS properties, those CSS properties will get applied as inline styles. If the value is a React component, that component will override the existing element. Lastly, if the value is null, it won't render the element.
 
+Let's look at some examples where we customize elements using this code snippet:
+
 ```jsx
 import * as React from "react";
 import { Signup, InputProps } from "@propelauth/react";
@@ -100,20 +102,7 @@ export default function SignupPage() {
 
   const signupAppearance = {
     elements: {
-      // CSS properties
-      Container: {
-        backgroundColor: "gray",
-        border: "1px solid #000",
-      },
-
-      // Custom class
-      SubmitButton: "blue-btn",
-
-      // Hide with null
-      EmailLabel: null,
-
-      // Override component
-      EmailInput: CustomInput,
+        // TODO
     },
   };
 
@@ -127,8 +116,65 @@ export default function SignupPage() {
     </div>
   );
 }
+```
+
+### Customize with CSS properties
+
+Each element can take in an object with CSS properties. The style will automatically be applied to that element.
+
+```jsx
+  const signupAppearance = {
+    elements: {
+      // CSS properties
+      Container: {
+        backgroundColor: "gray",
+        border: "1px solid #000",
+      },
+    },
+  };
+```
+
+### Customize with custom classes
+
+Each element can take in a string with class names.
+
+```jsx
+  const signupAppearance = {
+    elements: {
+      // Custom class
+      SubmitButton: "blue-btn",
+    },
+  };
+```
+
+### Customize with a custom component
+
+You can override components with your own.
+
+```jsx
+  const signupAppearance = {
+    elements: {
+      // Override component
+      EmailInput: (props) => <CustomInput {...props} />,
+    },
+  };
+
+// ...
 
 function CustomInput(props: InputProps) {
   return <input {...props} id={"custom-input"} />;
 }
+```
+
+### Hide an element
+
+Passing in null will hide an element.
+
+```jsx
+  const signupAppearance = {
+    elements: {
+      // Hide with null
+      EmailLabel: null,
+    },
+  };
 ```
