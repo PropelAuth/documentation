@@ -108,6 +108,32 @@
       "pages": ["example-apps/apps"]
     },
     {
+      "group": "Component Library",
+      "pages": [
+        "component-library/overview",
+        {
+          "group": "Getting Started",
+          "pages": [
+            "component-library/getting-started/usage",
+            "component-library/getting-started/customization"
+          ]
+        },
+        {
+          "group": "Components",
+          "pages": [
+            "component-library/components/login-manager",
+            "component-library/components/signup",
+            "component-library/components/login-passwordless",
+            "component-library/components/forgot-password"
+          ]
+        },
+        {
+          "group": "Adapter Libraries",
+          "pages": ["component-library/adapter-libraries/mui"]
+        }
+      ]
+    },
+    {
       "group": "Full Reference",
       "pages": [
         "reference/overview",
@@ -189,7 +215,7 @@
   },
   "analytics": {
     "amplitude": {
-        "apiKey": "df4703100596a0e25b85de9b4630369f"
+      "apiKey": "df4703100596a0e25b85de9b4630369f"
     }
   }
 }
