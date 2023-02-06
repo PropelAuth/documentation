@@ -23,9 +23,9 @@ To initialize the PropelAuth library in `lib/propelauth.js`, enter the code
 below, making sure to include the ***newline characters*** in your **verifierKey**:
 
 ```js
-import { initAuth } from "@propelauth/express";
+import { initBaseAuth } from "@propelauth/node";
 
-const propelauth = initAuth({
+const propelauth = initBaseAuth({
   // If true, error messages returned to the user will be detailed.
   // It's useful for debugging, but a good idea to turn off in production.
   debugMode: true,
