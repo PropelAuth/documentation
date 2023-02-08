@@ -47,6 +47,11 @@
       "name": "Blog",
       "icon": "newspaper",
       "url": "https://www.propelauth.com/blog"
+    },
+    {
+      "name": "Components (BETA)",
+      "icon": "puzzle-piece",
+      "url": "component-library"
     }
   ],
   "navigation": [
@@ -126,10 +131,6 @@
             "component-library/components/login-passwordless",
             "component-library/components/forgot-password"
           ]
-        },
-        {
-          "group": "Adapter Libraries",
-          "pages": ["component-library/adapter-libraries/mui"]
         }
       ]
     },

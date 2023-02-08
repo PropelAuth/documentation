@@ -5,10 +5,10 @@ description: "This section shows you how to install and use the PropelAuth compo
 
 ## Installation
 
-To get started, you'll first need to install the component library branch of [@PropelAuth/react](https://github.com/PropelAuth/react) library. You'll also need a set of underlying elements for the component library to use. This could be our official [Base Elements](https://github.com/PropelAuth/base-elements) or an Adapter Library like [MUI](/component-library/adapter-libraries/mui) (coming soon).
+To get started, you'll first need to install the component library branch of [@PropelAuth/react](https://github.com/PropelAuth/react) library. You'll also need a set of underlying elements for the component library to use. This could be our official [Base Elements](https://github.com/PropelAuth/base-elements) or an Adapter Library like MUI (coming soon).
 
 ```shell
-npm install @propelauth/react@2.1.0-beta.1 @propelauth/base-elements
+npm install @propelauth/react@2.1.0-beta.2 @propelauth/base-elements
 ```
 
 ## Usage
@@ -21,6 +21,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { AuthProvider, BetaComponentLibraryProvider } from "@propelauth/react";
 import { BaseElements } from "@propelauth/base-elements";
+import "@propelauth/base-elements/dist/default.css"
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
