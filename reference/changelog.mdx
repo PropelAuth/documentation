@@ -1,0 +1,106 @@
+---
+title: "Changelog"
+description: A list of user-facing changes made to the PropelAuth product
+---
+
+This changelog includes important updates to PropelAuth. For larger features, we'll provide links where you can find more details.
+For any item with the **Beta** label, if you are interested in testing it out, please email us at [support@propelauth.com](mailto:support@propelauth.com).
+
+### 2022-12-28
+
+| Category | Description |
+|--|----|
+| **Release** | Added backend support for [Rust](https://www.propelauth.com/post/rust-authentication-with-propelauth) with support for Axum and Actix. |
+| **Feature** | Added APIs to make it easier to programmatically manage your users (managing/deleting orgs, updating user metadata, etc.) |
+| **Feature** | Added a new webhook on user login. |
+| **Bugfix** | Cleaned up the workflow around verifying a domain. You can now verify ownership via a TXT record on a special subdomain, instead of using the root domain. |
+| **Beta** | User login duration can be configured now. You can either specify an absolute amount of time the user is logged in, or a period of inactivity, after which they will be logged out. |
+
+### 2022-12-05
+
+| Category | Description |
+|--|----|
+| **Feature** | Usernames now support unicode characters. |
+| **Feature** | Added AuthProviderForTest to our React library that's useful for testing (thanks to [mykeels](https://github.com/mykeels) for the suggestion). |
+| **Feature** | Added an option for copying user IDs out of the dashboard. |
+| **Bugfix** | Updated copy on the default create org page |
+
+### 2022-11-18
+
+| Category | Description |
+|--|----|
+| **Release** | [Custom Roles & Permissions (RBAC)](https://www.propelauth.com/post/adding-customizable-roles-and-permissions) is live! This feature enables you to create custom roles and permissions. We also updated all our libraries to add advanced authorization with these roles and permissions. |
+| **Feature** | Added the concept of an [**active organization**](https://www.propelauth.com/post/react-hooks-for-multi-tenancy-and-authorization-w-propelauth) (see getActiveOrgFn). For users in multiple organizations, this allows you to set the organization they are operating within and works with the roles and permissions update. |
+| **Beta** | Added option to disable signups from personal email domains (e.g. gmail.com, yahoo.com, etc). |
+
+### 2022-10-28
+
+| Category | Description |
+|--|----|
+| **Feature** | Added the ability to disable 2FA/MFA for your users either programmatically or through our dashboard |
+| **Feature** | Added the ability to [customize what you call "Organizations"](https://www.propelauth.com/post/custom-organization-naming). This will automatically update all the hosted UIs and user facing error messages. |
+| **Feature** | When logging a user in, you can specify where to redirect the user outside of the default redirect URL. |
+| **Bugfix** | You can now create organizations even if the feature is disabled. This allows for a smoother process of migrating to organizations if you are already live. |
+| **Beta** | Added more options to the concept of organizations. You can require that your users are in at least one organization, require that users must log in directly to their organization, and more. Reach out if you'd like to try this out. |
+| **Beta** | Added more granular controls over which domains/subdomains can access authentication information. This includes creating staging environments that can be reached by localhost, having a small set of subdomains that are NOT allowed to check if a user is logged in (for vendors you might not trust), and more. |
+
+### 2022-09-30
+
+| Category | Description |
+|--|----|
+| **Release** | [Self-service SAML](https://www.propelauth.com/post/propelauth-launches-self-service-saml) is live! This feature allows your customers to log in to your product using their existing identity provider, like Okta, Google, OneLogin, and more. |
+| **Feature** | Added support for Azure AD to our list of SAML IDPs, including documentation for your customers |
+| **Feature** | Added additional APIs for our backend libraries for enabling/disabling/deleting users. Also handles logging users out remotely. |
+
+### 2022-09-16
+
+| Category | Description |
+|--|----|
+| **Feature** | Added new APIs for disabling, enabling, and deleting users. Disabling/Deleting a user will both log them out and prevent them from logging back in. |
+| **Feature** | Added option for your users to test their SAML connections before enabling them. |
+| **Feature** | Added new APIs for explicitly picking which organizations can login via SAML. This can also be done via the dashboard, or you can enable it globally for all organizations.  |
+| **Bugfix** | @propelauth/react library was re-rendering more than it needed to. |
+| **Release** | Created <a href="https://demo.propelauth.com" target="_blank">demo site</a> where you can experiment with different themes without needing to sign up. |
+
+### 2022-08-26
+
+| Category | Description |
+|--|----|
+| **Release** | [Release of our new hosted authentication pages](https://www.propelauth.com/post/updates-to-our-hosted-auth-pages). Includes more customizations, more themes, and more self-service options for your users. |
+| **Feature** | Added new APIs for [migrating users from an external system](https://docs.propelauth.com/overview/migrations/). |
+| **Feature** | Added new APIs for manually managing organizations and RBAC. |
+| **Feature** | Released v1.2.4 of [@propelauth/javascript](https://github.com/PropelAuth/javascript) which prevents fetching auth information if we've fetched recently. |
+| **Beta** | Added Okta and JumpCloud support within our SAML beta. |
+
+### 2022-08-12
+
+| Category | Description |
+|--|----|
+| **Feature** | Our hosted authentication pages can now be embedded in your application via an iframe. |
+| **Feature** | Added more options for you to manage your users directly in your dashboard, like resending confirmation emails or manually confirming the email. |
+| **Feature** | Allow your users to revoke organization invitations and see invitations that expired. |
+| **Feature** | You can now search directly for a user by ID (in the dashboard). |
+| **Beta** | Added self-service wizards for existing IDPs within our SAML beta. This walks your users through the steps of setting up a SAML connection. |
+
+### 2022-07-29
+
+| Category | Description |
+|--|----|
+| **Feature** | Allow subdomains of your application to also fetch authentication information. In other words, if you set https://example.com as your application URL, you can now set up additional authenticated applications at any subdomain like https://app.example.com. |
+| **Feature** | Added option to disallow users from creating their own organizations. They can still manage the organization and invite new users, but it allows you to create and setup organizations on their behalf. |
+| **Bugfix** | Added `event_type` to webhooks to make it easier to distinguish |
+| **Bugfix** | Added additional options to verify your domain name |
+| **Beta** | Added non-hierarchical roles (RBAC) support to our [custom roles](https://docs.propelauth.com/overview/rbac/) beta |
+
+### 2022-07-15
+
+| Category | Description |
+|--|----|
+| **Release** | Added `@propelauth/node` library to support serverless use cases or frameworks that don't accept Express middleware. |
+| **Feature** | Our backend libraries can now check org membership by **name** instead of just **id**, allowing for better subdomain-per-customer support. |
+| **Feature** | You can now manage your user's organizations through our dashboard, instead of just programmatically. |
+| **Bugfix** | Allow you to submit logos as SVGs. |
+
+### And more...
+
+If you have any questions about features or changes before July 15, please reach out at [support@propelauth.com](mailto:support@propelauth.com).

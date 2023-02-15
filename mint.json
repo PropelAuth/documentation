@@ -203,7 +203,8 @@
             "reference/social-login/slack",
             "reference/social-login/linkedin"
           ]
-        }
+        },
+        "reference/changelog"
       ]
     }
   ],
