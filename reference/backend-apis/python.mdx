@@ -319,8 +319,9 @@ Successful response:
 ## Create User
 
 ```python
-# auth object somes from init_base_auth
+# auth object comes from init_base_auth
 auth.create_user(email, email_confirmed=False, send_email_to_confirm_email_address=True,
+                 ask_user_to_update_password_on_login=False,
                  password=None, username=None, first_name=None, last_name=None)
 ```
 
@@ -329,6 +330,7 @@ auth.create_user(email, email_confirmed=False, send_email_to_confirm_email_addre
 | email                               | The user's email address                                                                                                                                   |
 | email_confirmed                     | Whether the email address should start off as already confirmed. If false, the user is required to confirm the email address before they sign in.          |
 | send_email_to_confirm_email_address | Whether we should send an email immediately to confirm the user's email address. If false, the user will get a confirmation email when they first sign in. |
+| ask_user_to_update_password_on_login  | Whether we should require the user to set or update their password on initial login. Default false |
 | password                            | Optional password. If unset, the user can set it themselves via their account page                                                                         |
 | username                            | Optional username. Can only be used if **username** is enabled in your user schema                                                                         |
 | first_name                          | Optional first name. Can only be used if **name** is enabled in your user schema                                                                           |
@@ -354,6 +356,7 @@ It is also possible to provide an existing identifier, and we will store and ret
 auth.migrate_user_from_external_source(email, email_confirmed,
                                        existing_user_id=None, existing_password_hash=None,
                                        existing_mfa_base32_encoded_secret=None,
+                                       ask_user_to_update_password_on_login=False,
                                        enabled=None, first_name=None, last_name=None, username=None)
 ```
 
@@ -364,6 +367,7 @@ auth.migrate_user_from_external_source(email, email_confirmed,
 | existing_user_id                   | (Optional) The user's ID in the existing system. This ID will be stored on the user as a `legacy_user_id` and it is present everywhere user_id's are (e.g. fetching user metadata or validating a user's token). |
 | existing_password_hash             | (Optional) The user's hashed password. We support both bcrypt and argon2 password hashes.                                                                                                                        |
 | existing_mfa_base32_encoded_secret | (Optional) The user's MFA secret, base32 encoded. If specified the user will have MFA enabled by default.                                                                                                        |
+| ask_user_to_update_password_on_login  | (Optional) Whether we should require the user to set or update their password on initial login. Default false |
 | enabled                            | (Optional) Whether or not the user can login                                                                                                                                                                     |
 | username                           | Optional username. Can only be used if **username** is enabled in your user schema                                                                                                                               |
 | first_name                         | Optional first name. Can only be used if **name** is enabled in your user schema                                                                                                                                 |
@@ -427,6 +431,19 @@ auth.update_user_metadata(user_id, username=None, first_name=None, last_name=Non
 | username   | Optional username. Can only be used if **username** is enabled in your user schema                                                                         |
 | first_name | Optional first name. Can only be used if **name** is enabled in your user schema                                                                           |
 | last_name  | Optional last name. Can only be used if **name** is enabled in your user schema                                                                            |
+
+## Update User Password
+
+```python
+# auth object somes from init_base_auth
+# Returns true if it was successful, false if the user was not found
+auth.update_user_password(user_id, password, ask_user_to_update_password_on_login=False)
+```
+
+| Argument   | Description                                                                                                                                                |
+|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| password | The user's new password |
+| ask_user_to_update_password_on_login | (Optional) Whether we should require the user to set or update their password the next time they visit your product. Default false |
 
 ## Delete user
 
