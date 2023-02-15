@@ -190,7 +190,7 @@ will also take in **req_to_org_id**, and will set both [current_user](#current-u
 ## Fetch user metadata by id
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 auth.fetch_user_metadata_by_user_id(user_id, include_orgs=False)
 ```
 
@@ -233,7 +233,7 @@ Successful response:
 ## Fetch user metadata by email
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 auth.fetch_user_metadata_by_email(email, include_orgs=False)
 ```
 
@@ -242,7 +242,7 @@ Successful response is the same as [fetch_user_metadata_by_user_id](#fetch-user-
 ## Fetch user metadata by username
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 auth.fetch_user_metadata_by_username(email, include_orgs=False)
 ```
 
@@ -251,7 +251,7 @@ Successful response is the same as [fetch_user_metadata_by_user_id](#fetch-user-
 ## Batch fetch users by ids
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 user_id_to_metadata = auth.fetch_batch_user_metadata_by_user_ids([
     "1be238f3-5908-4c51-b3bf-e53dd763047e",
     "beb00acf-6e48-435d-8388-3758607ec01b",
@@ -307,7 +307,7 @@ user_id_to_metadata = auth.fetch_batch_user_metadata_by_user_ids([
 ## Batch fetch users by emails
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 auth.fetch_batch_user_metadata_by_emails(["a@example.com", "b@example.com"], include_orgs=True)
 ```
 
@@ -316,7 +316,7 @@ Successful response is the same as [Batch fetch users by ids](#batch-fetch-users
 ## Batch fetch users by usernames
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 auth.fetch_batch_user_metadata_by_usernames(["usera", "userb", "userc"], include_orgs=True)
 ```
 
@@ -325,7 +325,7 @@ Successful response is the same as [Batch fetch users by ids](#batch-fetch-users
 ## Search for users
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 auth.fetch_users_by_query(page_size=10, page_number=0, order_by=UserQueryOrderBy.CREATED_AT_ASC,
                           email_or_username=None, include_orgs=False)
 ```
@@ -359,7 +359,7 @@ Successful response:
 ## Fetch users in organization
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 auth.fetch_users_in_org(org_id, page_size=10, page_number=0, include_orgs=False)
 ```
 
@@ -391,7 +391,7 @@ Successful response:
 ## Create User
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 auth.create_user(email, email_confirmed=False, send_email_to_confirm_email_address=True,
                  ask_user_to_update_password_on_login=False,
                  password=None, username=None, first_name=None, last_name=None)
@@ -424,7 +424,7 @@ It is also possible to provide an existing identifier, and we will store and ret
 
 
 ```py
-# auth object somes from init_auth
+# auth object comes from init_auth
 auth.migrate_user_from_external_source(email, email_confirmed,
                                        existing_user_id=None, existing_password_hash=None,
                                        existing_mfa_base32_encoded_secret=None,
@@ -458,7 +458,7 @@ Successful response:
 Creates a magic link that a user can use to log in. Use this API if you'd prefer to send the magic link to the customer yourself, otherwise, we have [Create User](#create-user) which will email them directly.
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 auth.create_magic_link(email, redirect_to_url=None, expires_in_hours=None, create_new_user_if_one_doesnt_exist=None)
 ```
 
@@ -480,7 +480,7 @@ Successful response:
 ## Update User Email
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
 auth.update_user_email(user_id, new_email, require_email_confirmation)
 ```
@@ -493,7 +493,7 @@ auth.update_user_email(user_id, new_email, require_email_confirmation)
 ## Update User Metadata
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
 auth.update_user_metadata(user_id, username=None, first_name=None, last_name=None)
 ```
@@ -507,7 +507,7 @@ auth.update_user_metadata(user_id, username=None, first_name=None, last_name=Non
 ## Update User Password
 
 ```python
-# auth object somes from init_base_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
 auth.update_user_password(user_id, password, ask_user_to_update_password_on_login=False)
 ```
@@ -520,7 +520,7 @@ auth.update_user_password(user_id, password, ask_user_to_update_password_on_logi
 ## Delete user
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
 auth.delete_user(user_id)
 ```
@@ -530,7 +530,7 @@ auth.delete_user(user_id)
 If successful, the user is logged out and unable to log back in.
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
 auth.disable_user(user_id)
 ```
@@ -540,7 +540,7 @@ auth.disable_user(user_id)
 If successful, the user is able to log back in again.
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
 auth.enable_user(user_id)
 ```
@@ -548,7 +548,7 @@ auth.enable_user(user_id)
 ## Fetch an organization
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 org = auth.fetch_org(org_id)
 ```
 
@@ -563,7 +563,7 @@ Successful response:
 ## Fetch all organizations
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 auth.fetch_org_by_query(page_size=10, page_number=0, order_by=OrgQueryOrderBy.CREATED_AT_ASC)
 ```
 
@@ -593,7 +593,7 @@ Successful response:
 ## Create Organization
 
 ```py
-# auth object somes from init_auth
+# auth object comes from init_auth
 auth.create_org(name)
 ```
 
@@ -612,7 +612,7 @@ Successful response:
 ## Add user to organization
 
 ```py
-# auth object somes from init_auth
+# auth object comes from init_auth
 auth.add_user_to_org(user_id, org_id, role)
 ```
 
@@ -631,7 +631,7 @@ Successful response:
 ## Delete user
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
 auth.delete_user(user_id)
 ```
@@ -641,7 +641,7 @@ auth.delete_user(user_id)
 If successful, the user is logged out and unable to log back in.
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
 auth.disable_user(user_id)
 ```
@@ -651,7 +651,7 @@ auth.disable_user(user_id)
 If successful, the user is able to log back in again.
 
 ```python
-# auth object somes from init_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
 auth.enable_user(user_id)
 ```
