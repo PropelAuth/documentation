@@ -468,6 +468,7 @@ function createUser(createUserRequest: CreateUserRequest): Promise<User>
 | email                           | The user's email address                                                                                                                                   |
 | emailConfirmed                  | Whether the email address should start off as already confirmed. If false, the user is required to confirm the email address before they sign in.          |
 | sendEmailToConfirmEmailAddress  | Whether we should send an email immediately to confirm the user's email address. If false, the user will get a confirmation email when they first sign in. |
+| askUserToUpdatePasswordOnLogin  | Whether we should require the user to set or update their password on initial login. Default false |
 | password                        | Optional password. If unset, the user can set it themselves via their account page                                                                         |
 | username                        | Optional username. Can only be used if **username** is enabled in your user schema                                                                         |
 | firstName                       | Optional first name. Can only be used if **name** is enabled in your user schema                                                                           |
@@ -495,6 +496,7 @@ function migrateUserFromExternalSource(migrateUserFromExternalSourceRequest: Mig
 |--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | email                          | The user's email address                                                                                                                                                                                      |
 | emailConfirmed                 | Whether the email address should start off as already confirmed. If false, the user is required to confirm the email address before they sign in.                                                             |
+| askUserToUpdatePasswordOnLogin  | Whether we should require the user to set or update their password on initial login. Default false |
 | existingUserId                 | (Optional) The user's ID in the existing system. This ID will be stored on the user as a `legacyUserId` and it is present everywhere userId's are (e.g. fetching user metadata or validating a user's token). |
 | existingPasswordHash           | (Optional) The user's hashed password. We support both bcrypt and argon2 password hashes.                                                                                                                     |
 | existingMfaBase32EncodedSecret | (Optional) The user's MFA secret, base32 encoded. If specified the user will have MFA enabled by default.                                                                                                     |
@@ -559,6 +561,19 @@ function updateUserMetadata(userId: string, updateUserMetadataRequest: UpdateUse
 | firstName | Optional first name. Can only be used if **name** is enabled in your user schema                                                                           |
 | lastName  | Optional last name. Can only be used if **name** is enabled in your user schema                                                                            |
 
+## Update Password
+
+```ts
+// Returns true if it was successful, false if the user was not found
+function updateUserPassword(userId: string, updateUserPasswordRequest: UpdateUserPasswordRequest): Promise<boolean>
+```
+
+| Argument  | Description                                                                                                                                                |
+|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| password | The users new password |
+| askUserToUpdatePasswordOnLogin  | Whether we should require the user to set or update their password the next time they visit your product. Default false |
+
++Returns true if the user's password was updated.
 
 ## Delete user
 
