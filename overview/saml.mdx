@@ -17,39 +17,37 @@ people to give access.
 
 ### SAML Setup Guide
 
+We're going to set up our PropelAuth Project to enable Acme Co to set up a SAML connection.
 
-
-1. In the Organization Settings for your project, make sure that SAML is enabled and that all orgs can setup SAML.
+1. In the Organization Settings for your project, make sure that SAML is enabled and that all orgs can setup SAML. You can also enable SAML on a per org basis by enabling the Can setup SAML option in the organization settings
 
 ![organization settings](/images/saml-setup-1.png)
 
-2. Under Users, make sure that there is at least one test user with Admin or Owner priviledges.
-
-![test user](/images/saml-setup-2.png)
-
-3. On the dashboard for your project, click the "View Org Page" button under the Test Environment.
+2. On the dashboard for your project, click the "View Org Page" button under the Test Environment. When you click this, you are now viewing the organization management page for your product. In other words, you are now acting as if you were an employee at Acme Co. If you haven't done it yet, you'll need to sign up before you can view the org page.
 
 ![dashboard](/images/saml-setup-3.png)
 
-4. Click the Create Organization button.
+3. Click the Create Organization button.
 
 ![create organization](/images/saml-setup-4.png)
 
-5. Write a name for the organization, and click Create Organization.
+4. Write a name for the organization, and click Create Organization.
 
-![organization game](/images/saml-setup-5.png)
+![organization game](/images/saml-setup-9.png)
 
-6. On the page for the new Organization, click the Settings button, and click Enable SAML.
+5. On the page for the new Organization, click the Settings button, and click Enable SAML.
 
-![enable saml](/images/saml-setup-6.png)
+![enable saml](/images/saml-setup-10.png)
 
-7. Click the option for the SAML Identity Provider you would like to use.
+6. Click the option for the SAML Identity Provider you would like to use.
 
 ![choose identity provider](/images/saml-setup-7.png)
 
-8. Follow the set by step instructions we have provided for the Identity Provider of choice.
+7. Follow the set by step instructions we have provided for the Identity Provider of choice.
 
 ![follow IDP instructions](/images/saml-setup-8.png)
+
+As an employee of Acme Co, I was given step by step instructions on how to connect my IDP. I can then manage my employees access to your product easily. As the implementor, all you have to do is enable SAML for their organization, and PropelAuth takes care of the rest.
 
 
 ### SAML Example Use
