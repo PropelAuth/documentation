@@ -1,0 +1,35 @@
+---
+title: "SAML"
+sidebarTitle: "SAML / Enterprise SSO"
+---
+
+PropelAuth's [SAML SSO](https://www.propelauth.com/post/what-does-saml-actually-mean) support allows your users to
+connect their organizations their own identity provider (e.g. Okta, Azure AD, JumpCloud, etc).
+
+As an example, lets say you have a customer "Acme Co". Acme uses
+Okta as their identity provider, meaning that all employees at the company
+have an account with Okta. New employees are onboarded to Okta and
+exiting employees are removed.
+
+A SAML connection between your product and Acme allows employees at Acme to sign in to your product with their existing work accounts.
+
+![saml login](/images/saml-login.png)
+
+## No need to write any extra code
+
+PropelAuth's libraries have a concept of an [organization](/overview/organizations).
+Users are added to these organizations via invitations or joining by their domain.
+
+One of the best things about our SAML integration, is your code doesn't need to change at all when you close your first
+customer that needs it. SAML is an implementation detail of how an organization
+manages their users within your product. Any code you write that deals with organizations will work, regardless of
+the method that organization uses to manage its members.
+
+## Who can set up SAML?
+
+With the click of a button, you can allow all of your organizations to set up
+SAML connections with you. However, you may not want that if you consider SAML
+to be an enterprise/paid feature.
+
+You can also select which organizations can use SAML either in your dashboard or
+programmatically via our APIs.
