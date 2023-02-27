@@ -56,56 +56,62 @@
   ],
   "navigation": [
     {
-      "group": "Overview & Concepts",
+      "group": "Concepts",
       "pages": [
         "overview",
+        "overview/hosted-pages",
+        "overview/frontend-integration",
+        "overview/backend-integration",
         "overview/organizations",
         "overview/roles",
+        "overview/emails"
+      ]
+    },
+    {
+      "group": "Advanced Features",
+      "pages": [
         "overview/saml",
         "overview/user-schema",
         "overview/2fa",
         "overview/disable-public-signups",
         "overview/slack-notifications",
         "overview/webhooks",
-        "overview/migrate-existing-users",
+        "overview/migrate-existing-users"
+      ]
+    },
+    {
+      "group": "Under the hood",
+      "pages": [
         "overview/how-our-auth-works",
         "overview/access-tokens",
-        "overview/emails",
         "overview/faq"
       ]
     },
     {
-      "group": "Getting Started",
+      "group": "Guides",
       "pages": [
-        "getting-started/begin",
-        {
-          "group": "Integrate your frontend",
-          "pages": [
-            "getting-started/frontend-integration",
-            "getting-started/frontend-integration/react",
-            "getting-started/frontend-integration/nextjs",
-            "getting-started/frontend-integration/webflow",
-            "getting-started/frontend-integration/javascript"
-          ]
-        },
-        {
-          "group": "Integrate your backend",
-          "pages": [
-            "getting-started/backend-integration",
-            "getting-started/backend-integration/actix",
-            "getting-started/backend-integration/axum",
-            "getting-started/backend-integration/cloudflare",
-            "getting-started/backend-integration/django",
-            "getting-started/backend-integration/express",
-            "getting-started/backend-integration/fastapi",
-            "getting-started/backend-integration/flask",
-            "getting-started/backend-integration/nextjs-api-routes",
-            "getting-started/backend-integration/node",
-            "getting-started/backend-integration/python",
-            "getting-started/backend-integration/rust"
-          ]
-        },
+        "getting-started/quickstart-fe",
+        "getting-started/quickstart-be",
+        "getting-started/quickstart-requests",
         "getting-started/deploy-to-prod"
+      ]
+    },
+    {
+      "group": "Configuration",
+      "pages": [
+        "getting-started/ui-customization",
+        "getting-started/authentication-options",
+        "getting-started/user-metadata"
+      ]
+    },
+    {
+      "group": "Organizations (B2B)",
+      "pages": [
+        "getting-started/organizations",
+        "getting-started/rbac",
+        "getting-started/authorization-fe",
+        "getting-started/authorization-be",
+        "getting-started/saml"
       ]
     },
     {
