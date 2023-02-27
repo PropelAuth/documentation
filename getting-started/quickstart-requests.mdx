@@ -1,0 +1,73 @@
+---
+title: "Sending Authenticated Requests"
+---
+
+In the last two quickstart guides, we set up our frontend and backend. Now, we're going to make a request from
+our frontend to our backend.
+
+<Tabs>
+  <Tab title="React">
+    ## Make an authenticated request to the backend
+
+    To make an `authenticated` request on behalf of your user,
+    you'll need to provide an access token. Access tokens are available from
+    [withAuthInfo](/reference/frontend-apis/react#withauthinfo) (or similar functions, like `useAuthInfo`).
+    You provide it in the request in the `Authorization` header, like so:
+
+    ```
+    Authorization: Bearer YOUR_ACCESS_TOKEN
+    ```
+
+    Let's update our component so it makes an authenticated fetch request to `/api/whoami`:
+
+    ```jsx
+    function whoAmI(accessToken) {
+      return fetch("/api/whoami", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    }
+
+    const YourApp = withAuthInfo((props) => {
+      const [serverResponse, setServerResponse] = useState(undefined)
+
+      const fetchWhoAmI = () => {
+        whoAmI(props.accessToken).then(setServerResponse)
+      }
+
+      return <div>
+        {props.isLoggedIn ?
+          <p>You are logged in as {props.user.email}</p> :
+          <p>You are not logged in</p>}
+        <b>Server Response:</b>
+        <pre>{serverResponse}</pre>
+      </div>;
+    });
+    ```
+
+  </Tab>
+  <Tab title="Javascript / Typescript">
+    Go to the **Frontend Integration** section of your dashboard
+  </Tab>
+  <Tab title="Webflow / No-code tools">
+    Go to the **Frontend Integration** section of your dashboard
+  </Tab>
+</Tabs>
+
+When you are logged in, the request is made to the backend successfully:
+
+TODO: picture
+
+And when you aren't, the request fails:
+
+TODO: picture
+
+## Summary
+
+You know have all the building blocks you need to build an application. You can get the users information on the frontend,
+you can make authenticated requests to the backend, and you can protect your API routes so only authenticated users can access them.
+
+This is just the start of what you can do - in the next few guides, we'll look at how to configure your authentication experience
+and add support for B2B/multi-tenant applications.

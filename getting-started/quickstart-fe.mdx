@@ -1,0 +1,143 @@
+---
+title: "Quick Start"
+---
+
+In this guide, we're going to quickly set up signup, login, and account pages with PropelAuth.
+Then we'll hook up our frontend to display the current user's information.
+
+## Set up Signup, Login, and Account pages
+
+After signing up for PropelAuth, create a project. A project includes everything you need to set up authentication,
+like [UIs](/overview/hosted-pages), a dashboard for managing your users, [transactional emails](/overview/emails), and more.
+
+Once we've created a project, we're actually done with this step, since PropelAuth manages our UIs for us (or you check out our [component library](/component-library) to manage it yourself).
+
+On your dashboard, you'll see that you now have a test environment to play around with:
+
+![test env enabled](/images/envs.png)
+
+Click **View Login Page** and you'll be directed to the login page for your application.
+
+<Frame caption="This is what your users will see when they go to log in to your product">
+  <img alt="default login page" src="/images/default-login.png" />
+</Frame>
+
+Everything about this page is configurable, from the color scheme and logo, to the login options we present to the user (passwords, passwordless, SSO, etc.).
+We'll worry about configuring it later - instead lets connect our frontend.
+
+## Set up our frontend to display the current user's information
+
+We've seen that our users can already sign up and log in, but how do we access that information in our product?
+
+PropelAuth provides frontend libraries for frameworks like React, no-code tools like Webflow, and vanilla javascript
+which expose interfaces for accessing the current user's information.
+
+<br/>
+<br/>
+<Tabs>
+  <Tab title="React">
+    ### Installation
+
+    First, install the `@propelauth/react` library in your existing React application. If you don't have a React application yet, follow [these instructions](https://reactjs.org/docs/create-a-new-react-app.html).
+
+    <CodeGroup>
+
+    ```bash npm
+    $ npm install --save @propelauth/react
+    ```
+
+    ```bash yarn
+    $ yarn add @propelauth/react
+    ```
+
+    </CodeGroup>
+
+    ### Configuration
+
+    We need to point our React application to our test environment to fetch the current user's information.
+    Go to the **Frontend Integration** section of your [PropelAuth dashboard](https://app.propelauth.com), and
+    copy the auth url into an `.env` file:
+
+    ```text .env
+    # Test environment only, in production, we'll use our own domain
+    REACT_APP_AUTH_URL=https://something.propelauthtest.com
+    ```
+
+    Then, set up your test environment to use port 3000 (the default for React, if you are using a different port, enter that instead).
+    This will configure your application to receive requests from localhost:3000 and it will now redirect to localhost:3000 after you log in.
+
+    ![configure port 3000](/images/configure-port-3000.png)
+
+    ### Initialization
+
+    In your `index.js` or `index.ts` file, wrap your application with the [`AuthProvider`](/reference/frontend-apis/react#set-up-authprovider)
+
+    ```jsx index.js
+    import { AuthProvider } from "@propelauth/react";
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(
+      <AuthProvider authUrl={process.env.REACT_APP_AUTH_URL}>
+        <YourApp />
+      </AuthProvider>,
+      document.getElementById("root")
+    );
+    ```
+
+    The [AuthProvider](/reference/frontend-apis/react#set-up-authprovider) is responsible for fetching the current user's authentication information.
+    If your entire application requires the user to be logged in (for example, for a dashboard), use [RequiredAuthProvider](/reference/frontend-apis/react#requiredauthprovider) instead and you'll never have to check **isLoggedIn**.
+
+    ### Display user information
+
+    Here's a component which displays the current user's email address:
+
+    ```jsx
+    const YourApp = withAuthInfo((props) => {
+        const {redirectToLoginPage, redirectToSignupPage, redirectToAccountPage} = useRedirectFunctions()
+        const logoutFunction = useLogoutFunction()
+
+        // isLoggedIn and user are injected automatically from withAuthInfo
+        if (props.isLoggedIn) {
+            return <div>
+                <p>You are logged in as {props.user.email}</p>
+                <button onClick={redirectToAccountPage}>Account</button>
+                <button onClick={logoutFunction}>Logout</button>
+            </div>
+        } else {
+            return <div>
+                <p>You are not logged in</p>
+                <button onClick={redirectToLoginPage}>Login</button>
+                <button onClick={redirectToSignupPage}>Signup</button>
+            </div>
+        }
+    });
+    ```
+
+    [withAuthInfo](/reference/frontend-apis/react#withauthinfo) is a higher order component which will inject
+    useful properties like `isLoggedIn`, `user`, and `accessToken` into your components. Check out the [reference](/reference/frontend-apis/react#get-current-user-information) for all the
+    ways you can access user information.
+
+    We also used [useRedirectFunctions](/reference/frontend-apis/react#useredirectfunctions) to redirect to the
+    login, signup, and account pages and we used [useLogoutFunction](/reference/frontend-apis/react#logout) to log the user out.
+
+    When you aren't logged in, you'll see:
+
+    ![logged out state](/images/quickstart-logged-out.png)
+
+    And when you do log in, you'll see:
+
+    ![logged in state](/images/quickstart-logged-in.png)
+
+  </Tab>
+  <Tab title="Next.js">
+  </Tab>
+  <Tab title="Javascript / Typescript">
+    Go to the **Frontend Integration** section of your dashboard
+  </Tab>
+  <Tab title="Webflow / No-code tools">
+    Go to the **Frontend Integration** section of your dashboard
+  </Tab>
+</Tabs>
+
+Great! We now have a powerful, flexible authentication experience for our users. And for us, we have all the building
+blocks we need to set up our product.
