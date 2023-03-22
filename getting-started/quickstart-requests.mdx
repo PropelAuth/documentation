@@ -2,8 +2,8 @@
 title: "Sending Authenticated Requests"
 ---
 
-In the last two quickstart guides, we set up our frontend and backend. Now, we're going to make a request from
-our frontend to our backend.
+In the last two quickstart guides, we set up our frontend and backend. Now, we're going to make an authenticated request
+from our frontend to our backend.
 
 <Tabs>
   <Tab title="React">
@@ -47,22 +47,45 @@ our frontend to our backend.
     });
     ```
 
+    When you are logged in, you should see your user's email address in the response.
+    When you are not logged in, you should see a 401 error.
   </Tab>
   <Tab title="Javascript / Typescript">
-    Go to the **Frontend Integration** section of your dashboard
-  </Tab>
-  <Tab title="Webflow / No-code tools">
-    Go to the **Frontend Integration** section of your dashboard
+    ## Make an authenticated request to the backend
+
+    To make an `authenticated` request on behalf of your user,
+    you'll need to provide an access token. Access tokens are available from
+    [getAuthenticationInfoOrNull](/reference/frontend-apis/js#get-current-user-information).
+
+    You provide it in the request in the `Authorization` header, like so:
+
+    ```
+    Authorization: Bearer YOUR_ACCESS_TOKEN
+    ```
+
+    One example of how to do this is with the [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) API:
+
+    ```js
+    function whoAmI(accessToken) {
+      return fetch("/api/whoami", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+    }
+
+    const authInfo = getAuthenticationInfoOrNull();
+
+    // Make an authenticated request to the backend, if we are logged in
+    if (authInfo) {
+      whoAmI(authInfo.accessToken).then((response) => {
+        console.log(response);
+      });
+    }
+    ```
   </Tab>
 </Tabs>
-
-When you are logged in, the request is made to the backend successfully:
-
-TODO: picture
-
-And when you aren't, the request fails:
-
-TODO: picture
 
 ## Summary
 

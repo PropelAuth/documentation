@@ -3,7 +3,23 @@ title: "Login methods"
 ---
 
 By default, your project is configured with both password and passwordless authentication.
-This represents a nice default, however, you can enable/disable either of these options.
+You can enable or disable these methods in your dashboard, as well as enable social login and SSO.
+
+## Passwords
+
+A classic login method, passwords are the most common way for users to sign up and log in to your app.
+
+We add extra security for your users by disallowing them from using common passwords. We also protect your from
+brute force attacks by limiting the number of failed login attempts.
+
+## Passwordless
+
+Passwordless authentication allows users to log in without a password. This is done by sending a one-time
+password to the user's email address.
+
+We manage the entire process for you, including sending the email and verifying the one-time password.
+If you'd like to send emails from your own domain, email us at [support@propelauth.com](mailto:support@propelauth.com)
+and we'll get you set up.
 
 ## Social login / SSO
 
@@ -20,10 +36,19 @@ network you want to integrate with.
 
 ![a user configuring google social login](/images/configure-3.gif)
 
-## Account Linking
+### Account Linking
 
 If a user signs up with a social provider after signing up with their email address, their accounts will automatically
 be linked.
+
+## Enterprise SSO (SAML)
+
+Enterprise SSO (SAML) allows your users to login using their existing enterprise accounts (e.g. Okta, OneLogin, Azure AD).
+
+It's often a requirement for enterprise customers to use their existing enterprise accounts to login to your app.
+
+We provide self-service UIs for your customers to set up their own SAML connections. You can read more about PropelAuth's SAML
+support [here](/overview/saml).
 
 ## User login duration
 
