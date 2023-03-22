@@ -188,6 +188,12 @@ export interface RedirectToSignupOptions {
 }
 ```
 
+Or you can get the URL for the page with:
+
+```
+authClient.getSignupPageUrl(options?: RedirectToSignupOptions)
+```
+
 ### Redirect to login page
 
 Redirects the user to the login page.
@@ -201,6 +207,12 @@ export interface RedirectToLoginOptions {
 }
 ```
 
+Or you can get the URL for the page with:
+
+```
+authClient.getLoginPageUrl(options?: RedirectToLoginOptions)
+```
+
 ### Redirect to account page
 
 Redirects the user to the account page, where they can
@@ -210,6 +222,12 @@ view/modify their user information.
 authClient.redirectToAccountPage()
 ```
 
+Or you can get the URL for the page with:
+
+```
+authClient.getAccountPageUrl()
+```
+
 ### Redirect to create org page
 
 Redirects the user to the page where they can create
@@ -217,6 +235,12 @@ organizations.
 
 ```ts
 authClient.redirectToCreateOrgPage()
+```
+
+Or you can get the URL for the page with:
+
+```
+authClient.getCreateOrgPageUrl()
 ```
 
 ### Redirect to org page
@@ -229,6 +253,26 @@ authClient.redirectToOrgPage(orgId?: string)
 
 If **orgId** is specified, redirect to that organization's page. If none is
 specified, a default is chosen deterministically.
+
+Or you can get the URL for the page with:
+
+```
+authClient.getOrgPageUrl(orgId?: string)
+```
+
+### Redirect to the setup SAML page
+
+Redirects the user to a page where they can set up SAML for an organization.
+
+```ts
+authClient.redirectToSetupSAMLPage(orgId: string)
+```
+
+Or you can get the URL for the page with:
+
+```
+authClient.getSetupSAMLPageUrl(orgId: string)
+```
 
 ### Listen for logged in or out events
 
