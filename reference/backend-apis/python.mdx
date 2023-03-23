@@ -405,6 +405,32 @@ Successful response:
 }
 ```
 
+## Create Access Token
+
+Our frontend libraries allow you to get [access tokens](/overview/access-tokens) that can be sent to the backend.
+The backend is then responsible for verifying these tokens.
+
+For testing purposes, you may want to create access tokens separately from the frontend and set a custom expiration time.
+With this API, you can create access tokens for users programmatically and set a custom expiration.
+
+```python
+# auth object comes from init_base_auth
+auth.create_access_token(user_id, duration_in_minutes)
+```
+
+| Argument                       | Description                                                                                                                                                                                              |
+|--------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| user_id | The user's ID |
+| duration_in_minutes | How long the token is valid for, in minutes.  |
+
+Successful response:
+
+```js
+{
+    "access_token": "..."
+}
+```
+
 ## Update User Email
 
 ```python
