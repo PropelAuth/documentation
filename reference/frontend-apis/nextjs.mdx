@@ -238,8 +238,49 @@ collection of functions which redirect the user to useful locations.
 | redirectToLoginPage(options?: RedirectToLoginOptions)     | Redirects the user to the login hosted authentication page.                                                                                                                                                |
 | redirectToOrgPage(orgId?) | Redirects the user to an organization management hosted authentication page. If **orgId** is specified, redirect to that organization's page. If none is specified, a default is chosen deterministically. |
 | redirectToCreateOrgPage() | Redirects the user to the hosted authentication page where they can create organizations.                                                                                                                  |
+| redirectToSetupSAMLPage(orgId) | Redirects the user to the a page where they can setup a SAML connection for their organization. |
 
 Redirecting to the signup or login page allows you to specify some options:
+
+```ts
+export interface RedirectToSignupOptions {
+    // This must be a full URL and can only be a URL for a domain you have verified
+    postSignupRedirectUrl: string
+}
+
+export interface RedirectToLoginOptions {
+    // This must be a full URL and can only be a URL for a domain you have verified
+    postLoginRedirectUrl: string
+}
+```
+
+### useHostedPageUrls
+
+This is similar to [useRedirectFunctions](#useredirectfunctions), but instead of redirecting the user to a specific hosted page,
+it will just return the URL of that hosted page.
+
+```js
+function SignupAndLoginButtons() {
+  const { getSignupPageUrl, getLoginPageUrl } = useHostedPageUrls();
+  return (
+    <div>
+      <a href={getSignupPageUrl()}>Signup</a>
+      <a href={getLoginPageUrl()}>Login</a>
+    </div>
+  );
+}
+```
+
+| Function                  | Description                                                                                                                                                                                                |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| getAccountPageUrl()   | Returns the URL for the account hosted authentication page, where they can view/modify their user information.                                                                                           |
+| getSignupPageUrl(options?: RedirectToSignupOptions)    | Returns the URL for the signup hosted authentication page.                                                                                                                                               |
+| getLoginPageUrl(options?: RedirectToLoginOptions)     | Returns the URL for the login hosted authentication page.                                                                                                                                                |
+| getOrgPageUrl(orgId?) | Returns the URL for the organization management hosted authentication page. If **orgId** is specified, redirect to that organization's page. If none is specified, a default is chosen deterministically. |
+| getCreateOrgPageUrl() | Returns the URL for the hosted authentication page where they can create organizations.                                                                                                                  |
+| getSetupSAMLPageUrl(orgId) | Returns the URL for the page where they can setup a SAML connection for their organization. |
+
+When getting the URL for the the signup or login page, you can specify some options:
 
 ```ts
 export interface RedirectToSignupOptions {
