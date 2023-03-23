@@ -6,6 +6,27 @@ description: A list of user-facing changes made to the PropelAuth product
 This changelog includes important updates to PropelAuth. For larger features, we'll provide links where you can find more details.
 For any item with the **Beta** label, if you are interested in testing it out, please email us at [support@propelauth.com](mailto:support@propelauth.com).
 
+### 2023-03-15
+
+| Category | Description |
+|--|----|
+| **Feature** | Added an API to create access tokens for testing purposes. Previously, you would need to use our frontend libraries to get tokens, and the tokens were all short-lived. Now you can make an API call to get an access token for a specified user, with a custom expiration. |
+| **Feature** | Added `refreshAuthInfo` to @propelauth/react so you can force refresh the auth information |
+| **Feature** | Improved `useAuthInfo` so that you can now destructure without needing to check `loading` first |
+| **Feature** | Added new redirect function `redirectToSetupSAMLPage` |
+| **Feature** | For each redirect function (e.g. redirectToLoginPage), we now also provide a getter function to get the underlying URL (e.g. getLoginPageURL). This allows for more flexible usage. |
+| **Bugfix** | Fixed issue with `fetch_org` in the Rust crate |
+| **Bugfix** | Updating your email no longer sends a confirmation if you had "email confirmation not required" in that environment |
+
+### 2023-03-01
+
+| Category | Description |
+|--|----|
+| **Release** | Released support for [Chrome Extensions](https://www.propelauth.com/post/chrome-extension-authentication-with-plasmo) alongside Plasmo |
+| **Beta** | Beta support for API authentication. You can generate API keys for your customers tied to either your users, your organizations, or both. |
+| **Bugfix** | Fixed issue with propelauth-py which made it fail to build on some OS's |
+| **Bugfix** | Fixed issue with Google login where it wasn't always updating the user object with their name |
+
 ### 2023-02-14
 
 | Category | Description |
