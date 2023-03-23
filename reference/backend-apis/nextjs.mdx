@@ -446,12 +446,11 @@ Successful response:
 
 ## Create Access Token
 
-Our frontend libraries allow you to get [access token](/overview/access-tokens) that can be sent to the backend.
+Our frontend libraries allow you to get [access tokens](/overview/access-tokens) that can be sent to the backend.
 The backend is then responsible for verifying these tokens.
 
-For testing purposes, it can be valuable to be able to create access tokens separately from the frontend,
-and set a custom expiration time. This API allows you to do just that - create the same access tokens that the frontend
-gets, but you can set the expiration.
+For testing purposes, you may want to create access tokens separately from the frontend and set a custom expiration time.
+With this API, you can create access tokens for users programmatically and set a custom expiration.
 
 ```ts
 function createAccessToken(createAccessTokenRequest: CreateAccessTokenRequest): Promise<AccessToken>

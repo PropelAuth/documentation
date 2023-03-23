@@ -15,7 +15,7 @@ For any item with the **Beta** label, if you are interested in testing it out, p
 | **Feature** | Improved `useAuthInfo` so that you can now destructure without needing to check `loading` first |
 | **Feature** | Added new redirect function `redirectToSetupSAMLPage` |
 | **Feature** | For each redirect function (e.g. redirectToLoginPage), we now also provide a getter function to get the underlying URL (e.g. getLoginPageURL). This allows for more flexible usage. |
-| **Bugfix** | Fixed issue with `fetch_org` in the Rust crate |
+| **Bugfix** | Fixed issue with `fetch_org` in the Rust crate where it's return type was incorrect |
 | **Bugfix** | Updating your email no longer sends a confirmation if you had "email confirmation not required" in that environment |
 
 ### 2023-03-01
