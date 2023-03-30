@@ -6,6 +6,16 @@ description: A list of user-facing changes made to the PropelAuth product
 This changelog includes important updates to PropelAuth. For larger features, we'll provide links where you can find more details.
 For any item with the **Beta** label, if you are interested in testing it out, please email us at [support@propelauth.com](mailto:support@propelauth.com).
 
+### 2023-03-31
+
+| Category | Description |
+|--|----|
+| **Bugfix** | "Create Org" and "Join Org" now on the same page as separated functions. Previously, if you disabled the ability for users to create organizations, the “join org” functionality would be hidden as well. Users can now join organizations regardless of their ability to create one. |
+| **Bugfix** | Changed the "disable public signups" option so that invited users can still create an account even if the feature is turned on. Previously this feature was blocking some users who were invited and choose to join through SSO, but this has been fixed. |
+| **Bugfix** | Fixed Microsoft login issue. For users that didn’t have their first name or last name set in their Microsoft account, signing in with Microsoft was failing. This only affected users who enabled the “collect name on signup” feature. We’ve resolved this issue, and users can now sign in seamlessly with their Microsoft account, and if we cannot pull their first and last name from Microsoft, we prompt the user to provide it afterwards |
+| **Bugfix** | Increased the acceptance time for confirmation emails to 5 days (previously it was only 2) |
+| **Bugfix** | Made small styling fixes to our component library and hosted pages to improve the overall look and feel of the platform |
+
 ### 2023-03-15
 
 | Category | Description |
