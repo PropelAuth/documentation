@@ -35,9 +35,9 @@ To initialize the PropelAuth library in `lib/propelauth.js`, enter the code
 below, making sure to include the ***newline characters*** in your **verifierKey**:
 
 ```js
-import { initAuth } from "@propelauth/node";
+import { initBaseAuth } from "@propelauth/node";
 
-const propelauth = initAuth({
+const propelauth = initBaseAuth({
   // You can find the rest of the fields under the Backend Integration section for your project in PropelAuth.
   authUrl: "YOUR_AUTH_URL",
   apiKey: "YOUR_API_KEY",
