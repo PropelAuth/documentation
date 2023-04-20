@@ -1,0 +1,443 @@
+---
+title: "Protect Backend APIs"
+---
+
+In this guide, we're going to set up our backend so that it can reject unauthenticated requests from our frontend.
+
+PropelAuth provides backend libraries for languages like Node, Python, and Rust.
+We then also provide more specific libraries for frameworks like Express (node), FastAPI (python), Flask (python), etc.
+
+# Choose your framework
+<Tabs>
+  <Tab title="Express">
+    ## Installation
+
+    In your Express app, install the `@propelauth/express` library.
+
+    <CodeGroup>
+
+    ```bash npm
+    $ npm install --save @propelauth/express
+    ```
+
+    ```bash yarn
+    $ yarn add @propelauth/express
+    ```
+
+    </CodeGroup>
+
+    ## Initialize
+
+    [initAuth](/reference/backend-apis/express#initialize) performs a one-time initialization of the library.
+    It will verify that your `apiKey` is correct and fetch the metadata needed to verify requests sent from the frontend.
+
+    We recommend calling this in a new file and exporting the result.
+
+    ```js
+    // propelauth.js
+    const propelAuth = require("@propelauth/express");
+    module.exports = propelAuth.initAuth({
+      // If true, error messages returned to the user will be detailed.
+      // It's useful for debugging, but a good idea to turn off in production.
+      debugMode: true,
+      // You can find your Auth URL and API key under the Backend Integration
+      //   section for your project at https://app.propelauth.com.
+      authUrl: "https://auth.yourdomain.com",
+      apiKey: "YOUR_API_KEY",
+    });
+    ```
+
+    ## Protecting an API Route
+
+    This route can only be accessed from valid users:
+
+    ```js
+    const auth = require("./propelauth");
+
+    // requireUser is a middleware which validates the access token
+    app.get("/api/whoami", auth.requireUser, (req, res) => {
+      res.text("Hello user with ID " + req.user.userId);
+    });
+    ```
+
+    `requireUser` will return a **401 Unauthorized** for requests made without a valid [access token](/overview/access-tokens).
+    Requests with a valid token will have `req.user` set with the user's information.
+    The full schema is available in our [reference](/reference/backend-apis/express#requireuser).
+
+    You can instead use [optionalUser](/reference/backend-apis/express#optionaluser), if you want the request to proceed in either case, with `req.user` set only if a valid access token was provided.
+
+  </Tab>
+  <Tab title="Node">
+    ## Installation
+
+    In your Node app, install the `@propelauth/node` library.
+
+    <CodeGroup>
+
+    ```bash npm
+    $ npm install --save @propelauth/node
+    ```
+
+    ```bash yarn
+    $ yarn add @propelauth/node
+    ```
+
+    </CodeGroup>
+
+    ## Initialize
+
+    [initBaseAuth](/reference/backend-apis/node#initialize) performs a one-time initialization of the library.
+    It will verify that your `apiKey` is correct and fetch the metadata needed to verify requests sent from the frontend.
+
+    We recommend calling this in a new file and exporting the result.
+
+    ```js propelauth.js
+    const propelAuth = require("@propelauth/node");
+    module.exports = propelAuth.initBaseAuth({
+      // You can find your Auth URL and API key under the Backend Integration
+      //   section for your project at https://app.propelauth.com.
+      authUrl: "https://auth.yourdomain.com",
+      apiKey: "YOUR_API_KEY",
+    });
+    ```
+
+    ## Protecting an API Route
+
+    Each Node framework is different, but what you'll need to do is get the `Authorization` header and call
+    `validateAccessTokenAndGetUser` which will validate the access token in the header and return a user.
+    You can see the full user schema [here](/reference/backend-apis/node#validateaccesstokenandgetuser).
+
+    ```js
+    const authorizationHeader = // Get the Authorization header from an HTTP request
+    try {
+        const user = await validateAccessTokenAndGetUser(authorizationHeader)
+        console.log(`Got request from user ${user.userId}`);
+    } catch (err) {
+        // You can return a 401, or continue the request knowing it wasn't sent from a logged-in user
+        console.log(`Unauthorized request ${err}`);
+    }
+    ```
+
+  </Tab>
+  <Tab title="Flask">
+    ## Installation
+
+    In your Flask app, install the **propelauth_flask** library.
+
+    ```bash
+    $ pip install propelauth_flask
+    ```
+
+    ## Initialize
+
+    **init_auth** performs a one-time initialization of the library. It will verify your `api_key` is correct and fetch the
+    metadata needed to verify requests sent from the frontend.
+
+    ```python
+    from propelauth_flask import init_auth
+
+    # You can find your Auth URL and API key under the Backend Integration
+    #   section for your project at https://app.propelauth.com.
+    auth = init_auth("YOUR_AUTH_URL", "YOUR_API_KEY")
+    ```
+
+    ## Protecting an API Route
+
+    This route can only be accessed from valid users:
+
+    ```python
+    @app.route("/api/whoami")
+    @auth.require_user
+    def who_am_i():
+        """This route is protected, current_user is always set"""
+        return {"user_id": current_user.user_id}
+    ```
+
+    `@auth.require_user` will return a **401 Unauthorized** for requests made without a valid [access token](/overview/access-tokens).
+    Requests with a valid token will have `current_user` set with the user's information.
+    The full schema is available in our [reference](/reference/backend-apis/flask#current-user).
+
+    You can instead use [@auth.optional_user](/reference/backend-apis/flask#optional-user), if you want the request to proceed in either case.
+
+  </Tab>
+  <Tab title="FastAPI">
+    ## Installation
+
+    In your FastAPI app, install the **propelauth_fastapi** library.
+
+    ```bash
+    $ pip install propelauth_fastapi
+    ```
+
+    ## Initialize
+
+    **init_auth** performs a one-time initialization of the library. It will verify your `api_key` is correct and fetch the
+    metadata needed to verify requests sent from the frontend.
+
+    ```python
+    from propelauth_fastapi import init_auth
+
+    # You can find your Auth URL and API key under the Backend Integration
+    #   section for your project at https://app.propelauth.com.
+    auth = init_auth("YOUR_AUTH_URL", "YOUR_API_KEY")
+    ```
+
+    ## Protecting an API Route
+
+    This route can only be accessed from valid users:
+
+    ```python
+    @app.get("/api/whoami")
+    async def root(current_user: User = Depends(auth.require_user)):
+        return {"user_id": f"{current_user.user_id}"}
+    ```
+
+    `auth.require_user` will return a **401 Unauthorized** for requests made without a valid [access token](/overview/access-tokens).
+    Requests with a valid token will have `current_user` set with the user's information.
+    The full schema is available in our [reference](/reference/backend-apis/fastapi#user).
+
+    You can instead use [auth.optional_user](/reference/backend-apis/fastapi#optional-user), if you want the request to proceed in either case.
+  </Tab>
+  <Tab title="Django">
+     ## Installation
+
+     In your Django app, install the **propelauth-django-rest-framework** library.
+
+     ```bash
+     $ pip install propelauth-django-rest-framework
+     ```
+
+     ## Initialize
+
+     **init_auth** performs a one-time initialization of the library. It will verify your `api_key` is correct and fetch the
+     metadata needed to verify requests sent from the frontend.
+
+     ```python
+     from propelauth_django_rest_framework import init_auth
+
+     # You can find your Auth URL and API key under the Backend Integration
+     #   section for your project at https://app.propelauth.com.
+     auth = init_auth("YOUR_AUTH_URL", "YOUR_API_KEY")
+     ```
+
+     ## Protecting an API Route
+
+     This route can only be accessed from valid users:
+
+     ```python
+     @api_view(['GET'])
+     @permission_classes([auth.IsUserAuthenticated])
+     def whoami(request):
+        return HttpResponse(request.propelauth_user.user_id)
+     ```
+
+     `auth.IsUserAuthenticated` will return a **401 Unauthorized** for requests made without a valid [access token](/overview/access-tokens).
+     Requests with a valid token will have `request.propelauth_user` set with the user's information.
+     The full schema is available in our [reference](/reference/backend-apis/django#request-propelauth-user).
+
+     You can use this permission in class-based views:
+
+     ```python
+     class WhoAmIView(APIView):
+        permission_classes = [auth.IsUserAuthenticated]
+
+        def get(self, request):
+           return HttpResponse(request.propelauth_user.user_id)
+     ```
+
+     You can instead use [auth.AllowAny](/reference/backend-apis/django#allowany), if you want the request to proceed in either case.
+     The difference here is that `request.propelauth_user` will be set to `None` for requests without a valid token.
+  </Tab>
+  <Tab title="Python">
+    This library provides all the building blocks you need to integrate PropelAuth into your Python app. You should prefer
+    one of the other libraries if they exist for your framework.
+
+    ## Installation
+
+    ```bash
+    pip install propelauth_py
+    ```
+
+    ## Initialize
+
+    **init_base_auth** performs a one-time initialization of the library.
+    It will verify your `api_key` is correct and fetch the metadata needed to verify requests sent from the frontend.
+
+    ```python
+    from propelauth_py import init_base_auth
+
+    auth = init_base_auth("YOUR_AUTH_URL", "YOUR_API_KEY")
+    ```
+
+    ## Protecting an API Route
+
+    This route can only be accessed from valid users:
+
+    ```python
+    auth_header = # get authorization header sent from the frontend in the form `Bearer {TOKEN}`
+    try:
+        user = auth.validate_access_token_and_get_user(auth_header)
+        print("Logged in as", user.user_id)
+    except UnauthorizedException:
+        print("Invalid access token")
+    ```
+
+    `auth.validate_access_token_and_get_user` will raise an `UnauthorizedException` for requests made without a valid [access token](/overview/access-tokens).
+    Requests with a valid token will return the user's information.
+    The full schema is available in our [reference](/reference/backend-apis/python#user).
+  </Tab>
+  <Tab title="Axum">
+    ## Installation
+
+    Add the following to your `Cargo.toml`:
+
+    ```toml
+    propelauth = { version = "0.1", features = ["axum"] }
+    ```
+
+    ## Initialize
+
+    **PropelAuth::fetch_and_init** performs a one-time initialization of the library.
+    It will verify your `api_key` is correct and fetch the metadata needed to verify requests sent from the frontend.
+
+    ```rust
+    let auth = PropelAuth::fetch_and_init(AuthOptions { auth_url, api_key })
+        .await
+        .expect("Unable to initialize authentication");
+    ```
+
+    Then, we'll add a `PropelAuthLayer` to our Router:
+
+    ```rust
+    let auth_layer = PropelAuthLayer::new(auth);
+
+    let app = Router::new()
+      .route("/whoami", get(whoami))
+      .layer(auth_layer);
+    ```
+
+    ## Protecting an API Route
+
+    This route can only be accessed from valid users:
+
+    ```rust
+    // User will automatically return a 401 (Unauthorized) if a valid access token wasn't provided
+    async fn whoami(user: User) -> Json<User> {
+        Json(user)
+    }
+    ```
+
+    A **401 Unauthorized** will be returned for requests made without a valid [access token](/overview/access-tokens).
+    Requests with a valid token will have `user` set with the user's information.
+  </Tab>
+  <Tab title="Actix">
+    ## Installation
+
+    Add the following to your `Cargo.toml`:
+
+    ```toml
+    propelauth = { version = "0.1", features = ["actix4"] }
+    ```
+
+    ## Initialize
+
+    **PropelAuth::fetch_and_init** performs a one-time initialization of the library.
+    It will verify your `api_key` is correct and fetch the metadata needed to verify requests sent from the frontend.
+
+    ```rust
+    let auth = PropelAuth::fetch_and_init(AuthOptions { auth_url, api_key })
+        .await
+        .expect("Unable to initialize authentication");
+    ```
+
+    Then, we'll add auth to our app's `app_data`:
+
+    ```rust
+    HttpServer::new(move || {
+        App::new()
+            .service(whoami) // <-- some example route
+            .app_data(web::Data::new(auth.clone())) // <-- here
+    })
+    ```
+
+    ## Protecting an API Route
+
+    This route can only be accessed from valid users:
+
+    ```rust
+    // User will automatically return a 401 (Unauthorized) if a valid access token wasn't provided
+    #[get("/whoami")]
+    async fn whoami(user: User) -> impl Responder {
+        HttpResponse::Ok().json(user)
+    }
+    ```
+
+    A **401 Unauthorized** will be returned for requests made without a valid [access token](/overview/access-tokens).
+    Requests with a valid token will have `user` set with the user's information.
+  </Tab>
+  <Tab title="Rust">
+    This library provides all the building blocks you need to integrate PropelAuth into your Rust app. You should prefer
+    one of the other libraries if they exist for your framework.
+
+    ## Installation
+
+    Add the following to your `Cargo.toml`:
+
+    ```toml
+    propelauth = { version = "0.1" }
+    ```
+
+    ## Initialize
+
+    **PropelAuth::fetch_and_init** performs a one-time initialization of the library.
+    It will verify your `api_key` is correct and fetch the metadata needed to verify requests sent from the frontend.
+
+    ```rust
+    let auth = PropelAuth::fetch_and_init(AuthOptions { auth_url, api_key })
+        .await
+        .expect("Unable to initialize authentication");
+    ```
+
+    ## Protecting an API Route
+
+    This route can only be accessed from valid users:
+
+    ```rust
+    let authorization_header = // get authorization header sent from the frontend in the form `Bearer {TOKEN}`
+    let result = auth.verify().validate_authorization_header(&authorization_header);
+    match result {
+        Ok(user) => { /* valid access token in the header */ }
+        Err(_) => { /* invalid access token, typically we return a 401 Unauthorized here */ }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## How does this work?
+
+The backend is expecting an access token to be passed in an **Authorization** header, like:
+
+```text
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+If it doesn't find it or if the token is invalid, the request is rejected.
+
+## A Note on Latency
+
+Verifying access tokens can be done without making a request to PropelAuth.
+This means that checking the auth information adds virtually no latency to your requests.
+
+## Testing our API
+
+We can test that our API cannot be accessed by just anyone, with cURL:
+
+```shell
+# Use 3001 or whichever port the backend is running on
+curl -v localhost:3001/api/whoami
+...
+< HTTP/2 401
+...
+```
+
+However, in order to test that valid users _do_ work, let's go back and update our frontend to make the request for us.

@@ -1,0 +1,22 @@
+---
+title: "Backend Integration"
+description: "Protect your API routes in a few lines of code"
+---
+
+PropelAuth provides [hosted UIs](/overview/hosted-pages) and [frontend libraries](/overview/frontend-integration),
+but what about the backend?
+
+On the backend, we provide [libraries](/getting-started/frontend-integration) for languages like Node, Python, and Rust.
+We then also provide more specific libraries for frameworks like Express (node), FastAPI (python), Flask (python), etc.
+
+These libraries provide abstractions for common backend use cases like:
+ - "Only allow users that are logged in to call this API"
+ - "Only allow users that are Admins of this organization to call this API"
+ - "Block this user"
+ - "Fetch all users in an organization"
+
+Essentially, every backend library has two components to it:
+ - Functions for authentication/authorization - making sure the user has permission to perform some action
+ - APIs on top of PropelAuth - fetch user information, modify/create users, change roles, etc.
+
+The [getting started guide](/getting-started/quickstart-fe) provides detailed examples for your framework of choice.

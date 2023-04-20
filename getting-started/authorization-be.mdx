@@ -1,0 +1,251 @@
+---
+title: "Backend Authorization"
+---
+
+In our guide on [Protecting Backend APIs](/getting-started/quickstart-be), we saw how to set up a `/api/whoami` route only accessible from logged-in users.
+
+Now, we're going to create a route that is scoped to an organization and can only be called by users with an Admin role in the specified organization.
+
+## Passing in an orgId in the URL
+
+The API route we're going to create is:
+
+```text
+GET /org/:orgId/is-admin
+```
+
+This means that when the frontend makes a request, we expect it to tell us which organization is currently active.
+You can also configure PropelAuth such that each user can only be in one organization at a time, in which case you don't
+need to pass in the `orgId`, however, we consider it good practice to be explicit here.
+
+<br/>
+<br/>
+# Choose your framework
+<Tabs>
+  <Tab title="Express">
+    In the [Protecting Backend APIs](/getting-started/quickstart-be) guide, we created this route, protected by `requireUser`:
+
+    ```js
+    const auth = require("./propelauth");
+
+    // requireUser is a middleware which validates the access token
+    app.get("/whoami", auth.requireUser, (req, res) => {
+      res.text("Hello user with ID " + req.user.userId);
+    });
+    ```
+
+    To create our new API, we can use the [requireOrgMemberWithExactRole](/reference/backend-apis/express#requireorgmember) function:
+
+    ```js
+    // The extractor tells the library how to find the orgId
+    const orgIdInPathExtractor = (req) => req.params.orgId;
+    const requireAdminInOrg = auth.requireOrgMemberWithExactRole({
+      role: "Admin",
+      orgIdExtractor: orgIdInQueryExtractor,
+    })
+
+    app.get("/org/:orgId/is-admin", requireAdminInOrg, (req, res) => {
+      console.log("req.user AND req.org are set", req.user, req.org)
+      res.text("Yes, you are an admin");
+    });
+    ```
+
+    This middleware does a few things:
+     - Makes sure the user is valid, and sets `req.user` if so. If not, it returns a 401.
+     - Makes sure the user is in the specified organization, and sets `req.org` if so. If not, it returns a 403.
+     - Makes sure the user is an `Admin` within that organization. If not, it returns a 403.
+
+    ## Other authorization functions
+
+    You can also call:
+    - `requireOrgMember` - to just check that the user is in the extracted organization
+    - `requireOrgMemberWithMinimumRole` - checks `requireOrgMember` AND that the users role is at least the provided `minimumRequiredRole`
+    - `requireOrgMemberWithPermission` - checks `requireOrgMember` AND that the user has the provided `permission`
+    - `requireOrgMemberWithAllPermissions` - checks `requireOrgMember` AND that the user has all the provided `permissions`
+  </Tab>
+  <Tab title="Node">
+    In the [Protecting Backend APIs](/getting-started/quickstart-be) guide, we created this route, protected by `validateAccessTokenAndGetUser`:
+
+    ```js
+    const authorizationHeader = // Get the Authorization header from an HTTP request
+    try {
+        const user = await validateAccessTokenAndGetUser(authorizationHeader)
+        console.log(`Got request from user ${user.userId}`);
+    } catch (err) {
+        // You can return a 401, or continue the request knowing it wasn't sent from a logged-in user
+        console.log(`Unauthorized request ${err}`);
+    }
+    ```
+
+    To create our new API, we can use the [validateAccessTokenAndGetUserWithOrgInfoWithExactRole](/reference/backend-apis/node#validateaccesstokenandgetuserwithorginfo) function:
+
+    ```js
+    const authorizationHeader = // Get the Authorization header from an HTTP request
+    const orgId = // Get the orgId from the request
+    try {
+        const { user, orgMemberInfo } = await validateAccessTokenAndGetUserWithOrgInfoWithExactRole(
+            authorizationHeader,
+            {orgId}, // <-- you can specify either an orgId or an orgName
+            "Admin", // <-- the role to check for
+        )
+        console.log(`${user.userId} is an Admin of org ${orgMemberInfo.orgName}`);
+    } catch (err) {
+        // This can either be an UnauthorizedException (not valid user)
+        //   or a ForbiddenException (not in the org or not the right role)
+        console.log(`Unauthorized request ${err}`);
+    }
+    ```
+
+    ## Other authorization functions
+
+    You can also call:
+    - `validateAccessTokenAndGetUserWithOrgInfo` - to just check that the user is in the extracted organization
+    - `validateAccessTokenAndGetUserWithOrgInfoWithMinimumRole` - checks org membership AND that the users role is at least the provided `minimumRequiredRole`
+    - `validateAccessTokenAndGetUserWithOrgInfoWithPermission` - checks org membership AND that the user has the provided `permission`
+    - `validateAccessTokenAndGetUserWithOrgInfoWithAllPermissions` - checks org membership AND that the user has all the provided `permissions`
+  </Tab>
+  <Tab title="Flask">
+    In the [Protecting Backend APIs](/getting-started/quickstart-be) guide, we created this route, protected by `require_user`:
+
+    ```python
+    @app.route("/api/whoami")
+    @auth.require_user
+    def who_am_i():
+        """This route is protected, current_user is always set"""
+        return {"user_id": current_user.user_id}
+    ```
+
+    To create our new API, we can use the [require_org_member_with_exact_role](/reference/backend-apis/flask#require-org-member) decorator:
+
+    ```python
+    # This is the default
+    def extract_org_id_from_path(request):
+        return request.view_args.get("org_id")
+
+    @app.route("/api/org/<org_id>/is-admin")
+    @auth.require_org_member_with_exact_role("Admin", req_to_org_id=extract_org_id_from_path)
+    def is_admin(org_id):
+        """This route is protected, current_user and current_org are always set"""
+        return {"user_id": current_user.user_id, "org_id": current_org.org_id}
+    ```
+
+    This decorator does a few things:
+     - Makes sure the user is valid, and sets `current_user` if so. If not, it returns a 401.
+     - Makes sure the user is in the specified organization, and sets `current_org` if so. If not, it returns a 403.
+     - Makes sure the user is an `Admin` within that organization. If not, it returns a 403.
+
+    ## Other authorization functions
+
+    You can also call:
+    - `require_org_member` - to just check that the user is in the extracted organization
+    - `require_org_member_with_minimum_role` - checks `require_org_member` AND that the users role is at least the provided `minimum_required_role`
+    - `require_org_member_with_permission` - checks `require_org_member` AND that the user has the provided `permission`
+    - `require_org_member_with_all_permissions` - checks `require_org_member` AND that the user has all the provided `permissions`
+  </Tab>
+  <Tab title="FastAPI">
+    In the [Protecting Backend APIs](/getting-started/quickstart-be) guide, we created this route, protected by `require_user`:
+
+    ```python
+    @app.get("/api/whoami")
+    async def root(current_user: User = Depends(auth.require_user)):
+        return {"user_id": f"{current_user.user_id}"}
+    ```
+
+    To create our new API, we can use the [require_org_member_with_exact_role](/reference/backend-apis/fastapi#require-org-member) decorator:
+
+    ```python
+    @app.get("/api/org/{org_id}/is-admin")
+    async def is_admin(
+        org_id: str,
+        current_user: User = Depends(auth.require_user),
+    ):
+        # will raise a 403 if the user is not an Admin in the org
+        org = auth.require_org_member_with_exact_role(current_user, org_id, "Admin")
+        return {"user_id": f"{current_user.user_id}", "org_id": f"{org.org_id}"}
+    ```
+
+    ## Other authorization functions
+
+    You can also call:
+    - `require_org_member` - to just check that the user is in the extracted organization
+    - `require_org_member_with_minimum_role` - checks `require_org_member` AND that the users role is at least the provided `minimum_required_role`
+    - `require_org_member_with_permission` - checks `require_org_member` AND that the user has the provided `permission`
+    - `require_org_member_with_all_permissions` - checks `require_org_member` AND that the user has all the provided `permissions`
+  </Tab>
+  <Tab title="Django">
+    In the [Protecting Backend APIs](/getting-started/quickstart-be) guide, we created this route, protected by `IsUserAuthenticated`:
+
+     ```python
+     @api_view(['GET'])
+     @permission_classes([auth.IsUserAuthenticated])
+     def whoami(request):
+        return HttpResponse(request.propelauth_user.user_id)
+     ```
+
+    To create our new API, we can use [IsUserInOrgWithRole()](/reference/backend-apis/django#isuserinorg):
+
+    ```python
+    @api_view(['GET'])
+    @permission_classes([auth.IsUserInOrgWithRole('Admin')])
+    def is_admin(request, org_id):
+        message = f"You are an admin of {request.propelauth_org.org_name}"
+        return HttpResponse(message)
+    ```
+
+    This does a few things:
+     - Makes sure the user is valid, and sets `request.propelauth_user` if so. If not, it returns a 401.
+     - Makes sure the user is in the specified organization, and sets `request.propelauth_org` if so. If not, it returns a 403.
+     - Makes sure the user is an `Admin` within that organization. If not, it returns a 403.
+
+    ### Other authorization functions
+
+    You can also call:
+    - `IsUserInOrg()` - to just check that the user is in the extracted organization
+    - `IsUserInOrgWithMinimumRole(minimum_required_role)` - checks `IsUserInOrg()` AND that the users role is at least the provided `minimum_required_role`
+    - `IsUserInOrgWithPermission(permission)` - checks `IsUserInOrg()` AND that the user has the provided `permission`
+    - `IsUserInOrgWithAllPermissions(permissions)` - checks `IsUserInOrg()` AND that the user has all the provided `permissions`
+  </Tab>
+  <Tab title="Python">
+    In the [Protecting Backend APIs](/getting-started/quickstart-be) guide, we created this route, protected by `validate_access_token_and_get_user`:
+
+    ```python
+    auth_header = # get authorization header sent from the frontend in the form `Bearer {TOKEN}`
+    try:
+        user = auth.validate_access_token_and_get_user(auth_header)
+        print("Logged in as", user.user_id)
+    except UnauthorizedException:
+        print("Invalid access token")
+    ```
+
+    To create our new API, we can use the [validate_access_token_and_get_user_with_org_by_exact_role](/reference/backend-apis/python##validate-access-token-and-get-user-with-org) function:
+
+    ```python
+    auth_header = # get authorization header sent from the frontend in the form `Bearer {TOKEN}`
+    org_id = # get the org_id from the request
+    try:
+        user_and_org_info = auth.validate_access_token_and_get_user_with_org_by_exact_role(
+            auth_header, org_id, "Admin"
+        )
+        user = user_and_org_info.user
+        org_member_info = user_and_org_info.org_member_info
+        print("You are an admin of", org_member_info.org_name)
+    except UnauthorizedException:
+        print("Invalid user")
+    except ForbiddenException:
+        print("User isn't in the organization or doesn't have the Admin role")
+    ```
+
+    ## Other authorization functions
+
+    You can also call:
+    - `validate_access_token_and_get_user_with_org` - to just check that the user is in the provided organization
+    - `validate_access_token_and_get_user_with_org_by_minimum_role` - checks `validate_access_token_and_get_user_with_org` AND that the users role is at least the provided `minimum_required_role`
+    - `validate_access_token_and_get_user_with_org_by_permission` - checks `validate_access_token_and_get_user_with_org` AND that the user has the provided `permission`
+    - `validate_access_token_and_get_user_with_org_by_all_permissions` - checks `validate_access_token_and_get_user_with_org` AND that the user has all the provided `permissions`
+  </Tab>
+</Tabs>
+
+## A Note on Latency
+
+Checking authorization information can be done with no external requests, as the tokens themselves contain authorization information.
+This means that checking the organization, role, and/or permissions adds virtually no latency to your requests.

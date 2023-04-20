@@ -1,0 +1,127 @@
+---
+title: "Frontend Authorization"
+---
+
+We've previously seen that we can use **isLoggedIn** on the frontend to display different information to logged in vs logged out users.
+
+In this guide, we'll see how we can display different information based on the organization the user is in, and their role/permissions within that organization.
+
+<Tabs>
+  <Tab title="React / Next.js">
+    In our [quick start guide](/getting-started/quickstart-fe), we created this component:
+
+    ```jsx
+    const YourApp = withAuthInfo((props) => {
+        const {redirectToLoginPage, redirectToSignupPage, redirectToAccountPage} = useRedirectFunctions()
+        const logoutFunction = useLogoutFunction()
+
+        // isLoggedIn and user are injected automatically from withAuthInfo
+        if (props.isLoggedIn) {
+            return <div>
+                <p>You are logged in as {props.user.email}</p>
+                <button onClick={redirectToAccountPage}>Account</button>
+                <button onClick={logoutFunction}>Logout</button>
+            </div>
+        } else {
+            return <div>
+                <p>You are not logged in</p>
+                <button onClick={redirectToLoginPage}>Login</button>
+                <button onClick={redirectToSignupPage}>Signup</button>
+            </div>
+        }
+    });
+    ```
+
+    However, we didn't cover the [orgHelper](/reference/frontend-apis/react#orghelper) or [accessHelper](/reference/frontend-apis/react#accesshelper) props, which are also injected by `withAuthInfo`.
+
+    ## Checking to see if the user is in an organization
+
+    The `orgHelper` helps manage the current user’s organization information. Here's an example where we make
+    sure the user is in a specified organization, or we display `Not found`.
+
+    ```jsx
+    const Example = withRequiredAuthInfo((props) => {
+        const {orgName} = // get org name from the path or localStorage
+
+        // This will get an org if the user is in that organization
+        const org = props.orgHelper.getOrgByName(orgName)
+
+        if (org) {
+            return <div>Welcome to {org.orgName}</div>
+        } else {
+            return <div>Not found</div>
+        }
+    })
+    ```
+
+    ## Checking a user's role within an organization
+
+    Similarly, the `accessHelper` helps us check role/permission information within the organization.
+    Let's take the example above and add an additional check for the `Admin` role.
+
+    ```jsx
+    const Example = withRequiredAuthInfo(({orgHelper, accessHelper}) => {
+        const {orgName} = // get org name from the path or localStorage
+        const org = orgHelper.getOrgByName(orgName)
+        const isAdmin = accessHelper.isRole(org.orgId, "Admin")
+
+        if (org && isAdmin) {
+            return <div>You are an admin of {org.orgName}</div>
+        } else {
+            return <div>Not found</div>
+        }
+    })
+    ```
+
+  </Tab>
+  <Tab title="Javascript / Typescript">
+    In our [quick start guide](/getting-started/quickstart-fe), we used the [authClient](/reference/frontend-apis/js#createclient) to get the user's email:
+
+    ```js
+    authClient.getAuthenticationInfoOrNull()
+        .then(authInfo => {
+            document.getElementById("email").innerText = authInfo?.user?.email;
+        });
+    ```
+
+    However, we didn't cover the [orgHelper](/reference/frontend-apis/js#orghelper) or [accessHelper](/reference/frontend-apis/js#accesshelper),
+    which are also available on `authInfo`.
+
+    ## Checking to see if the user is in an organization
+
+    The `orgHelper` helps manage the current user’s organization information. Here's an example where we make
+    sure the user is in a specified organization, or we display `Not found`.
+
+    ```js
+    const authInfo = await authClient.getAuthenticationInfoOrNull()
+    const orgName = // get org name from the path or localStorage
+
+    // This will get an org if the user is in that organization
+    const org = authInfo.orgHelper.getOrgByName(orgName)
+    if (org) {
+        console.log("Welcome to " + org.orgName)
+    } else {
+        console.log("Not found")
+    }
+    ```
+
+    ## Checking a user's role within an organization
+
+    Similarly, the `accessHelper` helps us check role/permission information within the organization.
+    Let's take the example above and add an additional check for the `Admin` role.
+
+    ```js
+    const authInfo = await authClient.getAuthenticationInfoOrNull()
+    const orgName = // get org name from the path or localStorage
+
+    // This will get an org if the user is in that organization
+    const org = authInfo.orgHelper.getOrgByName(orgName)
+    const isAdmin = authInfo.accessHelper.isRole(org.orgId, "Admin")
+    if (org && isAdmin) {
+        console.log("You are an admin of " + org.orgName)
+    } else {
+        console.log("Not found")
+    }
+    ```
+  </Tab>
+</Tabs>
