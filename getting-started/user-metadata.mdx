@@ -16,3 +16,39 @@ Enabling an extra field has a few effects:
   will be asked to provide the extra field when they first sign up.
 - Existing users will be asked to fill in that field when they next sign up.
 - Your users can update those fields on your hosted account pages.
+
+## Custom Metadata
+
+Other than the inherent properties discussed in the section above this, you can also add custom metadata to your user 
+objects. By using our functions, you can add on a JSON object to the new "metadata" field, and this can be anything you want! 
+This feature also exists for organizations, so you can add custom metadata there as well.
+
+### Example
+
+Input:
+
+```jsx
+    await auth.updateUserMetadata("3954c1a9-8575-4a24-9d3a-aa66f4be7511", {
+        metadata: {
+            "user_testing_group": "A",
+        }
+    })
+
+    // later on...
+    const user = await auth.fetchUserMetadataByUserId("3954c1a9-8575-4a24-9d3a-aa66f4be7511")
+    console.log(user)
+```
+
+Output:
+```jsx
+    {
+        email: 'brooks@test.com',
+        metadata: { user_testing_group: 'A' },
+        locked: false,
+        enabled: true,
+        ....
+        mfaEnabled: false,
+        createdAt: 1680895145,
+        lastActiveAt: 1682024563
+    }
+```

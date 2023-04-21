@@ -488,6 +488,8 @@ function updateUserMetadata(userId: string, updateUserMetadataRequest: UpdateUse
 | username  | Optional username. Can only be used if **username** is enabled in your user schema                                                                         |
 | firstName | Optional first name. Can only be used if **name** is enabled in your user schema                                                                           |
 | lastName  | Optional last name. Can only be used if **name** is enabled in your user schema                                                                            |
+| metadata  | Optional custom metadata JSON object.                                                                            |
+
 
 ## Update Password
 
@@ -617,3 +619,17 @@ function disallowOrgToSetupSamlConnection(orgId: string): Promise<boolean>
 ```
 
 Returns true if successful, meaning the organization can no longer set up [SAML](/overview/saml) connections.
+
+## Update Organization Metadata
+
+```ts
+// Returns true if it was successful, false if the user was not found
+function updateOrg(updateOrgRequest: UpdateOrgRequest): Promise<boolean>
+```
+
+| Argument   | Description                                                                                                                                                |
+|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| orgId      | Required organization id.                                                                         |
+| name       | Optional organization name. Updates the name of the organization.                                                                         |
+| canSetupSaml  | Optional boolean. If enabled this organization has access to setup SAML connections via our hosted UI's.                                                                            |
+| metadata   | Optional custom metadata JSON object.                                                                                                                  | 

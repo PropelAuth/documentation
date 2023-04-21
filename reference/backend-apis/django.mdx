@@ -529,7 +529,7 @@ auth.update_user_email(user_id, new_email, require_email_confirmation)
 ```python
 # auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
-auth.update_user_metadata(user_id, username=None, first_name=None, last_name=None)
+auth.update_user_metadata(user_id, username=None, first_name=None, last_name=None, metadata=None)
 ```
 
 | Argument   | Description                                                                                                                                                |
@@ -537,6 +537,7 @@ auth.update_user_metadata(user_id, username=None, first_name=None, last_name=Non
 | username   | Optional username. Can only be used if **username** is enabled in your user schema                                                                         |
 | first_name | Optional first name. Can only be used if **name** is enabled in your user schema                                                                           |
 | last_name  | Optional last name. Can only be used if **name** is enabled in your user schema                                                                            |
+| metadata   | Optional custom metadata JSON object.                                                                            |
 
 ## Update User Password
 
@@ -689,3 +690,17 @@ If successful, the user is able to log back in again.
 # Returns true if it was successful, false if the user was not found
 auth.enable_user(user_id)
 ```
+
+## Update Organization Metadata
+
+```python
+# auth object comes from init_auth
+# Returns true if it was successful, false if the organization was not found
+auth.update_org_metadata(org_id, name=None, can_setup_saml=None, metadata=None)
+```
+
+| Argument   | Description                                                                                                                                                |
+|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| name       | Optional organization name. Updates the name of the organization.                                                                         |
+| can_setup_saml  | Optional boolean. If enabled this organization has access to setup SAML connections via our hosted UI's.                                                                            |
+| metadata   | Optional custom metadata JSON object.                                                                                                                  |
