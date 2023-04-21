@@ -298,7 +298,8 @@ export interface RedirectToLoginOptions {
 
 A React component that redirects the user to the login hosted authentication
 page when rendered. This is identical to calling **redirectToLoginPage** from
-[useRedirectFunctions](#use-redirect-functions).
+[useRedirectFunctions](#use-redirect-functions) and also takes in the same
+arguments as props.
 
 ```js
 function Private(props) {
@@ -315,7 +316,8 @@ export default withRequiredAuthInfo(Private, {
 
 A React component that redirects the user to the signup hosted authentication
 page when rendered. This is identical to calling **redirectToSignupPage** from
-[useRedirectFunctions](#use-redirect-functions).
+[useRedirectFunctions](#use-redirect-functions) and also takes in the same
+arguments as props.
 
 ```js
 function Private(props) {
