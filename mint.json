@@ -73,6 +73,7 @@
         "overview/saml",
         "overview/user-schema",
         "overview/2fa",
+        "overview/user-impersonation",
         "overview/disable-public-signups",
         "overview/slack-notifications",
         "overview/webhooks",

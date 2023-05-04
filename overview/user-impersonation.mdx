@@ -1,0 +1,76 @@
+---
+title: "User Impersonation"
+sidebarTitle: "User Impersonation"
+description:
+  "User impersonation allows you to sign in as one of your users, to help them
+  troubleshoot issues or see what they see."
+---
+
+### Overview
+
+User impersonation is an advanced feature that allows you to sign in to your product as one of your users.
+Given the sensitive nature of this operation, only the Owner of an organization can turn it on.
+Afterwards, Owners and Admins can select which of your employees have access to this feature.
+
+### Enabling User Impersonation
+
+To enable user impersonation, go to the **Project Settings** in your dashboard. Then click the **Configure** button under **User Impersonation**.
+
+![User Impersonation](/images/impersonation-setup.png)
+
+In the sidebar, the Owner of your organization will be able to enable user impersonation for your organization,
+and select which of your employees have access to this feature.
+
+![User Impersonation Config](/images/impersonation-config.png)
+
+### Using User Impersonation
+
+Once user impersonation is enabled, you can use it by going to the **Users** section of your dashboard.
+Find the user you want to impersonate, click the **Actions** button, and select **Impersonate User**.
+
+![Impersonate a user](/images/impersonation-user.png)
+
+After a confirmation, you will be signed in as that user. The login will only last for 1 hour, and you will be
+automatically signed out after that time.
+
+### Distinguishing Impersonated Users
+
+When you (or someone on your team) is impersonating a user, they will be able to perform actions as that user, within your product.
+You may, for example, want to:
+
+- Limit the actions that can be performed while impersonating a user
+- Audit the actions that were performed while impersonating a user
+- Limit the data that can be viewed while impersonating a user
+- Add a banner to your product, indicating that the user is being impersonated
+
+To help you distinguish between a user and an impersonated user, there's a new `impersonatorUserId` field on the user object,
+in both the frontend and the backend. This field will be set to the ID of the person on your team who is impersonating the user, if any.
+
+In React, for example, you could use this field to add a banner to your product, indicating that the user is being impersonated:
+
+```jsx
+import { withAuthInfo } from "@propelauth/react"
+
+const UserBanner = withAuthInfo({ impersonatorUserId }) => {
+  if (impersonatorUserId) {
+    return <div className="user-banner">(!) Currently Impersonating</div>
+  } else {
+    return null
+  }
+}
+```
+
+In the backend, you could use this field to limit the actions that can be performed while impersonating a user:
+
+```js
+// Express example
+app.post("/api/sensitive-action", auth.requireUser, (req, res) => {
+  if (req.user.impersonatorUserId) {
+    res.status(403).send("You cannot perform this action while impersonating a user")
+  } else {
+    // Perform the sensitive action
+  }
+})
+```
+
+See the [Reference documentation](/reference) for more information about the library for your language/framework.
