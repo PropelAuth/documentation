@@ -83,7 +83,7 @@ and [validate_access_token_and_get_user_with_org](#validate-access-token-and-get
 | user_id                   | The id of the user                                                                       |
 | org_id_to_org_member_info | A dictionary of org ids to metadata about the org. Includes all orgs that the user is in |
 | legacy_user_id            | The original ID of the user, if the user was migrated from an external source            |
-| impersonator_user_id | If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be undefined |
+| impersonator_user_id | If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be None |
 
 The values of **orgIdToOrgMemberInfo** are **OrgMemberInfo**'s, with the
 following fields/functions:
