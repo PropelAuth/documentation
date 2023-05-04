@@ -85,6 +85,10 @@ type AuthenticationInfo = {
 
     // Metadata about the current logged in user
     user: User,
+
+    // If someone on your team is impersonating another user, this will be set to the employee's ID
+    // By default, user impersonation is turned off and this will be undefined
+    impersonatorUserId?: string
 }
 
 // Metadata about the current logged in user

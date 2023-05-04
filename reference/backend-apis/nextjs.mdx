@@ -75,6 +75,7 @@ The **user** object looks like:
 | userId               | The id of the user                                                                       |
 | orgIdToOrgMemberInfo | A dictionary of org ids to metadata about the org. Includes all orgs that the user is in |
 | legacyUserId         | The original ID of the user, if the user was migrated from an external source            |
+| impersonatorUserId | If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be undefined |
 
 The values of **orgIdToOrgMemberInfo** are **OrgMemberInfo**'s, with the
 following fields/functions:

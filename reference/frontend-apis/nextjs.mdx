@@ -125,6 +125,7 @@ The following props are injected to the underlying component:
 | [orgHelper](#org-helper)       | A class with useful functions for managing organizations                                     |
 | [accessHelper](#access-helper) | A class with useful functions for accessing role and permissions (RBAC)                      |
 | [user](#the-user-object)      | If user is logged in, this contains metadata about them. Otherwise, null                       |
+| impersonatorUserId | If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be undefined |
 
 ### withRequiredAuthInfo
 
@@ -191,6 +192,7 @@ information. authInfo contains:
 | [orgHelper](#org-helper)       | A class with useful functions for managing organizations                                     |
 | [accessHelper](#access-helper) | A class with useful functions for accessing role and permissions (RBAC)                      |
 | [user](#the-user-object)      | If user is logged in, this contains metadata about them. Otherwise, null                       |
+| impersonatorUserId | If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be undefined |
 
 <Note>
     **When is an external API call made?**

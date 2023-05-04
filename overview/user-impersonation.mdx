@@ -45,3 +45,32 @@ You may, for example, want to:
 
 To help you distinguish between a user and an impersonated user, there's a new `impersonatorUserId` field on the user object,
 in both the frontend and the backend. This field will be set to the ID of the person on your team who is impersonating the user, if any.
+
+In React, for example, you could use this field to add a banner to your product, indicating that the user is being impersonated:
+
+```jsx
+import { withAuthInfo } from "@propelauth/react"
+
+const UserBanner = withAuthInfo({ impersonatorUserId }) => {
+  if (impersonatorUserId) {
+    return <div className="user-banner">(!) Currently Impersonating</div>
+  } else {
+    return null
+  }
+}
+```
+
+In the backend, you could use this field to limit the actions that can be performed while impersonating a user:
+
+```js
+// Express example
+app.post("/api/sensitive-action", auth.requireUser, (req, res) => {
+  if (req.user.impersonatorUserId) {
+    res.status(403).send("You cannot perform this action while impersonating a user")
+  } else {
+    // Perform the sensitive action
+  }
+})
+```
+
+See the [Reference documentation](/reference) for more information about the library for your language/framework.
