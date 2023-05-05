@@ -80,7 +80,7 @@ try {
 }
 ```
 
-The **user** object looks like:
+The **user** object contains:
 
 | Property             | Description                                                                              |
 | -------------------- | ---------------------------------------------------------------------------------------- |
@@ -88,6 +88,18 @@ The **user** object looks like:
 | orgIdToOrgMemberInfo | A dictionary of org ids to metadata about the org. Includes all orgs that the user is in |
 | legacyUserId         | The original ID of the user, if the user was migrated from an external source            |
 | impersonatorUserId | If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be undefined |
+
+<ParamField query="userId" type="string">
+  The id of the user
+</ParamField>
+
+<ParamField query="orgIdToOrgMemberInfo" type="object">
+  A dictionary of org ids to metadata about the org. Includes all orgs that the user is in
+</ParamField>
+
+<ParamField query="legacyUserId" type="string">
+  The original ID of the user, if the user was migrated from an external source 
+</ParamField>
 
 The values of **orgIdToOrgMemberInfo** are **OrgMemberInfo**'s, with the
 following fields/functions:
