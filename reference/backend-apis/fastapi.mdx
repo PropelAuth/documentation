@@ -80,10 +80,13 @@ async def admin_only(org_id: str, current_user: User = Depends(auth.require_user
     return {"message": f"You are in {org.org_name}"}
 ```
 
-| Argument        | Description                                                                                                                                                                     |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| current_user    | The result of [require_user](#require-user)                                                                                                                                                      |
-| required_org_id | The id of an organization. This function will check that the current user is a member of this org. Typically, this is passed in from the frontend as a query or path parameter. |
+<ParamField query="current_user">
+  The result of [require_user](#require-user)
+</ParamField>
+
+<ParamField query="required_org_id">
+  The id of an organization. This function will check that the current user is a member of this org. Typically, this is passed in from the frontend as a query or path parameter.
+</ParamField>
 
 Specifically, it will:
 
@@ -97,27 +100,72 @@ The returned organization is an [OrgMemberInfo](#org-member-info)
 
 A user returned by [require_user](#require-user) or [optional_user](#optional-user).
 
-| Property                    | Description                                                                              |
-|-----------------------------|------------------------------------------------------------------------------------------|
-| user_id                     | The id of the user                                                                       |
-| org_id_to_org_member_info   | A dictionary of org ids to metadata about the org. Includes all orgs that the user is in |
-| legacy_user_id              | The original ID of the user, if the user was migrated from an external source            |
-| impersonator_user_id | If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be None |
+<ParamField query="user_id">
+  The id of the user
+</ParamField>
 
-The values of **org_id_to_org_member_info** are [OrgMemberInfo](#org-member-info)'s.
+<ParamField query="org_id_to_org_member_info">
+  A dictionary of org ids to metadata about the org. Includes all orgs that the user is in
+</ParamField>
+
+<ParamField query="legacy_user_id">
+  The original ID of the user, if the user was migrated from an external source 
+</ParamField>
+
+<ParamField query="impersonator_user_id">
+  If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be None 
+</ParamField>
+
 
 ### OrgMemberInfo
 
-| Property | Description |
-| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| org_id                                                 | The id of the org                                                                                                                                                                                                                  |
-| org_name                                               | The name of the org                                                                                                                                                                                                                |
-| user_assigned_role                                     | The user's role within the organization. See [Roles and Permissions](/overview/roles) for more details.                                                                                                               |
-| user_is_role(role: str): bool                          | Returns True if the user's role within the organization matches the `role` passed in                                                                                                                                               |
-| user_is_at_least_role(role: str): bool                 | Returns True if the user's role within the organization is at least the `role` passed in. If the hierarchy of roles is Owner => Admin => Member, specifying "Admin" will return True for Admins and Owners, but False for Members. |
-| user_has_permission(permission: str): bool             | Returns True if the user has a specific permission. The users' permissions are derived from their role within this organization.                                                                                                    |
-| user_has_all_permissions(permissions: List[str]): bool | Returns True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.                                                                                            |
+The values of **org_id_to_org_member_info** are [OrgMemberInfo](#org-member-info)'s.
 
+
+<ParamField query="org_id" type="str">
+  The id of the org
+</ParamField>
+
+<ParamField query="org_name" type="str">
+  The name of the org
+</ParamField>
+
+<ParamField query="user_assigned_role" type="str">
+  The user's role within the organization. See [Roles and Permissions](/overview/roles) for more details.
+</ParamField>
+
+<ResponseField name="user_is_role(role)">
+    Returns True if the user's role within the organization matches the `role` passed in
+  <Expandable title="parameters">
+    <ResponseField name="role" type="str">
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="user_is_at_least_role(role)">
+    Returns True if the user's role within the organization is at least the `role` passed in. If the hierarchy of roles is Owner => Admin => Member, specifying "Admin" will return True for Admins and Owners, but False for Members.
+  <Expandable title="parameters">
+    <ResponseField name="role" type="str">
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="user_has_permission(permission)">
+    Return True if the user has a specific permission. The users' permissions are derived from their role within this organization.
+  <Expandable title="parameters">
+    <ResponseField name="permission" type="str">
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="user_has_all_permissions(permissions)">
+    Return True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.
+  <Expandable title="parameters">
+    <ResponseField name="permissions" type="List[str]">
+        Array of permission strings
+    </ResponseField>
+  </Expandable>
+</ResponseField>
 ## Roles and Permissions
 
 A user has a **Role** within an organization. By default, the available roles are **Owner**, **Admin**, or **Member**, but these can be configured.
@@ -161,12 +209,24 @@ using either `require_user` or `optional_user`.
 You can obtain an access token either from the frontend or by navigating to
 `${YOUR_AUTH_URL}/api/v1/refresh_token`.
 
-## Fetch user metadata by id
+## Fetching functions
+
+### Fetch user metadata by id
 
 ```python
-# auth object comes from init_auth
+# auth object comes from init_base_auth
 auth.fetch_user_metadata_by_user_id(user_id, include_orgs=False)
 ```
+
+Parameters
+
+<ParamField query="user_id" type="str">
+  The id of the user
+</ParamField>
+
+<ParamField query="include_orgs" type="bool">
+  Whether to return an **org_id_to_org_info** object
+</ParamField>
 
 Successful response:
 
@@ -204,34 +264,57 @@ Successful response:
 }
 ```
 
-## Fetch user metadata by email
+### Fetch user metadata by email
 
 ```python
-# auth object comes from init_auth
+# auth object comes from init_base_auth
 auth.fetch_user_metadata_by_email(email, include_orgs=False)
 ```
 
+<ParamField query="email" type="str">
+  The email of the user
+</ParamField>
+
+<ParamField query="include_orgs" type="bool">
+  Whether to return an **org_id_to_org_info** object
+</ParamField>
+
 Successful response is the same as [fetch_user_metadata_by_user_id](#fetch-user-metadata-by-id), expect it takes an email as an argument.
 
-## Fetch user metadata by username
+### Fetch user metadata by username
 
 ```python
-# auth object comes from init_auth
+# auth object comes from init_base_auth
 auth.fetch_user_metadata_by_username(email, include_orgs=False)
 ```
+<ParamField query="username" type="str">
+  The username of the user
+</ParamField>
+
+<ParamField query="include_orgs" type="bool">
+  Whether to return an **org_id_to_org_info** object
+</ParamField>
 
 Successful response is the same as [fetch_user_metadata_by_user_id](#fetch-user-metadata-by-id), expect it takes a username as an argument.
 
-## Batch fetch users by ids
+### Batch fetch users by ids
 
 ```python
-# auth object comes from init_auth
+# auth object comes from init_base_auth
 user_id_to_metadata = auth.fetch_batch_user_metadata_by_user_ids([
     "1be238f3-5908-4c51-b3bf-e53dd763047e",
     "beb00acf-6e48-435d-8388-3758607ec01b",
     "941c99e5-3530-4475-bd0f-bbc5d06603c3"
 ], include_orgs=False)
 ```
+
+<ParamField query="user_ids" type="List[str]">
+  List of user_ids
+</ParamField>
+
+<ParamField query="include_orgs" type="bool">
+  Whether to return an **org_id_to_org_info** object
+</ParamField>
 
 <Note>
     Any IDs that don't have a match are not returned. Duplicate users are only returned once.
@@ -278,39 +361,66 @@ user_id_to_metadata = auth.fetch_batch_user_metadata_by_user_ids([
 }
 ```
 
-## Batch fetch users by emails
+### Batch fetch users by emails
 
 ```python
-# auth object comes from init_auth
+# auth object comes from init_base_auth
 auth.fetch_batch_user_metadata_by_emails(["a@example.com", "b@example.com"], include_orgs=True)
 ```
+<ParamField query="emails" type="List[str]">
+  List of user emails
+</ParamField>
+
+<ParamField query="include_orgs" type="bool">
+  Whether to return an **org_id_to_org_info** object
+</ParamField>
 
 Successful response is the same as [Batch fetch users by ids](#batch-fetch-users-by-ids), but the keys are matching email addresses.
 
-## Batch fetch users by usernames
+### Batch fetch users by usernames
 
 ```python
-# auth object comes from init_auth
+# auth object comes from init_base_auth
 auth.fetch_batch_user_metadata_by_usernames(["usera", "userb", "userc"], include_orgs=True)
 ```
 
+<ParamField query="usernames" type="List[str]">
+  List of usernames
+</ParamField>
+
+<ParamField query="include_orgs" type="bool">
+  Whether to return an **org_id_to_org_info** object
+</ParamField>
+
 Successful response is the same as [Batch fetch users by ids](#batch-fetch-users-by-ids), but the keys are matching usernames.
 
-## Search for users
+### Search for users
 
 ```python
-# auth object comes from init_auth
+# auth object comes from init_base_auth
 auth.fetch_users_by_query(page_size=10, page_number=0, order_by=UserQueryOrderBy.CREATED_AT_ASC,
                           email_or_username=None, include_orgs=False)
 ```
 
-| Argument          | Description                                                                                                                                  |
-|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| page_size         | The number of results to return at a time. Must be between 1 and 100, default 10.                                                            |
-| page_number       | Used to page over results                                                                                                                    |
-| order_by          | How to order the results. See UserQueryOrderBy for options                                                                                   |
-| email_or_username | Searches for partial matches within email addresses or usernames. **port** would match a user with email address **support@propelauth.com**. |
-| include_orgs      | Whether or not to include the user's organization information in the response. Default false                                                 |
+<ParamField query="page_size" type="int">
+  The number of results to return at a time. Must be between 1 and 100, default 10.
+</ParamField>
+
+<ParamField query="page_number" type="int">
+  Used to page over results
+</ParamField>
+
+<ParamField query="order_by" type="str">
+  How to order the results. Must be one of: **CREATED_AT_ASC**, **CREATED_AT_DESC**, **LAST_ACTIVE_AT_ASC**, **LAST_ACTIVE_AT_DESC**, **EMAIL**, **USERNAME**
+</ParamField>
+
+<ParamField query="email_or_username" type="str">
+  Searches for partial matches within email addresses or usernames. **port** would match a user with email address **support@propelauth.com**.
+</ParamField>
+
+<ParamField query="include_orgs" type="bool">
+  Whether to return an **org_id_to_org_info** object
+</ParamField>
 
 Successful response:
 
@@ -330,19 +440,29 @@ Successful response:
 
 1. [Example user in response](#fetch-user-metadata-by-id)
 
-## Fetch users in organization
+### Fetch users in organization
 
 ```python
-# auth object comes from init_auth
+# auth object comes from init_base_auth
 auth.fetch_users_in_org(org_id, page_size=10, page_number=0, include_orgs=False)
 ```
 
-| Argument     | Description                                                                                  |
-|--------------|----------------------------------------------------------------------------------------------|
-| org_id       | The organization to fetch users for                                                          |
-| page_size    | The number of results to return at a time. Must be between 1 and 100, default 10.            |
-| page_number  | Used to page over results                                                                    |
-| include_orgs | Whether or not to include the user's organization information in the response. Default false |
+<ParamField query="org_id" type="str">
+  The organization to fetch users for
+</ParamField>
+
+<ParamField query="page_size" type="int">
+  The number of results to return at a time. Must be between 1 and 100, default 10.
+</ParamField>
+
+<ParamField query="page_number" type="int">
+  Used to page over results
+</ParamField>
+
+<ParamField query="include_orgs" type="bool">
+  Whether to return an **org_id_to_org_info** object
+</ParamField>
+
 
 Successful response:
 
@@ -362,196 +482,16 @@ Successful response:
 
 1. [Example user in response](#fetch-user-metadata-by-id)
 
-## Create User
+### Fetch an organization
 
 ```python
-# auth object comes from init_auth
-auth.create_user(email, email_confirmed=False, send_email_to_confirm_email_address=True,
-                 ask_user_to_update_password_on_login=False,
-                 password=None, username=None, first_name=None, last_name=None)
-```
-
-| Argument                            | Description                                                                                                                                                |
-|-------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| email                               | The user's email address                                                                                                                                   |
-| email_confirmed                     | Whether the email address should start off as already confirmed. If false, the user is required to confirm the email address before they sign in.          |
-| send_email_to_confirm_email_address | Whether we should send an email immediately to confirm the user's email address. If false, the user will get a confirmation email when they first sign in. |
-| ask_user_to_update_password_on_login  | Whether we should require the user to set or update their password on initial login. Default false |
-| password                            | Optional password. If unset, the user can set it themselves via their account page                                                                         |
-| username                            | Optional username. Can only be used if **username** is enabled in your user schema                                                                         |
-| first_name                          | Optional first name. Can only be used if **name** is enabled in your user schema                                                                           |
-| last_name                           | Optional last name. Can only be used if **name** is enabled in your user schema                                                                            |
-
-Successful response:
-
-```js
-{
-    "user_id": "b5f667fb-e51a-49c6-a396-711e62948689"
-}
-```
-
-## Migrate User from External Source
-
-A similar function to [Create User](#create-user), but for cases where you already have a user stored in an external system.
-You can, for example, pass in a password hash for an existing user, and they will be able to login with their same password.
-It is also possible to provide an existing identifier, and we will store and return it along with our future identifiers, allowing you to link them.
-
-
-```py
-# auth object comes from init_auth
-auth.migrate_user_from_external_source(email, email_confirmed,
-                                       existing_user_id=None, existing_password_hash=None,
-                                       existing_mfa_base32_encoded_secret=None,
-                                       ask_user_to_update_password_on_login=False,
-                                       enabled=None, first_name=None, last_name=None, username=None)
-```
-
-| Argument                           | Description                                                                                                                                                                                                      |
-|------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| email                              | The user's email address                                                                                                                                                                                         |
-| email_confirmed                    | Whether the email address should start off as already confirmed. If false, the user is required to confirm the email address before they sign in.                                                                |
-| existing_user_id                   | (Optional) The user's ID in the existing system. This ID will be stored on the user as a `legacy_user_id` and it is present everywhere user_id's are (e.g. fetching user metadata or validating a user's token). |
-| existing_password_hash             | (Optional) The user's hashed password. We support both bcrypt and argon2 password hashes.                                                                                                                        |
-| existing_mfa_base32_encoded_secret | (Optional) The user's MFA secret, base32 encoded. If specified the user will have MFA enabled by default.                                                                                                        |
-| ask_user_to_update_password_on_login  | (Optional) Whether we should require the user to set or update their password on initial login. Default false |
-| enabled                            | (Optional) Whether or not the user can login                                                                                                                                                                     |
-| username                           | Optional username. Can only be used if **username** is enabled in your user schema                                                                                                                               |
-| first_name                         | Optional first name. Can only be used if **name** is enabled in your user schema                                                                                                                                 |
-| last_name                          | Optional last name. Can only be used if **name** is enabled in your user schema                                                                                                                                  |
-
-Successful response:
-
-```js
-{
-    "user_id": "b5f667fb-e51a-49c6-a396-711e62948689"
-}
-```
-
-## Create magic link
-
-Creates a magic link that a user can use to log in. Use this API if you'd prefer to send the magic link to the customer yourself, otherwise, we have [Create User](#create-user) which will email them directly.
-
-```python
-# auth object comes from init_auth
-auth.create_magic_link(email, redirect_to_url=None, expires_in_hours=None, create_new_user_if_one_doesnt_exist=None)
-```
-
-| Argument                            | Description                                                                                                                                                                                   |
-|-------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| email                               | The user's email address                                                                                                                                                                      |
-| redirect_to_url                     | (Optional) Where to redirect the user after they login. If unspecified, will use the login redirect path specified in your dashboard.                                                         |
-| expires_in_hours                    | (Optional) How many hours should the link be valid for?                                                                                                                                       |
-| create_new_user_if_one_doesnt_exist | (Optional) If true, this will create a new user if one matching the provided email address doesn't exist. If false, the request will fail if no user with that email exists. Default is true. |
-
-Successful response:
-
-```js
-{
-    "url": "https://auth.yourdomain.com/..."
-}
-```
-
-## Create Access Token
-
-Our frontend libraries allow you to get [access tokens](/overview/access-tokens) that can be sent to the backend.
-The backend is then responsible for verifying these tokens.
-
-For testing purposes, you may want to create access tokens separately from the frontend and set a custom expiration time.
-With this API, you can create access tokens for users programmatically and set a custom expiration.
-
-```python
-# auth object comes from init_auth
-auth.create_access_token(user_id, duration_in_minutes)
-```
-
-| Argument                       | Description                                                                                                                                                                                              |
-|--------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| user_id | The user's ID |
-| duration_in_minutes | How long the token is valid for, in minutes.  |
-
-Successful response:
-
-```js
-{
-    "access_token": "..."
-}
-```
-
-## Update User Email
-
-```python
-# auth object comes from init_auth
-# Returns true if it was successful, false if the user was not found
-auth.update_user_email(user_id, new_email, require_email_confirmation)
-```
-
-| Argument                   | Description                                                                                                                                                                                           |
-|----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| new_email                  | New email address for this user                                                                                                                                                                       |
-| require_email_confirmation | Whether the new email address requires confirmation. If true, an email will be sent to the new email address to confirm. If false, the users email address will be updated and confirmed immediately. |
-
-## Update User Metadata
-
-```python
-# auth object comes from init_auth
-# Returns true if it was successful, false if the user was not found
-auth.update_user_metadata(user_id, username=None, first_name=None, last_name=None, metadata=None)
-```
-
-| Argument   | Description                                                                                                                                                |
-|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| username   | Optional username. Can only be used if **username** is enabled in your user schema                                                                         |
-| first_name | Optional first name. Can only be used if **name** is enabled in your user schema                                                                           |
-| last_name  | Optional last name. Can only be used if **name** is enabled in your user schema                                                                            |
-| metadata   | Optional custom metadata JSON object.                                                                                                                      |
-
-## Update User Password
-
-```python
-# auth object comes from init_auth
-# Returns true if it was successful, false if the user was not found
-auth.update_user_password(user_id, password, ask_user_to_update_password_on_login=False)
-```
-
-| Argument   | Description                                                                                                                                                |
-|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| password | The user's new password |
-| ask_user_to_update_password_on_login | (Optional) Whether we should require the user to set or update their password the next time they visit your product. Default false |
-
-## Delete user
-
-```python
-# auth object comes from init_auth
-# Returns true if it was successful, false if the user was not found
-auth.delete_user(user_id)
-```
-
-## Disable user
-
-If successful, the user is logged out and unable to log back in.
-
-```python
-# auth object comes from init_auth
-# Returns true if it was successful, false if the user was not found
-auth.disable_user(user_id)
-```
-
-## Enable user
-
-If successful, the user is able to log back in again.
-
-```python
-# auth object comes from init_auth
-# Returns true if it was successful, false if the user was not found
-auth.enable_user(user_id)
-```
-
-## Fetch an organization
-
-```python
-# auth object comes from init_auth
+# auth object comes from init_base_auth
 org = auth.fetch_org(org_id)
 ```
+
+<ParamField query="org_id" type="str">
+  The organization to fetch users for
+</ParamField>
 
 Successful response:
 ```js
@@ -561,18 +501,23 @@ Successful response:
 }
 ```
 
-## Fetch all organizations
+### Fetch all organizations
 
 ```python
-# auth object comes from init_auth
+# auth object comes from init_base_auth
 auth.fetch_org_by_query(page_size=10, page_number=0, order_by=OrgQueryOrderBy.CREATED_AT_ASC)
 ```
+<ParamField query="page_size" type="int">
+  The number of results to return at a time. Must be between 1 and 100, default 10.
+</ParamField>
 
-| Argument    | Description                                                                       |
-|-------------|-----------------------------------------------------------------------------------|
-| page_size   | The number of results to return at a time. Must be between 1 and 100, default 10. |
-| page_number | Used to page over results                                                         |
-| order_by    | How to order the results. See OrgQueryOrderBy for options                         |
+<ParamField query="page_number" type="int">
+  Used to page over results
+</ParamField>
+
+<ParamField query="order_by" type="str">
+  How to order the results. Must be one of: **CREATED_AT_ASC**, **CREATED_AT_DESC**, **LAST_ACTIVE_AT_ASC**, **LAST_ACTIVE_AT_DESC**, **EMAIL**, **USERNAME**
+</ParamField>
 
 Successful response:
 
@@ -591,16 +536,312 @@ Successful response:
 }
 ```
 
-## Create Organization
+## User Management
+
+### Create User
+
+```python
+# auth object comes from init_base_auth
+auth.create_user(email, email_confirmed=False, send_email_to_confirm_email_address=True,
+                 ask_user_to_update_password_on_login=False,
+                 password=None, username=None, first_name=None, last_name=None)
+```
+
+<ParamField query="email" type="str">
+  The user's email address
+</ParamField>
+
+<ParamField query="email_confirmed" type="bool">
+  Whether the email address should start off as already confirmed. If false, the user is required to confirm the email address before they sign in.
+</ParamField>
+
+<ParamField query="send_email_to_confirm_email_address" type="bool">
+  Whether we should send an email immediately to confirm the user's email address. If false, the user will get a confirmation email when they first sign in.
+</ParamField>
+
+<ParamField query="ask_user_to_update_password_on_login" type="bool">
+  Whether we should require the user to set or update their password on initial login. Default false
+</ParamField>
+
+<ParamField query="password" type="str">
+  Optional password. If unset, the user can set it themselves via their account page 
+</ParamField>
+
+<ParamField query="username" type="str">
+  Optional username. Can only be used if **username** is enabled in your user schema 
+</ParamField>
+
+<ParamField query="first_name" type="str">
+  Optional first name. Can only be used if **name** is enabled in your user schema
+</ParamField>
+
+<ParamField query="last_name" type="str">
+  Optional last name. Can only be used if **name** is enabled in your user schema
+</ParamField>
+
+Successful response:
+
+```js
+{
+    "user_id": "b5f667fb-e51a-49c6-a396-711e62948689"
+}
+```
+
+### Update User Email
+
+```python
+# auth object comes from init_base_auth
+# Returns true if it was successful, false if the user was not found
+auth.update_user_email(user_id, new_email, require_email_confirmation)
+```
+
+<ParamField query="user_id" type="str">
+  The id of the user
+</ParamField>
+
+<ParamField query="new_email" type="str">
+  New email address for this user
+</ParamField>
+
+<ParamField query="require_email_confirmation" type="bool">
+  Whether the new email address requires confirmation. If true, an email will be sent to the new email address to confirm. If false, the users email address will be updated and confirmed immediately.
+</ParamField>
+
+### Update User Metadata
+
+```python
+# auth object comes from init_base_auth
+# Returns true if it was successful, false if the user was not found
+auth.update_user_metadata(user_id, username=None, first_name=None, last_name=None, metadata=None)
+```
+
+<ParamField query="user_id" type="str">
+  The id of the user
+</ParamField>
+
+<ParamField query="username" type="str">
+  Optional username. Can only be used if **username** is enabled in your user schema 
+</ParamField>
+
+<ParamField query="first_name" type="str">
+  Optional first name. Can only be used if **name** is enabled in your user schema
+</ParamField>
+
+<ParamField query="last_name" type="str">
+  Optional last name. Can only be used if **name** is enabled in your user schema
+</ParamField>
+
+<ParamField query="metadata" type="dict">
+  Optional custom metadata dictionary.
+</ParamField>
+
+### Update User Password
+
+```python
+# auth object comes from init_base_auth
+# Returns true if it was successful, false if the user was not found
+auth.update_user_password(user_id, password, ask_user_to_update_password_on_login=False)
+```
+
+<ParamField query="user_id" type="str">
+  The id of the user
+</ParamField>
+
+<ParamField query="password" type="str">
+  The id of the user
+</ParamField>
+
+<ParamField query="ask_user_to_update_password_on_login" type="bool">
+  (Optional) Whether we should require the user to set or update their password the next time they visit your product. Default false
+</ParamField>
+
+### Delete user
+
+```python
+# auth object comes from init_base_auth
+# Returns true if it was successful, false if the user was not found
+auth.delete_user(user_id)
+```
+
+<ParamField query="user_id" type="str">
+  The id of the user
+</ParamField>
+
+### Disable user
+
+If successful, the user is logged out and unable to log back in.
+
+```python
+# auth object comes from init_base_auth
+# Returns true if it was successful, false if the user was not found
+auth.disable_user(user_id)
+```
+
+<ParamField query="user_id" type="str">
+  The id of the user
+</ParamField>
+
+### Enable user
+
+If successful, the user is able to log back in again.
+
+```python
+# auth object comes from init_base_auth
+# Returns true if it was successful, false if the user was not found
+auth.enable_user(user_id)
+```
+
+<ParamField query="user_id" type="str">
+  The id of the user
+</ParamField>
+
+
+### Migrate User from External Source
+
+A similar function to [Create User](#create-user), but for cases where you already have a user stored in an external system.
+You can, for example, pass in a password hash for an existing user, and they will be able to login with their same password.
+It is also possible to provide an existing identifier, and we will store and return it along with our future identifiers, allowing you to link them.
+
 
 ```py
-# auth object comes from init_auth
+# auth object comes from init_base_auth
+auth.migrate_user_from_external_source(email, email_confirmed,
+                                       existing_user_id=None, existing_password_hash=None,
+                                       existing_mfa_base32_encoded_secret=None,
+                                       ask_user_to_update_password_on_login=False,
+                                       enabled=None, first_name=None, last_name=None, username=None)
+```
+
+<ParamField query="email" type="str">
+  The user's email address
+</ParamField>
+
+<ParamField query="email_confirmed" type="bool">
+  Whether the email address should start off as already confirmed. If false, the user is required to confirm the email address before they sign in.
+</ParamField>
+
+<ParamField query="existing_user_id" type="str">
+  (Optional) The user's ID in the existing system. This ID will be stored on the user as a `legacy_user_id` and it is present everywhere user_id's are (e.g. fetching user metadata or validating a user's token).
+</ParamField>
+
+<ParamField query="existing_password_hash" type="str">
+  (Optional) The user's hashed password. We support both bcrypt and argon2 password hashes.
+</ParamField>
+
+<ParamField query="existing_mfa_base32_encoded_secret" type="str">
+  (Optional) The user's MFA secret, base32 encoded. If specified the user will have MFA enabled by default.
+</ParamField>
+
+<ParamField query="ask_user_to_update_password_on_login" type="bool">
+  (Optional) Whether we should require the user to set or update their password on initial login. Default false
+</ParamField>
+
+<ParamField query="enabled" type="bool">
+  (Optional) Whether or not the user can login
+</ParamField>
+
+<ParamField query="username" type="str">
+  Optional username. Can only be used if **username** is enabled in your user schema 
+</ParamField>
+
+<ParamField query="first_name" type="str">
+  Optional first name. Can only be used if **name** is enabled in your user schema
+</ParamField>
+
+<ParamField query="last_name" type="str">
+  Optional last name. Can only be used if **name** is enabled in your user schema
+</ParamField>
+
+Successful response:
+
+```js
+{
+    "user_id": "b5f667fb-e51a-49c6-a396-711e62948689"
+}
+```
+
+### Create magic link
+
+Creates a magic link that a user can use to log in. Use this API if you'd prefer to send the magic link to the customer yourself, otherwise, we have [Create User](#create-user) which will email them directly.
+
+```python
+# auth object comes from init_base_auth
+auth.create_magic_link(email, redirect_to_url=None, expires_in_hours=None, create_new_user_if_one_doesnt_exist=None)
+```
+
+| Argument                            | Description                                                                                                                                                                                   |
+|-------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| email                               | The user's email address                                                                                                                                                                      |
+| redirect_to_url                     | (Optional) Where to redirect the user after they login. If unspecified, will use the login redirect path specified in your dashboard.                                                         |
+| expires_in_hours                    | (Optional) How many hours should the link be valid for?                                                                                                                                       |
+| create_new_user_if_one_doesnt_exist | (Optional) If true, this will create a new user if one matching the provided email address doesn't exist. If false, the request will fail if no user with that email exists. Default is true. |
+
+<ParamField query="email" type="str">
+  The user's email address
+</ParamField>
+
+<ParamField query="redirect_to_url" type="str">
+  (Optional) Where to redirect the user after they login. If unspecified, will use the login redirect path specified in your dashboard.
+</ParamField>
+
+<ParamField query="expires_in_hours" type="int">
+  (Optional) How many hours should the link be valid for? 
+</ParamField>
+
+<ParamField query="create_new_user_if_one_doesnt_exist" type="bool">
+  (Optional) If true, this will create a new user if one matching the provided email address doesn't exist. If false, the request will fail if no user with that email exists. Default is true.
+</ParamField>
+
+Successful response:
+
+```js
+{
+    "url": "https://auth.yourdomain.com/..."
+}
+```
+
+### Create Access Token
+
+Our frontend libraries allow you to get [access tokens](/overview/access-tokens) that can be sent to the backend.
+The backend is then responsible for verifying these tokens.
+
+For testing purposes, you may want to create access tokens separately from the frontend and set a custom expiration time.
+With this API, you can create access tokens for users programmatically and set a custom expiration.
+
+```python
+# auth object comes from init_base_auth
+auth.create_access_token(user_id, duration_in_minutes)
+```
+
+<ParamField query="user_id" type="str">
+  The id of the user
+</ParamField>
+
+<ParamField query="duration_in_minutes" type="int">
+  How long the token is valid for, in minutes.
+</ParamField>
+
+Successful response:
+
+```js
+{
+    "access_token": "..."
+}
+```
+
+
+## Org Management
+
+### Create Organization
+
+```py
+# auth object comes from init_base_auth
 auth.create_org(name)
 ```
 
-| Argument | Description             |
-|----------|-------------------------|
-| name     | The organization's name |
+<ParamField query="name" type="str">
+  The organization's name
+</ParamField>
 
 Successful response:
 
@@ -610,18 +851,24 @@ Successful response:
 }
 ```
 
-## Add user to organization
+### Add user to organization
 
 ```py
-# auth object comes from init_auth
+# auth object comes from init_base_auth
 auth.add_user_to_org(user_id, org_id, role)
 ```
 
-| Argument | Description                                           |
-|----------|-------------------------------------------------------|
-| user_id  | The user's ID                                         |
-| org_id   | The org's ID                                          |
-| role     | The role of the user in that organization, e.g. Admin |
+<ParamField query="user_id" type="str">
+  The id of the user
+</ParamField>
+
+<ParamField query="org_id" type="str">
+  The org's ID
+</ParamField>
+
+<ParamField query="role" type="str">
+  The role of the user in that organization, e.g. Admin
+</ParamField>
 
 Successful response:
 
@@ -629,44 +876,47 @@ Successful response:
 {}
 ```
 
-## Delete user
+### Allow organization to set up SAML connection
 
-```python
-# auth object comes from init_auth
-# Returns true if it was successful, false if the user was not found
-auth.delete_user(user_id)
+```py
+# auth object comes from init_base_auth
+auth.allow_org_to_setup_saml_connection(org_id)
 ```
+<ParamField query="orgId" type="str">
+  The org's ID
+</ParamField>
 
-## Disable user
+Returns True if successful, meaning the organization can now set up [SAML](/overview/saml) connections.
 
-If successful, the user is logged out and unable to log back in.
+### Disallow organization to set up SAML connection
 
-```python
-# auth object comes from init_auth
-# Returns true if it was successful, false if the user was not found
-auth.disable_user(user_id)
+```py
+# auth object comes from init_base_auth
+auth.disallow_org_to_setup_saml_connection(org_id)
 ```
+<ParamField query="orgId" type="str">
+  The org's ID
+</ParamField>
 
-## Enable user
+Returns True if successful, meaning the organization can no longer set up [SAML](/overview/saml) connections.
 
-If successful, the user is able to log back in again.
 
-```python
-# auth object comes from init_auth
-# Returns true if it was successful, false if the user was not found
-auth.enable_user(user_id)
-```
-
-## Update Organization Metadata
+### Update Organization Metadata
 
 ```python
-# auth object comes from init_auth
+# auth object comes from init_base_auth
 # Returns true if it was successful, false if the organization was not found
 auth.update_org_metadata(org_id, name=None, can_setup_saml=None, metadata=None)
 ```
 
-| Argument   | Description                                                                                                                                                |
-|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| name       | Optional organization name. Updates the name of the organization.                                                                         |
-| can_setup_saml  | Optional boolean. If enabled this organization has access to setup SAML connections via our hosted UI's.                                                                            |
-| metadata   | Optional custom metadata JSON object.                                                                                                                  |
+<ParamField query="name" type="str">
+  Optional organization name. Updates the name of the organization.
+</ParamField>
+
+<ParamField query="can_setup_saml" type="bool">
+  Optional boolean. If enabled this organization has access to setup SAML connections via our hosted UI's.
+</ParamField>
+
+<ParamField query="metadata" type="dict">
+  Optional custom metadata dictionary.
+</ParamField>
