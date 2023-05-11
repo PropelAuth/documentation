@@ -382,7 +382,7 @@ user_id_to_metadata = auth.fetch_batch_user_metadata_by_user_ids([
     Any IDs that don't have a match are not returned. Duplicate users are only returned once.
 </Note>
 
-`user_id_to_metadata` will store a dictionary response as shown below:
+`user_id_to_metadata` will store a dictionary response mapped to the 'user_ids' you pass in, as shown below:
 
 ```js
 {

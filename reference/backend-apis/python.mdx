@@ -259,7 +259,7 @@ user_id_to_metadata = auth.fetch_batch_user_metadata_by_user_ids([
     Any IDs that don't have a match are not returned. Duplicate users are only returned once.
 </Note>
 
-`user_id_to_metadata` will store a dictionary response as shown below:
+`user_id_to_metadata` will store a dictionary response mapped to the 'user_ids' you pass in, as shown below:
 
 ```js
 {
@@ -847,6 +847,10 @@ Returns True if successful, meaning the organization can no longer set up [SAML]
 # Returns true if it was successful, false if the organization was not found
 auth.update_org_metadata(org_id, name=None, can_setup_saml=None, metadata=None)
 ```
+
+<ParamField query="orgId" type="str">
+  The org's ID
+</ParamField>
 
 <ParamField query="name" type="str">
   Optional organization name. Updates the name of the organization.

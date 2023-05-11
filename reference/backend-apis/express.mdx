@@ -202,7 +202,7 @@ belongs to a specific organization.
 
 If none is specified like in the Basic example below, the default function here will 
 it will check for a path param **orgId**. Otherwise, you can provide a function here 
-that returns an **orgId** in another way, as seen in the Advanced example.
+that returns an **orgId** in another way, as seen with the `orgIdInQueryExtractor` in the Advanced example.
 
 <CodeGroup>
 
@@ -405,7 +405,7 @@ Parameters
     Any IDs that don't have a match are not returned. Duplicate users are only returned once.
 </Note>
 
-Successful response:
+A successful response will be a map of the user objects set to keys of the userIds you passed in. For example:
 
 ```js
 {
