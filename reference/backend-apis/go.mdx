@@ -39,15 +39,15 @@ Here's an example where we create an auth middleware that will protect a route a
 
 ```go
 func requireUser(client *propelauth.Client, next http.HandlerFunc) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        user, err := client.GetUser(r.Header.Get("Authorization"))
-        if err != nil {
-            w.WriteHeader(401)
-            return
-        }
-        requestContext := context.WithValue(r.Context(), "user", user)
-        next.ServeHTTP(w, r.WithContext(requestContext))
-    })
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user, err := client.GetUser(r.Header.Get("Authorization"))
+		if err != nil {
+				w.WriteHeader(401)
+				return
+		}
+		requestContext := context.WithValue(r.Context(), "user", user)
+		next.ServeHTTP(w, r.WithContext(requestContext))
+	})
 }
 ```
 
@@ -55,14 +55,117 @@ Which can then be used like:
 
 ```go
 func whoami(w http.ResponseWriter, req *http.Request) {
-    user := req.Context().Value("user").(*models.UserFromToken)
-    json.NewEncoder(w).Encode(user)
+	user := req.Context().Value("user").(*models.UserFromToken)
+	json.NewEncoder(w).Encode(user)
 }
 // ...
 http.Handle("/api/whoami", requireUser(client, whoami))
 ```
 
 ## Roles and Permissions
+
+In the [Protect API Routes](#protect-api-routes) section, we created an auth middleware that protected a route and set the user on the request context. To expand, here 
+is an example of authorization using the default Go http module, using the built in **GetOrgMemberInfo** and **IsRole** functions to determine if the user is an admin.
+
+```go
+func requireAdmin(client *propelauth.Client, next http.HandlerFunc) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user, err := client.GetUser(r.Header.Get("Authorization"))
+		if err != nil {
+				w.WriteHeader(401)
+				return
+		}
+		// Get the org id from the request - this could be a path param, header, query param
+		orgId := getOrgIdFromRequest(r)
+		orgMemberInfo, err := user.GetOrgMemberInfo(orgId)
+		if err != nil {
+				w.WriteHeader(403)
+				return
+		}
+		if !orgMemberInfo.IsRole("Admin") {
+				w.WriteHeader(403)
+				return
+		}
+		requestContext := context.WithValue(r.Context(), "user", user)
+		requestContext = context.WithValue(requestContext, "orgMemberInfo", orgMemberInfo)
+		next.ServeHTTP(w, r.WithContext(requestContext))
+	})
+}
+```
+
+The **user** object contains:
+<ParamField query="UserID" type="string">
+	The id of the user
+</ParamField>
+<ResponseField name="OrgIDToOrgMemberInfo">
+  <Expandable>
+		<ResponseField name="OrgID" type="string">
+			The id of the org
+		</ResponseField>
+		<ResponseField name="OrgName" type="string">
+			The name of the org
+		</ResponseField>
+    <ResponseField name="UserAssignedRole" type="string">
+        The user's role within the organization.
+    </ResponseField>
+    <ResponseField name="UserPermissions" type="string">
+        The user's permissions within the organization
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+<ParamField query="LegacyUserID" type="string">
+  The original ID of the user, if the user was migrated from an external source 
+</ParamField>
+
+<ParamField query="ImpersonatorUserID" type="string">
+  If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be undefined 
+</ParamField>
+
+There are also additional authorization functions that exist on the **OrgIDToOrgMemberInfo** object:
+
+### IsRole
+
+Returns true if the user has the exact role.
+
+```go
+orgMemberInfo.IsRole(exactRole)
+```
+<ParamField query="exactRole" type="string">
+  The exact role of the user.
+</ParamField>
+
+### IsAtLeastRole
+
+Returns true if the user has the exact role or a role that is higher in the hierarchy.
+
+```go
+orgMemberInfo.IsAtLeastRole(minimumRole)
+```
+<ParamField query="minimumRole" type="string">
+  The minimum role of the user.
+</ParamField>
+
+### HasPermission
+
+Returns true if the user has the exact permission.
+
+```go
+orgMemberInfo.HasPermission(permission)
+```
+<ParamField query="permission" type="string">
+  The exact permission of the user.
+</ParamField>
+
+### HasAllPermissions
+
+returns true if the user has all of the permissions.
+
+```go
+orgMemberInfo.HasAllPermissions(permissions)
+```
+<ParamField query="permissions" type="[]string">
+  The permissions of the user.
+</ParamField>
 
 ## Fetching functions
 
@@ -83,8 +186,6 @@ Parameters
 </ParamField>
 
 Successful response:
-
-
 
 ### Fetch user metadata by email
 
