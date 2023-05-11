@@ -411,6 +411,69 @@ We then also provide more specific libraries for frameworks like Express (node),
     }
     ```
   </Tab>
+  <Tab title="Go">
+    This library provides all the building blocks you need to integrate PropelAuth into your Go app. You should prefer
+    one of the other libraries if they exist for your framework.
+
+    ## Installation
+
+    ```bash
+    go get github.com/propelauth/propelauth-go
+    ```
+
+    ## Initialize
+
+    **propelauth.InitBaseAuth** performs a one-time initialization of the library.
+    It will verify your `apiKey` is correct and fetch the metadata needed to verify requests sent from the frontend.
+    You can find the authUrl and apiKey in the PropelAuth dashboard under **Backend Integration**.
+    We recommend storing them in environment variables as you will have different values for each environment.
+
+    ```go
+    client, err := propelauth.InitBaseAuth(authUrl, apiKey, nil)
+    ```
+
+    ## Protecting an API Route
+
+    You can protect an API route by validating the Authorization header:
+
+    ```go
+    user, err := client.GetUser(r.Header.Get("Authorization"))
+    if err != nil {
+        w.WriteHeader(401)
+        return
+    }
+    ```
+
+    Here's an example where we create an auth middleware that will protect a route and set the user on the request context:
+
+    ```go
+    func requireUser(client *propelauth.Client, next http.HandlerFunc) http.Handler {
+    	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    		user, err := client.GetUser(r.Header.Get("Authorization"))
+    		if err != nil {
+    			w.WriteHeader(401)
+    			return
+    		}
+
+    		requestContext := context.WithValue(r.Context(), "user", user)
+    		next.ServeHTTP(w, r.WithContext(requestContext))
+    	})
+    }
+    ```
+
+    Which can then be used like:
+
+    ```go
+    func whoami(w http.ResponseWriter, req *http.Request) {
+    	user := req.Context().Value("user").(*models.UserFromToken)
+    	json.NewEncoder(w).Encode(user)
+    }
+
+    // ...
+
+    http.Handle("/api/whoami", requireUser(client, whoami))
+    ```
+  </Tab>
 </Tabs>
 
 ## How does this work?
