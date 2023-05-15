@@ -94,31 +94,31 @@ func requireAdmin(client *propelauth.Client, next http.HandlerFunc) http.Handler
 ```
 
 The **user** object contains:
-<ParamField query="UserID" type="string">
+<ParamField query="UserID" type="UUID">
 	The id of the user
 </ParamField>
-<ResponseField name="OrgIDToOrgMemberInfo">
+<ResponseField name="OrgIDToOrgMemberInfo" type="map[string]*OrgMemberInfoFromToken">
+  A map from OrgID to OrgMemberInfoFromToken
   <Expandable>
-		<ResponseField name="OrgID" type="string">
-			The id of the org
-		</ResponseField>
-		<ResponseField name="OrgName" type="string">
-			The name of the org
-		</ResponseField>
+    <ResponseField name="OrgID" type="UUID">
+        The id of the org
+    </ResponseField>
+    <ResponseField name="OrgName" type="string">
+        The name of the org
+    </ResponseField>
     <ResponseField name="UserAssignedRole" type="string">
         The user's role within the organization.
     </ResponseField>
-    <ResponseField name="UserPermissions" type="string">
+    <ResponseField name="UserPermissions" type="[]string">
         The user's permissions within the organization
     </ResponseField>
   </Expandable>
 </ResponseField>
-<ParamField query="LegacyUserID" type="string">
+<ParamField query="LegacyUserID" type="*string">
   The original ID of the user, if the user was migrated from an external source 
 </ParamField>
-
-<ParamField query="ImpersonatorUserID" type="string">
-  If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be undefined 
+<ParamField query="ImpersonatorUserID" type="*UUID">
+  If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be nil
 </ParamField>
 
 There are also additional authorization functions that exist on the **OrgIDToOrgMemberInfo** object:
@@ -177,7 +177,7 @@ client.FetchUserMetadataByUserID(userId, includeOrgs)
 
 Parameters
 
-<ParamField query="userId" type="string">
+<ParamField query="userId" type="UUID">
   The id of the user
 </ParamField>
 
@@ -187,7 +187,27 @@ Parameters
 
 Successful response:
 
-//TODO RESPONSE
+```go
+models.UserMetadata{
+    UserID: uuid.MustParse("e08aa7f2-b2d8-4ad2-9fda-1cda86a9f533"),
+    Email: "user@example.com",
+    EmailConfirmed: true,
+    HasPassword: true,
+    Username: "example_username",
+    FirstName: "Firstname",
+    LastName: "LastName",
+    PictureURL: "https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
+    Locked: false,
+    Enabled: true,
+    MFAEnabled: false,
+    CreatedAt: 1680895145,
+    LastActiveAt: 1682024563,
+    LegacyUserID: "",
+    OrgIDToOrgInfo: map[UUID]models.OrgInfo{UUID.Must"c784285e-d827-4801-9362-1f1361e20329":
+        models.OrgInfo{OrgID:UUID.Must"c784285e-d827-4801-9362-1f1361e20329", OrgName:"Acme", UserRole:"Owner"}
+    }
+}
+```
 
 ### Fetch user metadata by email
 
@@ -241,7 +261,17 @@ client.FetchBatchUserMetadataByUserIds(userIds, includeOrgs)
 
 A successful response will be a map of the user objects set to keys of the userIds you passed in. For example:
 
-//TODO RESPONSE
+```go
+map[UUID]models.UserMetadata{
+    UUID.MustParse("e08aa7f2-b2d8-4ad2-9fda-1cda86a9f533"): models.UserMetadata{
+        UserID: uuid.MustParse("e08aa7f2-b2d8-4ad2-9fda-1cda86a9f533"),
+        Email: "user@example.com",
+        // etc
+    },
+}
+```
+
+To see the values in the map, see [Fetch user metadata by id](#fetch-user-metadata-by-id).
 
 ### Batch fetch users by emails
 
@@ -303,15 +333,28 @@ client.FetchUsersByQuery(UserQuery)
 
 Successful response:
 
-//TODO RESPONSE
+```go
+&models.UserList{
+    TotalUsers: 45,
+    CurrentPage: 0,
+    PageSize: 10,
+    HasMoreResults: true,
+    Users: []models.UserMetadata{
+        // See Fetch user metadata by id for the fields
+        models.UserMetadata{},
+        models.UserMetadata{},
+        // ...
+    }
+}
+```
 
 ### Fetch users in organization
 
 ```go
-client.FetchUsersInOrg(orgID, UserInOrgQuery)
+client.FetchUsersInOrg(orgId, UserInOrgQuery)
 ```
 
-<ParamField query="orgID" type="string">
+<ParamField query="orgId" type="UUID">
   The org ID
 </ParamField>
 
@@ -331,15 +374,28 @@ client.FetchUsersInOrg(orgID, UserInOrgQuery)
 
 Successful response:
 
-//TODO RESPONSE
+```go
+&models.UserList{
+    TotalUsers: 45,
+    CurrentPage: 0,
+    PageSize: 10,
+    HasMoreResults: true,
+    Users: []models.UserMetadata{
+        // See Fetch user metadata by id for the fields
+        models.UserMetadata{},
+        models.UserMetadata{},
+        // ...
+    }
+}
+```
 
 ### Fetch an organization
 
 ```go
-client.FetchOrg(orgID)
+client.FetchOrg(orgId)
 ```
 
-<ParamField query="orgID" type="string">
+<ParamField query="orgId" type="UUID">
   The org ID
 </ParamField>
 
@@ -619,29 +675,29 @@ client.AddUserToOrg(AddUserToOrgQuery)
 ### Allow organization to set up SAML connection
 
 ```go
-client.AllowOrgToSetupSamlConnection(orgID)
+client.AllowOrgToSetupSamlConnection(orgId)
 ```
 
-<ParamField query="orgID" type="string">
+<ParamField query="orgId" type="string">
   The id of the organization
 </ParamField>
 
 ### Disallow organization to set up SAML connection
 
 ```go
-client.DisallowOrgToSetupSamlConnection(orgID)
+client.DisallowOrgToSetupSamlConnection(orgId)
 ```
 
-<ParamField query="orgID" type="string">
+<ParamField query="orgId" type="string">
   The id of the organization
 </ParamField>
 
 ### Update Organization Metadata
 ```go
-client.UpdateOrgMetadata(orgID, UpdateOrgQuery)
+client.UpdateOrgMetadata(orgId, UpdateOrgQuery)
 ```
 
-<ParamField query="orgID" type="string">
+<ParamField query="orgId" type="string">
   The id of the organization
 </ParamField>
 
