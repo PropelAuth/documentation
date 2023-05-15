@@ -194,6 +194,7 @@
             "reference/backend-apis/express",
             "reference/backend-apis/fastapi",
             "reference/backend-apis/flask",
+            "reference/backend-apis/go",
             "reference/backend-apis/nextjs",
             "reference/backend-apis/node",
             "reference/backend-apis/python",

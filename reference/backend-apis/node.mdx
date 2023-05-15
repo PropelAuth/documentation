@@ -80,29 +80,82 @@ try {
 }
 ```
 
-The **user** object looks like:
+The **user** object contains:
 
-| Property             | Description                                                                              |
-| -------------------- | ---------------------------------------------------------------------------------------- |
-| userId               | The id of the user                                                                       |
-| orgIdToOrgMemberInfo | A dictionary of org ids to metadata about the org. Includes all orgs that the user is in |
-| legacyUserId         | The original ID of the user, if the user was migrated from an external source            |
-| impersonatorUserId | If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be undefined |
+<ParamField query="userId" type="string">
+  The id of the user
+</ParamField>
+
+<ParamField query="orgIdToOrgMemberInfo" type="object">
+  A dictionary of org ids to metadata about the org. Includes all orgs that the user is in
+</ParamField>
+
+<ParamField query="legacyUserId" type="string">
+  The original ID of the user, if the user was migrated from an external source 
+</ParamField>
+
+<ParamField query="impersonatorUserId" type="string">
+  If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be undefined 
+</ParamField>
 
 The values of **orgIdToOrgMemberInfo** are **OrgMemberInfo**'s, with the
 following fields/functions:
 
-| Field | Description |
-| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| orgId                                            | The id of the org                                                                                                                                                                                                                  |
-| orgName                                          | The name of the org                                                                                                                                                                                                                |
-| urlSafeOrgName                                    | A URL-safe version of the name of the org                                                                                                                                                                                          |
-| assignedRole(): string                            | The user's role within the organization. See [Roles and Permissions](/overview/roles) for more details.                                                                                                               |
-| permissions(): string[]                           | The user's permissions within the organization. See [Roles and Permissions](/overview/roles)                                                                                                                          |
-| isRole(role: string): boolean                     | Returns True if the user's role within the organization matches the `role` passed in                                                                                                                                               |
-| isAtLeastRole(role: string): boolean              | Returns True if the user's role within the organization is at least the `role` passed in. If the hierarchy of roles is Owner => Admin => Member, specifying "Admin" will return True for Admins and Owners, but False for Members. |
-| hasPermission(permission: string): boolean        | Return True if the user has a specific permission. The users' permissions are derived from their role within this organization.                                                                                                    |
-| hasAllPermissions(permissions: string[]): boolean | Return True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.                                                                                            |
+<ParamField query="orgId" type="string">
+  The id of the org
+</ParamField>
+
+<ParamField query="orgName" type="string">
+  The name of the org
+</ParamField>
+
+<ParamField query="urlSafeOrgName" type="string">
+  A URL-safe version of the name of the org 
+</ParamField>
+
+<ParamField query="assignedRole()" type="function">
+  A function that returns the user's role within the organization. See [Roles and Permissions](/overview/roles) for more details. 
+</ParamField>
+
+<ParamField query="permissions()" type="function">
+  A function that returns the user's permissions within the organization. See [Roles and Permissions](/overview/roles)
+</ParamField>
+
+<ResponseField name="isRole(role)" type="function">
+    Returns True if the user's role within the organization matches the `role` passed in
+  <Expandable title="parameters">
+    <ResponseField name="role" type="string">
+
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="isAtLeastRole(role)" type="function">
+    Returns True if the user's role within the organization is at least the `role` passed in. If the hierarchy of roles is Owner => Admin => Member, specifying "Admin" will return True for Admins and Owners, but False for Members
+  <Expandable title="parameters">
+    <ResponseField name="role" type="string">
+
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="hasPermission(permission)" type="function">
+    Return True if the user has a specific permission. The users' permissions are derived from their role within this organization.
+  <Expandable title="parameters">
+    <ResponseField name="permission" type="string">
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="hasAllPermissions(permissions)" type="function">
+    Return True if the user has all the specified permissions. The users' permissions are derived from their role within this organization.
+  <Expandable title="parameters">
+    <ResponseField name="permissions" type="array">
+        Array of permission strings
+    </ResponseField>
+  </Expandable>
+</ResponseField>
 
 ### validateAccessTokenAndGetUserWithOrgInfo
 
@@ -149,18 +202,25 @@ All of these functions, just like **validateAccessTokenAndGetUserWithOrgInfo**,
 will take in an authorization header and an organization ID. The last parameter
 is either a role, permission, or list of permissions depending on the function.
 
-## Fetch user metadata by id
+## Fetching functions
 
-<CodeGroup>
-```ts Type
-function fetchUserMetadataByUserId(userId: string, includeOrgs?: boolean): Promise<UserMetadata | null>
+### Fetch user metadata by id
+
+
+```ts
+function fetchUserMetadataByUserId(userId, includeOrgs)
 ```
 
-```ts Example
-const userMetadata = await fetchUserMetadataByUserId(user.userId);
-console.log({"userId": userMetadata.userId, "email": userMetadata.email, "lastActiveAt": userMetadata.lastActiveAt});
-```
-</CodeGroup>
+
+Parameters
+
+<ParamField query="userId" type="string" required>
+  The id of the user
+</ParamField>
+
+<ParamField query="includeOrgs" type="boolean">
+  Whether to return an **orgIdToOrgInfo** object, default value is `false`
+</ParamField>
 
 Successful response (**UserMetadata**):
 
@@ -198,52 +258,65 @@ Successful response (**UserMetadata**):
 }
 ```
 
-## Fetch user metadata by email
-
-<CodeGroup>
-```ts Type
-function fetchUserMetadataByEmail(email: string, includeOrgs?: boolean): Promise<UserMetadata | null>
-```
-
-```ts Example
-const email = await db.fetchEmailFromAnalytics()
-const userMetadata = await fetchUserMetadataByEmail(email)
-if (userMetadata) {
-    console.log("Found user " + userMetadata)
-} else {
-    console.log("No user found")
-}
-```
-</CodeGroup>
-
-Successful response is the same as [Fetch user metadata by id](#fetch-user-metadata-by-id).
-
-## Fetch user metadata by username
-
-<CodeGroup>
-```ts Type
-function fetchUserMetadataByUsername(username: string, includeOrgs?: boolean): Promise<UserMetadata | null>
-```
-
-```ts Example
-const userMetadata = await fetchUserMetadataByUsername("username");
-console.log({"userId": userMetadata.userId, "pictureUrl": userMetadata.pictureUrl});
-```
-</CodeGroup>
-
-Successful response is the same as [Fetch user metadata by id](#fetch-user-metadata-by-id).
-
-## Batch fetch users by ids
+### Fetch user metadata by email
 
 ```ts
-function fetchBatchUserMetadataByUserIds(userIds: string[], includeOrgs?: boolean): Promise<{ [userId: string]: UserMetadata }>
+function fetchUserMetadataByEmail(email, includeOrgs)
 ```
+
+
+Parameters
+
+<ParamField query="email" type="string" required>
+  The email of the user
+</ParamField>
+
+<ParamField query="includeOrgs" type="boolean">
+  Whether to return an **orgIdToOrgInfo** object, default value is `false`
+</ParamField>
+
+Successful response is the same as [Fetch user metadata by id](#fetch-user-metadata-by-id).
+
+### Fetch user metadata by username
+
+```ts
+function fetchUserMetadataByUsername(username, includeOrgs)
+```
+
+Parameters
+
+<ParamField query="username" type="string" required>
+  The username of the user
+</ParamField>
+
+<ParamField query="includeOrgs" type="boolean">
+  Whether to return an **orgIdToOrgInfo** object, default value is `false`
+</ParamField>
+
+Successful response is the same as [Fetch user metadata by id](#fetch-user-metadata-by-id).
+
+### Batch fetch users by ids
+
+```ts
+function fetchBatchUserMetadataByUserIds(userIds, includeOrgs)
+```
+
+Parameters
+
+<ParamField query="userIds" type="array" required>
+  List of userIds
+</ParamField>
+
+<ParamField query="includeOrgs" type="boolean">
+  Whether to return an **orgIdToOrgInfo** object, default value is `false`
+</ParamField>
+
 
 <Note>
     Any IDs that don't have a match are not returned. Duplicate users are only returned once.
 </Note>
 
-Successful response:
+A successful response will be a map of the user objects set to keys of the userIds you passed in. For example:
 
 ```js
 {
@@ -282,41 +355,74 @@ Successful response:
 }
 ```
 
-## Batch fetch users by emails
+### Batch fetch users by emails
 
 ```ts
-function fetchBatchUserMetadataByEmails(emails: string[], includeOrgs?: boolean): Promise<{ [email: string]: UserMetadata }>
+function fetchBatchUserMetadataByEmails(emails, includeOrgs)
 ```
+
+Parameters
+
+<ParamField query="emails" type="array" required>
+  List of user emails
+</ParamField>
+
+<ParamField query="includeOrgs" type="boolean">
+  Whether to return an **orgIdToOrgInfo** object, default value is `false`
+</ParamField>
+
 
 Successful response is the same as [Batch fetch users by ids](#batch-fetch-users-by-ids), but the keys are matching email addresses.
 
-## Batch fetch users by usernames
+### Batch fetch users by usernames
 
 ```ts
-function fetchBatchUserMetadataByUsernames(usernames: string[], includeOrgs?: boolean): Promise<{ [username: string]: UserMetadata }>
+function fetchBatchUserMetadataByUsernames(usernames, includeOrgs)
 ```
+
+Parameters
+
+<ParamField query="usernames" type="array" required>
+  List of user usernames
+</ParamField>
+
+<ParamField query="includeOrgs" type="boolean">
+  Whether to return an **orgIdToOrgInfo** object, default value is `false`
+</ParamField>
+
 
 Successful response is the same as [Batch fetch users by ids](#batch-fetch-users-by-ids), but the keys are matching usernames.
 
-## Search for users
+### Search for users
 
-```ts
-function fetchUsersByQuery(usersQuery: UsersQuery): Promise<UsersPagedResponse>
-
-// Example
-const usersResponse = await auth.fetchUsersByQuery({emailOrUsername: "@example.com", orderBy: "LAST_ACTIVE_AT_DESC"})
-for (const user of userResponse.users) {
-    console.log("Found user " + user)
-}
+```ts 
+function fetchUsersByQuery(usersQuery)
 ```
 
-| Argument        | Description                                                                                                                                                 |
-|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| pageSize        | The number of results to return at a time. Must be between 1 and 100, default 10.                                                                           |
-| pageNumber      | Used to page over results                                                                                                                                   |
-| orderBy         | How to order the results. Must be one of: **CREATED_AT_ASC**, **CREATED_AT_DESC**, **LAST_ACTIVE_AT_ASC**, **LAST_ACTIVE_AT_DESC**, **EMAIL**, **USERNAME** |
-| emailOrUsername | Searches for partial matches within email addresses or usernames. **port** would match a user with email address **support@propelauth.com**.                |
-| includeOrgs     | Whether or not to include the user's organization information in the response. Default false                                                                |
+Searches for users through a customizable query object, `usersQuery`. The possible parameters for this query are as follows.
+
+`usersQuery` Parameters
+
+<ParamField query="pageSize" type="number">
+  The number of results to return at a time. Must be between 1 and 100, default 10.
+</ParamField>
+
+<ParamField query="pageNumber" type="number">
+  Used to page over results
+</ParamField>
+
+<ParamField query="orderBy" type="string">
+  How to order the results. Must be one of: **CREATED_AT_ASC**, **CREATED_AT_DESC**, **LAST_ACTIVE_AT_ASC**, **LAST_ACTIVE_AT_DESC**, **EMAIL**, **USERNAME**
+</ParamField>
+
+<ParamField query="emailOrUsername" type="string">
+  Searches for partial matches within email addresses or usernames. **port** would match a user with email address **support@propelauth.com**.
+</ParamField>
+
+<ParamField query="includeOrgs" type="boolean">
+  Whether to return an **orgIdToOrgInfo** object, default value is `false`
+</ParamField>
+
 
 Successful response:
 
@@ -336,24 +442,89 @@ Successful response:
 
 1. [Example user in response](#fetch-user-metadata-by-id)
 
-## Fetch users in organization
+### Fetch an organization
 
 ```ts
-function fetchUsersInOrg(usersInOrgQuery: UsersInOrgQuery): Promise<UsersPagedResponse>
-
-// Example
-const usersResponse = await auth.fetchUsersInOrg({
-    orgId: req.params.orgId,
-    pageNumber: req.params.pageNumber,
-})
+function fetchOrg(orgId)
 ```
 
-| Argument    | Description                                                                                  |
-|-------------|----------------------------------------------------------------------------------------------|
-| orgId       | The organization to fetch users for                                                          |
-| pageSize    | The number of results to return at a time. Must be between 1 and 100, default 10.            |
-| pageNumber  | Used to page over results                                                                    |
-| includeOrgs | Whether or not to include the user's organization information in the response. Default false |
+<ParamField query="orgId" type="string">
+  Id for the organization
+</ParamField>
+
+
+Successful response:
+```js
+{
+    "orgId": "d488996d-8ccc-4101-b5f2-131f5f09ddb6"
+    "name": "OneOfYourCustomers"
+}
+```
+
+### Fetch all organizations
+
+```ts
+function fetchOrgsByQuery(orgQuery)
+```
+`orgQuery` Parameters
+
+<ParamField query="pageSize" type="number">
+  The number of results to return at a time. Must be between 1 and 100, default 10.
+</ParamField>
+
+<ParamField query="pageNumber" type="number">
+  Used to page over results
+</ParamField>
+
+<ParamField query="orderBy" type="string">
+  How to order the results. Must be one of: **CREATED_AT_ASC**, **CREATED_AT_DESC**, **NAME**
+</ParamField>
+
+
+
+Successful response:
+
+```js
+{
+    "totalOrgs": 21,
+    "currentPage": 0,
+    "pageSize": 10,
+    "hasMoreResults": true,
+    "orgs": [{
+        "orgId": "d488996d-8ccc-4101-b5f2-131f5f09ddb6",
+        "name": "OneOfYourCustomers"
+    }, {
+        // There will be 10 orgs in this response
+    }]
+}
+```
+
+### Fetch users in organization
+
+```ts 
+function fetchUsersInOrg(usersInOrgQuery)
+```
+
+Searches for users in a specified organization through a customizable query object. The possible parameters for this query are as follows.
+
+Parameters
+
+<ParamField query="orgId" type="number" required>
+  The organization to fetch users for
+</ParamField>
+
+<ParamField query="pageSize" type="number">
+  The number of results to return at a time. Must be between 1 and 100, default 10.
+</ParamField>
+
+<ParamField query="pageNumber" type="number">
+  Used to page over results
+</ParamField>
+
+<ParamField query="includeOrgs" type="boolean">
+  Whether to return an **orgIdToOrgInfo** object, default value is `false`
+</ParamField>
+
 
 Successful response:
 
@@ -373,22 +544,48 @@ Successful response:
 
 1. [Example user in response](#fetch-user-metadata-by-id)
 
-## Create User
+## User Management
+
+### Create User
 
 ```ts
-function createUser(createUserRequest: CreateUserRequest): Promise<User>
+function createUser(createUserRequest)
 ```
 
-| Argument                        | Description                                                                                                                                                |
-|---------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| email                           | The user's email address                                                                                                                                   |
-| emailConfirmed                  | Whether the email address should start off as already confirmed. If false, the user is required to confirm the email address before they sign in.          |
-| sendEmailToConfirmEmailAddress  | Whether we should send an email immediately to confirm the user's email address. If false, the user will get a confirmation email when they first sign in. |
-| askUserToUpdatePasswordOnLogin  | Whether we should require the user to set or update their password on initial login. Default false |
-| password                        | Optional password. If unset, the user can set it themselves via their account page                                                                         |
-| username                        | Optional username. Can only be used if **username** is enabled in your user schema                                                                         |
-| firstName                       | Optional first name. Can only be used if **name** is enabled in your user schema                                                                           |
-| lastName                        | Optional last name. Can only be used if **name** is enabled in your user schema                                                                            |
+`createUserRequest` Parameters
+
+<ParamField query="email" type="string" required>
+  The user's email address
+</ParamField>
+
+<ParamField query="emailConfirmed" type="boolean">
+  Whether the email address should start off as already confirmed. If false, the user is required to confirm the email address before they sign in.
+</ParamField>
+
+<ParamField query="sendEmailToConfirmEmailAddress" type="boolean">
+  Whether we should send an email immediately to confirm the user's email address. If false, the user will get a confirmation email when they first sign in.
+</ParamField>
+
+<ParamField query="askUserToUpdatePasswordOnLogin" type="boolean">
+  Whether we should require the user to set or update their password on initial login. Default false
+</ParamField>
+
+<ParamField query="password" type="string">
+  Optional password. If unset, the user can set it themselves via their account page 
+</ParamField>
+
+<ParamField query="username" type="string">
+  Optional username. Can only be used if **username** is enabled in your user schema 
+</ParamField>
+
+<ParamField query="firstName" type="string">
+  Optional first name. Can only be used if **name** is enabled in your user schema
+</ParamField>
+
+<ParamField query="lastName" type="string">
+  Optional last name. Can only be used if **name** is enabled in your user schema
+</ParamField>
+
 
 Successful response:
 
@@ -398,28 +595,180 @@ Successful response:
 }
 ```
 
-## Migrate User from External Source
+### Update User Email
+
+```ts
+// Returns true if it was successful, false if the user was not found
+function updateUserEmailWrapper(userId, updateUserEmailRequest)
+```
+
+<ParamField query="userId" type="string">
+  Id for the user
+</ParamField>
+
+<ResponseField name="updateUserEmailRequest" type="request object">
+  <Expandable title="properties">
+    <ResponseField name="newEmail" type="string">
+      New email address for this user
+    </ResponseField>
+
+    <ResponseField name="requireEmailConfirmation" type="boolean">
+      Whether the new email address requires confirmation. If true, an email will be sent to the new email address to confirm. If false, the users email address will be updated and confirmed immediately.
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
+
+
+
+### Update User Metadata
+
+```ts
+// Returns true if it was successful, false if the user was not found
+function updateUserMetadata(userId, updateUserMetadataRequest)
+```
+
+<ParamField query="userId" type="string">
+  Id for the user
+</ParamField>
+
+<ResponseField name="updateUserMetadataRequest" type="request object">
+  <Expandable title="properties">
+    <ResponseField name="username" type="string">
+      Optional username. Can only be used if **username** is enabled in your user schema
+    </ResponseField>
+
+    <ResponseField name="firstName" type="boolean">
+      Optional first name. Can only be used if **name** is enabled in your user schema
+    </ResponseField>
+
+    <ResponseField name="lastName" type="boolean">
+      Optional last name. Can only be used if **name** is enabled in your user schema
+    </ResponseField>
+
+    <ResponseField name="metadata" type="object">
+      Optional custom metadata JSON object.
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
+
+### Update Password
+
+```ts
+// Returns true if it was successful, false if the user was not found
+function updateUserPassword(userId, updateUserPasswordRequest)
+```
+
+<ParamField query="userId" type="string">
+  Id for the user
+</ParamField>
+
+<ResponseField name="updateUserPasswordRequest" type="request object">
+  <Expandable title="properties">
+    <ResponseField name="password" type="string">
+      The user's new password
+    </ResponseField>
+
+    <ResponseField name="askUserToUpdatePasswordOnLogin" type="boolean">
+      Whether we should require the user to set or update their password the next time they visit your product. Default false
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
+
+Returns true if the user's password was updated.
+
+### Delete user
+
+```ts
+function deleteUser(userId)
+```
+
+<ParamField query="userId" type="string">
+  Id for the user
+</ParamField>
+
+Returns true if the user was deleted.
+
+### Disable user
+
+```ts
+function disableUser(userId)
+```
+
+<ParamField query="userId" type="string">
+  Id for the user
+</ParamField>
+
+Returns true if the user was disabled. Afterwards, the user is logged out and unable to log back in.
+
+### Enable user
+
+```ts
+function enableUser(userId)
+```
+
+<ParamField query="userId" type="string">
+  Id for the user
+</ParamField>
+
+Returns true if the user was enabled, allowing them to log in again.
+
+### Migrate User from External Source
 
 Similar to [Create User](#create-user), but for cases where you already have a user stored in an external system.
 You can, for example, pass in a password hash for an existing user, and they will be able to login with their same password.
 It is also possible to provide an existing identifier, and we will store and return it along with our future identifiers, allowing you to link them.
 
 ```ts
-function migrateUserFromExternalSource(migrateUserFromExternalSourceRequest: MigrateUserFromExternalSourceRequest): Promise<User>
+function migrateUserFromExternalSource(migrateUserFromExternalSourceRequest)
 ```
 
-| Argument                       | Description                                                                                                                                                                                                   |
-|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| email                          | The user's email address                                                                                                                                                                                      |
-| emailConfirmed                 | Whether the email address should start off as already confirmed. If false, the user is required to confirm the email address before they sign in.                                                             |
-| askUserToUpdatePasswordOnLogin  | Whether we should require the user to set or update their password on initial login. Default false |
-| existingUserId                 | (Optional) The user's ID in the existing system. This ID will be stored on the user as a `legacyUserId` and it is present everywhere userId's are (e.g. fetching user metadata or validating a user's token). |
-| existingPasswordHash           | (Optional) The user's hashed password. We support both bcrypt and argon2 password hashes.                                                                                                                     |
-| existingMfaBase32EncodedSecret | (Optional) The user's MFA secret, base32 encoded. If specified the user will have MFA enabled by default.                                                                                                     |
-| enabled                        | (Optional) Whether or not the user can login                                                                                                                                                                  |
-| username                       | Optional username. Can only be used if **username** is enabled in your user schema                                                                                                                            |
-| firstName                      | Optional first name. Can only be used if **name** is enabled in your user schema                                                                                                                              |
-| lastName                       | Optional last name. Can only be used if **name** is enabled in your user schema                                                                                                                               |
+<ResponseField name="migrateUserFromExternalSourceRequest" type="request object">
+  <Expandable title="properties">
+    <ResponseField name="email" type="string">
+      The user's email address
+    </ResponseField>
+
+    <ResponseField name="emailConfirmed" type="boolean">
+      Whether the email address should start off as already confirmed. If false, the user is required to confirm the email address before they sign in.
+    </ResponseField>
+
+    <ResponseField name="askUserToUpdatePasswordOnLogin" type="boolean">
+      Whether we should require the user to set or update their password on initial login. Default false
+    </ResponseField>
+
+    <ResponseField name="existingUserId" type="string">
+      (Optional) The user's ID in the existing system. This ID will be stored on the user as a `legacyUserId` and it is present everywhere userId's are (e.g. fetching user metadata or validating a user's token).
+    </ResponseField>
+
+    <ResponseField name="existingPasswordHash" type="string">
+      (Optional) The user's hashed password. We support both bcrypt and argon2 password hashes.
+    </ResponseField>
+
+    <ResponseField name="existingMfaBase32EncodedSecret" type="string">
+      (Optional) The user's MFA secret, base32 encoded. If specified the user will have MFA enabled by default.
+    </ResponseField>
+
+    <ResponseField name="enabled" type="boolean">
+      (Optional) Whether or not the user can login
+    </ResponseField>
+
+    <ResponseField name="username" type="string">
+      Optional username. Can only be used if **username** is enabled in your user schema
+    </ResponseField>
+
+    <ResponseField name="firstName" type="boolean">
+      Optional first name. Can only be used if **name** is enabled in your user schema
+    </ResponseField>
+
+    <ResponseField name="lastName" type="boolean">
+      Optional last name. Can only be used if **name** is enabled in your user schema
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
 
 Successful response:
 
@@ -429,20 +778,34 @@ Successful response:
 }
 ```
 
-## Create Magic Link
+### Create Magic Link
 
 Creates a magic link that a user can use to log in. Use this API if you'd prefer to send the magic link to the customer yourself, otherwise, we have [createUser](#create-user) which will email them directly.
 
 ```ts
-function createMagicLink(createUserRequest: CreateMagicLinkRequest): Promise<MagicLink>
+function createMagicLink(createUserRequest)
 ```
 
-| Argument                       | Description                                                                                                                                                                                              |
-|--------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| email                          | The user's email address                                                                                                                                                                                 |
-| redirectToUrl                  | (Optional) Where to redirect the user after they login. If unspecified, will use the login redirect path specified in your dashboard.                                                                    |
-| expiresInHours                 | (Optional) How many hours should the link be valid for?                                                                                                                                                  |
-| createNewUserIfOneDoesntExist  | (Optional) If true, createMagicLink will create a new user if one matching the provided email address doesn't exist. If false, the request will fail if no user with that email exists. Default is true. |
+<ResponseField name="createUserRequest" type="request object">
+  <Expandable title="properties">
+    <ResponseField name="email" type="string">
+      The user's email address
+    </ResponseField>
+
+    <ResponseField name="redirectToUrl" type="string">
+      (Optional) Where to redirect the user after they login. If unspecified, will use the login redirect path specified in your dashboard.
+    </ResponseField>
+
+    <ResponseField name="expiresInHours" type="string">
+      (Optional) How many hours should the link be valid for?
+    </ResponseField>
+
+    <ResponseField name="createNewUserIfOneDoesntExist" type="boolean">
+      (Optional) If true, createMagicLink will create a new user if one matching the provided email address doesn't exist. If false, the request will fail if no user with that email exists. Default is true.
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
 
 Successful response:
 
@@ -452,7 +815,7 @@ Successful response:
 }
 ```
 
-## Create Access Token
+### Create Access Token
 
 Our frontend libraries allow you to get [access tokens](/overview/access-tokens) that can be sent to the backend.
 The backend is then responsible for verifying these tokens.
@@ -461,13 +824,21 @@ For testing purposes, you may want to create access tokens separately from the f
 With this API, you can create access tokens for users programmatically and set a custom expiration.
 
 ```ts
-function createAccessToken(createAccessTokenRequest: CreateAccessTokenRequest): Promise<AccessToken>
+function createAccessToken(createAccessTokenRequest)
 ```
 
-| Argument                       | Description                                                                                                                                                                                              |
-|--------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| userId | The user's ID |
-| durationInMinutes | How long the token is valid for, in minutes.  |
+<ResponseField name="createAccessTokenRequest" type="request object">
+  <Expandable title="properties">
+    <ResponseField name="userId" type="string">
+      The user's ID
+    </ResponseField>
+
+    <ResponseField name="durationInMinutes" type="string">
+      How long the token is valid for, in minutes.
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
 
 Successful response:
 
@@ -476,123 +847,22 @@ Successful response:
     "access_token": "..."
 }
 ```
+## Org Management
 
-## Update User Email
-
-```ts
-// Returns true if it was successful, false if the user was not found
-function updateUserEmailWrapper(userId: string, updateUserEmailRequest: UpdateUserEmailRequest): Promise<boolean>
-```
-
-| Argument                 | Description                                                                                                                                                                                           |
-|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| newEmail                 | New email address for this user                                                                                                                                                                       |
-| requireEmailConfirmation | Whether the new email address requires confirmation. If true, an email will be sent to the new email address to confirm. If false, the users email address will be updated and confirmed immediately. |
-
-## Update User Metadata
+### Create Organization
 
 ```ts
-// Returns true if it was successful, false if the user was not found
-function updateUserMetadata(userId: string, updateUserMetadataRequest: UpdateUserMetadataRequest): Promise<boolean>
+function createOrg(createOrgRequest)
 ```
 
-| Argument  | Description                                                                                                                                                |
-|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| username  | Optional username. Can only be used if **username** is enabled in your user schema                                                                         |
-| firstName | Optional first name. Can only be used if **name** is enabled in your user schema                                                                           |
-| lastName  | Optional last name. Can only be used if **name** is enabled in your user schema                                                                            |
-| metadata  | Optional custom metadata JSON object.                                                                                                                      |
+<ResponseField name="createOrgRequest" type="request object">
+  <Expandable title="properties">
+    <ResponseField name="name" type="string">
+      The organization's name
+    </ResponseField>
 
-## Update Password
-
-```ts
-// Returns true if it was successful, false if the user was not found
-function updateUserPassword(userId: string, updateUserPasswordRequest: UpdateUserPasswordRequest): Promise<boolean>
-```
-
-| Argument  | Description                                                                                                                                                |
-|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| password | The users new password |
-| askUserToUpdatePasswordOnLogin  | Whether we should require the user to set or update their password the next time they visit your product. Default false |
-
-Returns true if the user's password was updated.
-
-## Delete user
-
-```ts
-function deleteUser(userId: string): Promise<boolean>
-```
-
-Returns true if the user was deleted.
-
-## Disable user
-
-```ts
-function disableUser(userId: string): Promise<boolean>
-```
-
-Returns true if the user was disabled. Afterwards, the user is logged out and unable to log back in.
-
-## Enable user
-
-```ts
-function enableUser(userId: string): Promise<boolean>
-```
-
-Returns true if the user was enabled, allowing them to log in again.
-
-## Fetch an organization
-
-```ts
-function fetchOrg(orgId: string): Promise<Org | null>
-```
-
-Successful response:
-```js
-{
-    "orgId": "d488996d-8ccc-4101-b5f2-131f5f09ddb6"
-    "name": "OneOfYourCustomers"
-}
-```
-
-## Fetch all organizations
-
-```ts
-function fetchOrgsByQuery(orgQuery: OrgQuery): Promise<OrgQueryResponse>
-```
-
-| Argument   | Description                                                                                 |
-|------------|---------------------------------------------------------------------------------------------|
-| pageSize   | The number of results to return at a time. Must be between 1 and 100, default 10.           |
-| pageNumber | Used to page over results                                                                   |
-| orderBy    | How to order the results. Must be one of: **CREATED_AT_ASC**, **CREATED_AT_DESC**, **NAME** |
-
-Successful response:
-
-```js
-{
-    "totalOrgs": 21,
-    "currentPage": 0,
-    "pageSize": 10,
-    "hasMoreResults": true,
-    "orgs": [{
-        "orgId": "d488996d-8ccc-4101-b5f2-131f5f09ddb6",
-        "name": "OneOfYourCustomers"
-    }, {
-        // There will be 10 orgs in this response
-    }]
-}
-```
-
-## Create Organization
-
-```ts
-function createOrg(createOrgRequest: CreateOrgRequest): Promise<Org>
-```
-
-| Argument | Description             |
-|----------|-------------------------|
-| name     | The organization's name |
+  </Expandable>
+</ResponseField>
 
 Successful response:
 
@@ -602,46 +872,80 @@ Successful response:
 }
 ```
 
-## Add user to organization
+### Add user to organization
 
 ```ts
-function addUserToOrg(addUserToOrgRequest: AddUserToOrgRequest): Promise<boolean>
+function addUserToOrg(addUserToOrgRequest)
 ```
 
-| Argument | Description                                           |
-|----------|-------------------------------------------------------|
-| userId   | The user's ID                                         |
-| orgId    | The org's ID                                          |
-| role     | The role of the user in that organization, e.g. Admin |
+<ResponseField name="addUserToOrgRequest" type="request object">
+  <Expandable title="properties">
+    <ResponseField name="userId" type="string">
+      The user's ID
+    </ResponseField>
+
+    <ResponseField name="orgId" type="string">
+      The org's ID
+    </ResponseField>
+
+    <ResponseField name="role" type="string">
+      The role of the user in that organization, e.g. Admin
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
 
 Returns true if the user was successfully added to the organization.
 
-## Allow organization to set up SAML connection
+### Allow organization to set up SAML connection
 
 ```ts
-function allowOrgToSetupSamlConnection(orgId: string): Promise<boolean>
+function allowOrgToSetupSamlConnection(orgId)
 ```
+
+<ParamField query="orgId" type="string">
+  The org's ID
+</ParamField>
 
 Returns true if successful, meaning the organization can now set up [SAML](/overview/saml) connections.
 
-## Disallow organization to set up SAML connection
+### Disallow organization to set up SAML connection
 
 ```ts
 function disallowOrgToSetupSamlConnection(orgId: string): Promise<boolean>
 ```
 
+<ParamField query="orgId" type="string">
+  The org's ID
+</ParamField>
+
 Returns true if successful, meaning the organization can no longer set up [SAML](/overview/saml) connections.
 
-## Update Organization Metadata
+### Update Organization Metadata
 
 ```ts
 // Returns true if it was successful, false if the user was not found
-function updateOrg(updateOrgRequest: UpdateOrgRequest): Promise<boolean>
+function updateOrg(updateOrgRequest)
 ```
 
-| Argument   | Description                                                                                                                                                |
-|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| orgId      | Required organization id.                                                                         |
-| name       | Optional organization name. Updates the name of the organization.                                                                         |
-| canSetupSaml  | Optional boolean. If enabled this organization has access to setup SAML connections via our hosted UI's.                                                                            |
-| metadata   | Optional custom metadata JSON object.                                                                                                                  |                                                                                                                    |
+<ResponseField name="updateOrgRequest" type="request object">
+  <Expandable title="properties">
+    <ResponseField name="orgId" type="string">
+      The user's ID
+    </ResponseField>
+
+    <ResponseField name="name" type="string">
+      Optional organization name. Updates the name of the organization.
+    </ResponseField>
+
+    <ResponseField name="canSetupSaml" type="boolean">
+      Optional boolean. If enabled this organization has access to setup SAML connections via our hosted UI's.
+    </ResponseField>
+    
+    <ResponseField name="metadata" type="object">
+      Optional custom metadata JSON object.
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
+

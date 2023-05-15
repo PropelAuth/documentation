@@ -1,0 +1,716 @@
+---
+title: "Go Library Reference"
+sidebarTitle: "Go"
+---
+
+PropelAuth’s Go library provides all the building blocks you need to add authentication to any Go backend.
+
+## Installation
+
+```bash
+go get github.com/propelauth/propelauth-go
+```
+
+## Initialize
+
+**propelauth.InitBaseAuth** performs a one-time initialization of the library.
+It will verify your `apiKey` is correct and fetch the metadata needed to verify requests sent from the frontend.
+You can find the authUrl and apiKey in the PropelAuth dashboard under **Backend Integration**.
+We recommend storing them in environment variables as you will have different values for each environment.
+
+
+```go
+client, err := propelauth.InitBaseAuth(authUrl, apiKey, nil)
+```
+
+## Protect API Routes
+
+You can protect an API route by validating the Authorization header:
+
+```go
+user, err := client.GetUser(r.Header.Get("Authorization"))
+if err != nil {
+    w.WriteHeader(401)
+    return
+}
+```
+
+Here's an example where we create an auth middleware that will protect a route and set the user on the request context:
+
+```go
+func requireUser(client *propelauth.Client, next http.HandlerFunc) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user, err := client.GetUser(r.Header.Get("Authorization"))
+		if err != nil {
+				w.WriteHeader(401)
+				return
+		}
+		requestContext := context.WithValue(r.Context(), "user", user)
+		next.ServeHTTP(w, r.WithContext(requestContext))
+	})
+}
+```
+
+Which can then be used like:
+
+```go
+func whoami(w http.ResponseWriter, req *http.Request) {
+	user := req.Context().Value("user").(*models.UserFromToken)
+	json.NewEncoder(w).Encode(user)
+}
+// ...
+http.Handle("/api/whoami", requireUser(client, whoami))
+```
+
+## Roles and Permissions
+
+In the [Protect API Routes](#protect-api-routes) section, we created an auth middleware that protected a route and set the user on the request context. To expand, here 
+is an example of authorization using the default Go http module, using the built in **GetOrgMemberInfo** and **IsRole** functions to determine if the user is an admin.
+
+```go
+func requireAdmin(client *propelauth.Client, next http.HandlerFunc) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user, err := client.GetUser(r.Header.Get("Authorization"))
+		if err != nil {
+				w.WriteHeader(401)
+				return
+		}
+		// Get the org id from the request - this could be a path param, header, query param
+		orgId := getOrgIdFromRequest(r)
+		orgMemberInfo, err := user.GetOrgMemberInfo(orgId)
+		if err != nil {
+				w.WriteHeader(403)
+				return
+		}
+		if !orgMemberInfo.IsRole("Admin") {
+				w.WriteHeader(403)
+				return
+		}
+		requestContext := context.WithValue(r.Context(), "user", user)
+		requestContext = context.WithValue(requestContext, "orgMemberInfo", orgMemberInfo)
+		next.ServeHTTP(w, r.WithContext(requestContext))
+	})
+}
+```
+
+The **user** object contains:
+<ParamField query="UserID" type="UUID">
+	The id of the user
+</ParamField>
+<ResponseField name="OrgIDToOrgMemberInfo" type="map[string]*OrgMemberInfoFromToken">
+  A map from OrgID to OrgMemberInfoFromToken
+  <Expandable>
+    <ResponseField name="OrgID" type="UUID">
+        The id of the org
+    </ResponseField>
+    <ResponseField name="OrgName" type="string">
+        The name of the org
+    </ResponseField>
+    <ResponseField name="UserAssignedRole" type="string">
+        The user's role within the organization.
+    </ResponseField>
+    <ResponseField name="UserPermissions" type="[]string">
+        The user's permissions within the organization
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+<ParamField query="LegacyUserID" type="*string">
+  The original ID of the user, if the user was migrated from an external source 
+</ParamField>
+<ParamField query="ImpersonatorUserID" type="*UUID">
+  If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be nil
+</ParamField>
+
+There are also additional authorization functions that exist on the **OrgIDToOrgMemberInfo** object:
+
+### IsRole
+
+Returns true if the user has the exact role.
+
+```go
+orgMemberInfo.IsRole(exactRole)
+```
+<ParamField query="exactRole" type="string">
+  The exact role of the user.
+</ParamField>
+
+### IsAtLeastRole
+
+Returns true if the user has the exact role or a role that is higher in the hierarchy.
+
+```go
+orgMemberInfo.IsAtLeastRole(minimumRole)
+```
+<ParamField query="minimumRole" type="string">
+  The minimum role of the user.
+</ParamField>
+
+### HasPermission
+
+Returns true if the user has the exact permission.
+
+```go
+orgMemberInfo.HasPermission(permission)
+```
+<ParamField query="permission" type="string">
+  The exact permission of the user.
+</ParamField>
+
+### HasAllPermissions
+
+returns true if the user has all of the permissions.
+
+```go
+orgMemberInfo.HasAllPermissions(permissions)
+```
+<ParamField query="permissions" type="[]string">
+  The permissions of the user.
+</ParamField>
+
+## Fetching functions
+
+### Fetch user metadata by id
+
+```go
+client.FetchUserMetadataByUserID(userId, includeOrgs)
+```
+
+Parameters
+
+<ParamField query="userId" type="UUID">
+  The id of the user
+</ParamField>
+
+<ParamField query="includeOrgs" type="bool">
+  Whether to return organization information
+</ParamField>
+
+Successful response:
+
+```go
+models.UserMetadata{
+    UserID: uuid.MustParse("e08aa7f2-b2d8-4ad2-9fda-1cda86a9f533"),
+    Email: "user@example.com",
+    EmailConfirmed: true,
+    HasPassword: true,
+    Username: "example_username",
+    FirstName: "Firstname",
+    LastName: "LastName",
+    PictureURL: "https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
+    Locked: false,
+    Enabled: true,
+    MFAEnabled: false,
+    CreatedAt: 1680895145,
+    LastActiveAt: 1682024563,
+    LegacyUserID: "",
+    OrgIDToOrgInfo: map[UUID]models.OrgInfo{UUID.Must"c784285e-d827-4801-9362-1f1361e20329":
+        models.OrgInfo{OrgID:UUID.Must"c784285e-d827-4801-9362-1f1361e20329", OrgName:"Acme", UserRole:"Owner"}
+    }
+}
+```
+
+### Fetch user metadata by email
+
+```go
+client.FetchUserMetadataByEmail(email, includeOrgs)
+```
+
+Parameters
+
+<ParamField query="email" type="string">
+  The email of the user
+</ParamField>
+
+<ParamField query="includeOrgs" type="boolean">
+  Whether to return organization information
+</ParamField>
+
+Successful response is the same as [Fetch user metadata by id](#fetch-user-metadata-by-id).
+
+### Fetch user metadata by username
+
+```go
+client.FetchUserMetadataByUsername(username, includeOrgs)
+```
+
+Parameters
+
+<ParamField query="username" type="string">
+  The username of the user
+</ParamField>
+
+<ParamField query="includeOrgs" type="boolean">
+  Whether to return organization information
+</ParamField>
+
+Successful response is the same as [Fetch user metadata by id](#fetch-user-metadata-by-id).
+
+### Batch fetch users by ids
+
+```go
+client.FetchBatchUserMetadataByUserIds(userIds, includeOrgs)
+```
+
+<ParamField query="userIds" type="[]string">
+  The array of user Ids
+</ParamField>
+
+<ParamField query="includeOrgs" type="boolean">
+  Whether to return organization information
+</ParamField>
+
+A successful response will be a map of the user objects set to keys of the userIds you passed in. For example:
+
+```go
+map[UUID]models.UserMetadata{
+    UUID.MustParse("e08aa7f2-b2d8-4ad2-9fda-1cda86a9f533"): models.UserMetadata{
+        UserID: uuid.MustParse("e08aa7f2-b2d8-4ad2-9fda-1cda86a9f533"),
+        Email: "user@example.com",
+        // etc
+    },
+}
+```
+
+To see the values in the map, see [Fetch user metadata by id](#fetch-user-metadata-by-id).
+
+### Batch fetch users by emails
+
+```go
+client.FetchBatchUserMetadataByEmails(emails, includeOrgs)
+```
+
+<ParamField query="emails" type="[]string">
+  The array of user emails
+</ParamField>
+
+<ParamField query="includeOrgs" type="boolean">
+  Whether to return organization information
+</ParamField>
+
+Successful response is the same as [Batch fetch users by ids](#batch-fetch-users-by-ids), but the keys are matching email addresses.
+
+### Batch fetch users by usernames
+
+```go
+client.FetchBatchUserMetadataByUsernames(usernames, includeOrgs)
+```
+
+<ParamField query="usernames" type="[]string">
+  The array of user usernames
+</ParamField>
+
+<ParamField query="includeOrgs" type="boolean">
+  Whether to return organization information
+</ParamField>
+
+Successful response is the same as [Batch fetch users by ids](#batch-fetch-users-by-ids), but the keys are matching usernames.
+
+### Search for users
+
+```go
+client.FetchUsersByQuery(UserQuery)
+```
+
+<ResponseField name="UserQuery">
+  <Expandable>
+    <ResponseField name="PageSize" type="int">
+        The number of results to return at a time. Must be between 1 and 100, default 10.
+    </ResponseField>
+    <ResponseField name="PageNumber" type="int">
+        Used to page over results
+    </ResponseField>
+    <ResponseField name="OrderBy" type="string">
+        How to order the results. Must be one of: **CREATED_AT_ASC**, **CREATED_AT_DESC**, **LAST_ACTIVE_AT_ASC**, **LAST_ACTIVE_AT_DESC**, **EMAIL**, **USERNAME**
+    </ResponseField>
+    <ResponseField name="EmailOrUsername" type="string">
+        Searches for partial matches within email addresses or usernames. **port** would match a user with email address **support@propelauth.com**.
+    </ResponseField>
+    <ResponseField name="IncludeOrgs" type="bool">
+        Whether to return an org information object, default value is `false`
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+Successful response:
+
+```go
+&models.UserList{
+    TotalUsers: 45,
+    CurrentPage: 0,
+    PageSize: 10,
+    HasMoreResults: true,
+    Users: []models.UserMetadata{
+        // See Fetch user metadata by id for the fields
+        models.UserMetadata{},
+        models.UserMetadata{},
+        // ...
+    }
+}
+```
+
+### Fetch users in organization
+
+```go
+client.FetchUsersInOrg(orgId, UserInOrgQuery)
+```
+
+<ParamField query="orgId" type="UUID">
+  The org ID
+</ParamField>
+
+<ResponseField name="UserInOrgQuery">
+  <Expandable>
+    <ResponseField name="PageSize" type="int">
+        The number of results to return at a time. Must be between 1 and 100, default 10.
+    </ResponseField>
+    <ResponseField name="PageNumber" type="int">
+        Used to page over results
+    </ResponseField>
+    <ResponseField name="IncludeOrgs" type="bool">
+        Whether to return an org information object, default value is `false`
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+Successful response:
+
+```go
+&models.UserList{
+    TotalUsers: 45,
+    CurrentPage: 0,
+    PageSize: 10,
+    HasMoreResults: true,
+    Users: []models.UserMetadata{
+        // See Fetch user metadata by id for the fields
+        models.UserMetadata{},
+        models.UserMetadata{},
+        // ...
+    }
+}
+```
+
+### Fetch an organization
+
+```go
+client.FetchOrg(orgId)
+```
+
+<ParamField query="orgId" type="UUID">
+  The org ID
+</ParamField>
+
+### Fetch all organizations
+
+```go
+client.FetchOrgByQuery(OrgQuery)
+```
+
+<ResponseField name="OrgQuery">
+  <Expandable>
+    <ResponseField name="PageSize" type="int">
+        The number of results to return at a time. Must be between 1 and 100, default 10.
+    </ResponseField>
+    <ResponseField name="PageNumber" type="int">
+        Used to page over results
+    </ResponseField>
+    <ResponseField name="OrderBy" type="string">
+        How to order the results. Must be one of: **CREATED_AT_ASC**, **CREATED_AT_DESC**, **LAST_ACTIVE_AT_ASC**, **LAST_ACTIVE_AT_DESC**, **EMAIL**, **USERNAME**
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+## User Management
+
+### Create User
+
+```go
+client.CreateUser(CreateUserQuery)
+```
+
+<ResponseField name="CreateUserQuery">
+  <Expandable>
+    <ResponseField name="Email" type="string" >
+        The user's email address
+    </ResponseField>
+
+    <ResponseField name="EmailConfirmed" type="bool">
+        Whether the email address should start off as already confirmed. If false, the user is required to confirm the email address before they sign in.
+    </ResponseField>
+
+    <ResponseField name="SendEmailToConfirmEmailAddress" type="bool">
+        Whether we should send an email immediately to confirm the user's email address. If false, the user will get a confirmation email when they first sign in.
+    </ResponseField>
+
+    <ResponseField name="Password" type="string">
+        Optional password. If unset, the user can set it themselves via their account page 
+    </ResponseField>
+
+    <ResponseField name="Username" type="string">
+        Optional username. Can only be used if **username** is enabled in your user schema 
+    </ResponseField>
+
+    <ResponseField name="FirstName" type="string">
+        Optional first name. Can only be used if **name** is enabled in your user schema
+    </ResponseField>
+
+    <ResponseField name="LastName" type="string">
+        Optional last name. Can only be used if **name** is enabled in your user schema
+    </ResponseField>
+
+    <ResponseField name="Metadata" type="struct">
+        Optional custom metadata structure.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Update User Email
+
+```go
+client.UpdateUserEmail(userId, UpdateEmailQuery)
+```
+
+<ParamField query="userId" type="string">
+  The id of the user
+</ParamField>
+
+<ResponseField name="UpdateEmailQuery">
+  <Expandable>
+    <ResponseField name="Email" type="string">
+        The user's email address
+    </ResponseField>
+    <ResponseField name="RequireEmailConfirmation" type="bool">
+        Whether the new email address requires confirmation. If true, an email will be sent to the new email address to confirm. If false, the users email address will be updated and confirmed immediately.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Update User Metadata
+
+```go
+client.UpdateUserMetadata(userId, UpdateUserMetadataQuery)
+```
+
+<ParamField query="userId" type="string">
+  The id of the user
+</ParamField>
+
+<ResponseField name="UserMetadata">
+  <Expandable>
+    <ResponseField name="Username" type="string">
+        The user's username.
+    </ResponseField>
+    <ResponseField name="FirstName" type="string">
+        The user's first name.
+    </ResponseField>
+    <ResponseField name="LastName" type="string">
+        The user's last name.
+    </ResponseField>
+    <ResponseField name="PictureURL" type="string">
+        The url for the user's profile picture.
+    </ResponseField>
+    <ResponseField name="Metadata" type="struct">
+        Optional custom metadata structure.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Update User Password
+
+```go
+client.UpdateUserPassword(userId, UpdateUserPasswordQuery)
+```
+
+<ParamField query="userId" type="string">
+  The id of the user
+</ParamField>
+
+<ResponseField name="UserMetadata">
+  <Expandable>
+    <ResponseField name="Password" type="string">
+        The user's username.
+    </ResponseField>
+    <ResponseField name="AskUserToUpdatePasswordOnLogin" type="bool">
+        Whether we should require the user to set or update their password the next time they visit your product. Default false
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Delete user
+
+```go
+client.DeleteUser(userId)
+```
+
+<ParamField query="userId" type="string">
+  The id of the user
+</ParamField>
+
+### Disable user
+
+```go
+client.DisableUser(userId)
+```
+
+<ParamField query="userId" type="string">
+  The id of the user
+</ParamField>
+
+### Enable user
+
+```go
+client.EnableUser(userId)
+```
+
+<ParamField query="userId" type="string">
+  The id of the user
+</ParamField>
+
+### Migrate User from External Source
+
+```go
+client.MigrateUserFromExternalSource(MigrateUserQuery)
+```
+
+<ResponseField name="MigrateUserQuery">
+  <Expandable>
+    <ResponseField name="Email" type="string">
+        The user's email address
+    </ResponseField>
+    <ResponseField name="EmailConfirmed" type="bool">
+        Whether the email address should start off as already confirmed. If false, the user is required to confirm the email address before they sign in.
+    </ResponseField>
+    <ResponseField name="ExistingUserId" type="string">
+        (Optional) The user's ID in the existing system. This ID will be stored on the user as a `legacyUserId` and it is present everywhere userId's are (e.g. fetching user metadata or validating a user's token).
+    </ResponseField>
+    <ResponseField name="ExistingPasswordHash" type="string">
+        (Optional) The user's hashed password. We support both bcrypt and argon2 password hashes.
+    </ResponseField>
+    <ResponseField name="ExistingMfaBase32EncodedSecret" type="string">
+        (Optional) The user's MFA secret, base32 encoded. If specified the user will have MFA enabled by default.
+    </ResponseField>
+    <ResponseField name="Enabled" type="bool">
+        (Optional) Whether or not the user can login
+    </ResponseField>
+    <ResponseField name="Username" type="string">
+        The user's username.
+    </ResponseField>
+    <ResponseField name="FirstName" type="string">
+        The user's first name.
+    </ResponseField>
+    <ResponseField name="LastName" type="string">
+        The user's last name.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Create magic link
+
+```go
+client.CreateMagicLink(CreateMagicLinkQuery)
+```
+
+<ResponseField name="MigrateUserQuery">
+  <Expandable>
+    <ResponseField name="Email" type="string">
+        The user's email address
+    </ResponseField>
+    <ResponseField name="RedirectURL" type="string">
+        Where to redirect the user after they login. If unspecified, will use the login redirect path specified in your dashboard.
+    </ResponseField>
+    <ResponseField name="ExpiresInHours" type="string">
+        How many hours should the link be valid for?
+    </ResponseField>
+    <ResponseField name="CreateNewUserIfOneDoesntExist" type="string">
+        If true, createMagicLink will create a new user if one matching the provided email address doesn't exist. If false, the request will fail if no user with that email exists. Default is true.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Create Access Token
+
+```go
+client.CreateAccessToken(userId, durationInMinutes)
+```
+
+<ParamField query="userId" type="string">
+  The id of the user
+</ParamField>
+
+<ParamField query="durationInMinutes" type="int">
+  The duration of the access token, in minutes
+</ParamField>
+
+## Org Management
+
+### Create Organization
+
+```go
+client.CreateOrg(name)
+```
+
+<ParamField query="name" type="string">
+  The organization's name
+</ParamField>
+
+### Add user to organization
+
+```go
+client.AddUserToOrg(AddUserToOrgQuery)
+```
+
+<ResponseField name="AddUserToOrgQuery">
+  <Expandable>
+    <ResponseField name="UserID" type="string">
+        The user's Id
+    </ResponseField>
+    <ResponseField name="OrgID" type="string">
+        The org's ID
+    </ResponseField>
+    <ResponseField name="Role" type="string">
+        The role of the user in that organization, e.g. Admin
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Allow organization to set up SAML connection
+
+```go
+client.AllowOrgToSetupSamlConnection(orgId)
+```
+
+<ParamField query="orgId" type="string">
+  The id of the organization
+</ParamField>
+
+### Disallow organization to set up SAML connection
+
+```go
+client.DisallowOrgToSetupSamlConnection(orgId)
+```
+
+<ParamField query="orgId" type="string">
+  The id of the organization
+</ParamField>
+
+### Update Organization Metadata
+```go
+client.UpdateOrgMetadata(orgId, UpdateOrgQuery)
+```
+
+<ParamField query="orgId" type="string">
+  The id of the organization
+</ParamField>
+
+<ResponseField name="UpdateOrgQuery">
+  <Expandable>
+    <ResponseField name="Name" type="string">
+        Optional organization name. Updates the name of the organization.
+    </ResponseField>
+    <ResponseField name="CanSetupSaml" type="bool">
+        Optional boolean. If enabled this organization has access to setup SAML connections via our hosted UI's.
+    </ResponseField>
+    <ResponseField name="Metadata" type="struct">
+        Optional custom metadata structure.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
