@@ -243,6 +243,68 @@ need to pass in the `orgId`, however, we consider it good practice to be explici
     - `validate_access_token_and_get_user_with_org_by_permission` - checks `validate_access_token_and_get_user_with_org` AND that the user has the provided `permission`
     - `validate_access_token_and_get_user_with_org_by_all_permissions` - checks `validate_access_token_and_get_user_with_org` AND that the user has all the provided `permissions`
   </Tab>
+  <Tab title="Go">
+    In the [Protecting Backend APIs](/getting-started/quickstart-be) guide, we created this middleware to protect our API:
+
+    ```go
+    func requireUser(client *propelauth.Client, next http.HandlerFunc) http.Handler {
+        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+            user, err := client.GetUser(r.Header.Get("Authorization"))
+            if err != nil {
+                w.WriteHeader(401)
+                return
+            }
+
+            requestContext := context.WithValue(r.Context(), "user", user)
+            next.ServeHTTP(w, r.WithContext(requestContext))
+        })
+    }
+    ```
+
+    To create our new API, we can use the **GetOrgMemberInfo** and **IsRole** function to determine if the user is an admin:
+
+    ```go
+    func requireAdmin(client *propelauth.Client, next http.HandlerFunc) http.Handler {
+        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+            user, err := client.GetUser(r.Header.Get("Authorization"))
+            if err != nil {
+                w.WriteHeader(401)
+                return
+            }
+
+            // Get the org id from the request - this could be a path param, header, query param
+            orgId := getOrgIdFromRequest(r)
+            orgMemberInfo, err := user.GetOrgMemberInfo(orgId)
+            if err != nil {
+                w.WriteHeader(403)
+                return
+            }
+
+            if !orgMemberInfo.IsRole("Admin") {
+                w.WriteHeader(403)
+                return
+            }
+
+            requestContext := context.WithValue(r.Context(), "user", user)
+            requestContext = context.WithValue(requestContext, "orgMemberInfo", orgMemberInfo)
+            next.ServeHTTP(w, r.WithContext(requestContext))
+        })
+    }
+    ```
+
+    This middleware does a few things:
+     - Makes sure the user is valid. If not, it returns a 401.
+     - Makes sure the user is in the specified organization. If not, it returns a 403.
+     - Makes sure the user is an `Admin` within that organization. If not, it returns a 403.
+     - Finally, sets "user" and "orgMemberInfo" on the request context so that the next handler can access them.
+
+    ## Other authorization functions
+
+    You can also call:
+    - `orgMemberInfo.IsAtLeastRole(minimumRole)` - checks that the users role is at least the provided role.
+    - `orgMemberInfo.HasPermission(permission)` - checks that the user has the provided `permission`.
+    - `orgMemberInfo.HasAllPermissions(permissions)` - checks that the user has all the provided `permissions`.
+  </Tab>
 </Tabs>
 
 ## A Note on Latency
