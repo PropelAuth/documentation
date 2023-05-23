@@ -714,3 +714,133 @@ client.UpdateOrgMetadata(orgId, UpdateOrgQuery)
     </ResponseField>
   </Expandable>
 </ResponseField>
+
+## API Authentication
+
+### Fetch API Key 
+
+### Disallow organization to set up SAML connection
+
+```go
+client.FetchAPIKey(apiKeyID)
+```
+
+<ParamField query="apiKeyID" type="string">
+  The API Key id
+</ParamField>
+
+### Fetch Current API Keys 
+
+```go
+client.FetchCurrentAPIKeys(APIKeysQuery)
+```
+
+<ResponseField name="APIKeysQuery">
+  <Expandable>
+		<ResponseField name="OrgID" type="string">
+			The org's ID
+    </ResponseField>
+    <ResponseField name="UserID" type="string">
+        The user's Id
+    </ResponseField>
+		<ResponseField name="UserEmail" type="string">
+        The user's email
+    </ResponseField>
+    <ResponseField name="PageSize" type="int">
+        The number of results to return at a time. Must be between 1 and 100, default 10.
+    </ResponseField>
+		<ResponseField name="PageNumber" type="int">
+        Used to page over results
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Fetch Archived API Keys 
+
+```go
+client.FetchArchivedAPIKeys(APIKeysQuery)
+```
+
+<ResponseField name="APIKeysQuery">
+  <Expandable>
+		<ResponseField name="OrgID" type="string">
+			The org's ID
+    </ResponseField>
+    <ResponseField name="UserID" type="string">
+        The user's Id
+    </ResponseField>
+		<ResponseField name="UserEmail" type="string">
+        The user's email
+    </ResponseField>
+    <ResponseField name="PageSize" type="int">
+        The number of results to return at a time. Must be between 1 and 100, default 10.
+    </ResponseField>
+		<ResponseField name="PageNumber" type="int">
+        Used to page over results
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Create API Key 
+
+```go
+client.CreateAPIKey(APIKeyCreateParams)
+```
+
+<ResponseField name="APIKeyCreateParams">
+  <Expandable>
+		<ResponseField name="OrgID" type="string">
+			The org's ID
+    </ResponseField>
+    <ResponseField name="UserID" type="string">
+        The user's Id
+    </ResponseField>
+		<ResponseField name="ExpiresAtSeconds" type="int">
+        How many seconds shoud the API key be valid for
+    </ResponseField>
+    <ResponseField name="Metadata" type="struct">
+        Optional custom metadata structure.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Update API Key 
+
+```go
+client.UpdateAPIKey(apiKeyID, APIKeyCreateParams)
+```
+
+<ParamField query="apiKeyID" type="string">
+  The API Key id
+</ParamField>
+
+<ResponseField name="APIKeyUpdateParams">
+  <Expandable>
+		<ResponseField name="ExpiresAtSeconds" type="int">
+        How many seconds shoud the API key be valid for
+    </ResponseField>
+    <ResponseField name="Metadata" type="struct">
+        Optional custom metadata structure.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Delete API Key 
+
+```go
+client.DeleteAPIKey(apiKeyID)
+```
+
+<ParamField query="apiKeyID" type="string">
+  The API Key id
+</ParamField>
+
+### Validate API Key 
+
+```go
+client.ValidateAPIKey(apiKeyID)
+```
+
+<ParamField query="apiKeyID" type="string">
+  The API Key id
+</ParamField>

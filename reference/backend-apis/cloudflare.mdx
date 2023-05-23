@@ -935,3 +935,161 @@ function updateOrg(updateOrgRequest)
   </Expandable>
 </ResponseField>
 
+## API Authentication
+
+### Fetch API Key 
+
+```ts
+function fetchApiKey(apiKeyId)
+```
+
+<ParamField query="apiKeyId" type="string">
+  The API Key ID
+</ParamField>
+
+Returns the full API Key
+
+### Fetch Current API Keys
+
+```ts
+function fetchCurrentApiKeys(apiKeyRequest)
+```
+
+<ResponseField name="apiKeyRequest" type="request object">
+  <Expandable>
+    <ResponseField name="orgId" type="string">
+      The org ID
+    </ResponseField>
+
+    <ResponseField name="userId" type="string">
+      The user's ID
+    </ResponseField>
+
+    <ResponseField name="email" type="string">
+      The user's email
+    </ResponseField>
+    
+    <ResponseField name="pageSize" type="number">
+      The number of results to return at a time. Must be between 1 and 100, default 10.
+    </ResponseField>
+
+    <ResponseField name="pageNumber" type="number">
+      Used to page over results
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
+
+Returns a list of current API Keys
+
+### Fetch Archived API Keys 
+
+```ts
+function fetchArchivedApiKeys(apiKeyRequest)
+```
+
+<ResponseField name="apiKeyRequest" type="request object">
+  <Expandable>
+    <ResponseField name="orgId" type="string">
+      The org ID
+    </ResponseField>
+
+    <ResponseField name="userId" type="string">
+      The user's ID
+    </ResponseField>
+
+    <ResponseField name="email" type="string">
+      The user's email
+    </ResponseField>
+    
+    <ResponseField name="pageSize" type="number">
+      The number of results to return at a time. Must be between 1 and 100, default 10.
+    </ResponseField>
+
+    <ResponseField name="pageNumber" type="number">
+      Used to page over results
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
+
+Returns a list of archived API Keys
+
+### Create API Key 
+
+```ts
+function createApiKey(createApiKeyRequest)
+```
+
+<ResponseField name="createApiKeyRequest" type="request object">
+  <Expandable>
+    <ResponseField name="orgId" type="string">
+      The org ID
+    </ResponseField>
+
+    <ResponseField name="userId" type="string">
+      The user's ID
+    </ResponseField>
+
+    <ResponseField name="expiresInSeconds" type="number">
+      How many seconds shoud the API key be valid for
+    </ResponseField>
+
+    <ResponseField name="metadata" type="object">
+      Optional metadata JSON object
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
+
+Creates a new API Key.
+
+### Update API Key 
+
+```ts
+function updateApiKey(apiKeyId, updateApiKeyRequest)
+```
+
+<ParamField query="apiKeyId" type="string">
+  The API Key ID
+</ParamField>
+
+<ResponseField name="updateApiKeyRequest" type="request object">
+  <Expandable>
+
+    <ResponseField name="expiresInSeconds" type="number">
+      How many seconds shoud the API key be valid for
+    </ResponseField>
+
+    <ResponseField name="metadata" type="object">
+      Optional metadata JSON object
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
+
+Updates an API Key's expiration and/or metadata.
+
+### Delete API Key
+
+```ts
+function deleteApiKey(apiKeyId)
+```
+
+<ParamField query="apiKeyId" type="string">
+  The API Key ID
+</ParamField>
+
+Deletes an API Key.
+
+### Validate API Key 
+
+```ts
+function validateApiKey(apiKeyId)
+```
+
+<ParamField query="apiKeyId" type="string">
+  The API Key ID
+</ParamField>
+
+Returns true if the API Key is valid.

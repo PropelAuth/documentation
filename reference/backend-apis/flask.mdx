@@ -983,3 +983,144 @@ auth.update_org_metadata(org_id, name=None, can_setup_saml=None, metadata=None)
 <ParamField query="metadata" type="dict">
   Optional custom metadata dictionary.
 </ParamField>
+
+## API Authentication
+
+### Fetch API Key 
+
+```python
+# auth object comes from init_base_auth
+# Returns the API Key
+auth.fetch_api_key(api_key)
+```
+
+<ParamField query="api_key" type="str">
+  The API Key ID
+</ParamField>
+
+
+### Fetch Current API Keys 
+
+```python
+# auth object comes from init_base_auth
+# Returns a list of current API Keys
+auth.fetch_current_api_keys(org_id: None, user_id: None, user_email: None, page_size: None, page_number: None)
+```
+
+<ParamField query="org_id" type="str">
+  The org ID
+</ParamField>
+
+<ParamField query="user_id" type="str">
+  The user's ID
+</ParamField>
+
+<ParamField query="user_email" type="str">
+  The user's email
+</ParamField>
+
+<ParamField query="page_size" type="int">
+  The number of results to return at a time. Must be between 1 and 100, default 10.
+</ParamField>
+
+<ParamField query="page_number" type="int">
+  Used to page over results
+</ParamField>
+
+### Fetch Archived API Keys 
+
+```python
+# auth object comes from init_base_auth
+# Returns a list of archived API Keys
+auth.fetch_archived_api_keys(org_id: None, user_id: None, user_email: None, page_size: None, page_number: None)
+```
+
+<ParamField query="org_id" type="str">
+  The org ID
+</ParamField>
+
+<ParamField query="user_id" type="str">
+  The user's ID
+</ParamField>
+
+<ParamField query="user_email" type="str">
+  The user's email
+</ParamField>
+
+<ParamField query="page_size" type="int">
+  The number of results to return at a time. Must be between 1 and 100, default 10.
+</ParamField>
+
+<ParamField query="page_number" type="int">
+  Used to page over results
+</ParamField>
+
+### Create API Key 
+
+```python
+# auth object comes from init_base_auth
+# Creates a new API Key
+auth.create_api_key(org_id=None, user_id=None, expires_at_seconds=None, metadata=None)
+```
+
+<ParamField query="org_id" type="str">
+  The org ID
+</ParamField>
+
+<ParamField query="user_id" type="str">
+  The user's ID
+</ParamField>
+
+<ParamField query="expires_at_seconds" type="int">
+  How many seconds should the API Key be valid for
+</ParamField>
+
+<ParamField query="metadata" type="dict">
+  Optional custom metadata dictionary.
+</ParamField>
+
+### Update API Key 
+
+```python
+# auth object comes from init_base_auth
+# Updates a the epiration and/or metadata for an  API Key
+auth.update_api_key(api_key, expires_at_seconds=None, metadata=None)
+```
+
+
+<ParamField query="api_key" type="str">
+  The API Key ID
+</ParamField>
+
+<ParamField query="expires_at_seconds" type="int">
+  How many seconds should the API Key be valid for
+</ParamField>
+
+<ParamField query="metadata" type="dict">
+  Optional custom metadata dictionary.
+</ParamField>
+
+### Delete API Key 
+
+```python
+# auth object comes from init_base_auth
+# Deletes an API Key
+auth.delete_api_key(api_key)
+```
+
+<ParamField query="api_key" type="str">
+  The API Key ID
+</ParamField>
+
+
+### Validate API Key 
+
+```python
+# auth object comes from init_base_auth
+# Returns true if the API key is valid
+auth.validate_api_key(api_key)
+```
+
+<ParamField query="api_key" type="str">
+  The API Key ID
+</ParamField>
