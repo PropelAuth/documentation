@@ -968,8 +968,12 @@ Returns True if successful, meaning the organization can no longer set up [SAML]
 ```python
 # auth object comes from init_base_auth
 # Returns true if it was successful, false if the organization was not found
-auth.update_org_metadata(org_id, name=None, can_setup_saml=None, metadata=None)
+auth.update_org_metadata(org_id, name=None, can_setup_saml=None, metadata=None, max_users=None)
 ```
+
+<ParamField query="orgId" type="str">
+  The org's ID
+</ParamField>
 
 <ParamField query="name" type="str">
   Optional organization name. Updates the name of the organization.
@@ -981,6 +985,10 @@ auth.update_org_metadata(org_id, name=None, can_setup_saml=None, metadata=None)
 
 <ParamField query="metadata" type="dict">
   Optional custom metadata dictionary.
+</ParamField>
+
+<ParamField query="max_users" type="int">
+  Updates the maximum number of users that can be in the organization.
 </ParamField>
 
 ## API Authentication

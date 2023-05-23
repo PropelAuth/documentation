@@ -924,7 +924,6 @@ Returns true if successful, meaning the organization can no longer set up [SAML]
 ### Update Organization Metadata
 
 ```ts
-// Returns true if it was successful, false if the user was not found
 function updateOrg(updateOrgRequest)
 ```
 
@@ -944,6 +943,10 @@ function updateOrg(updateOrgRequest)
     
     <ResponseField name="metadata" type="object">
       Optional custom metadata JSON object.
+    </ResponseField>
+
+    <ResponseField name="maxUsers" type="number">
+      Updates the maximum number of users that can be in the organization.
     </ResponseField>
 
   </Expandable>
