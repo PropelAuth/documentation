@@ -94,7 +94,8 @@
         "getting-started/quickstart-fe",
         "getting-started/quickstart-be",
         "getting-started/quickstart-requests",
-        "getting-started/deploy-to-prod"
+        "getting-started/deploy-to-prod",
+        "getting-started/api-auth-outside-the-browser"
       ]
     },
     {

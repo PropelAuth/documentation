@@ -769,6 +769,35 @@ Successful response:
 ```
 
 
+### Enable Org Creation 
+
+If successful, the user is able to create organizations.
+
+```python
+# auth object comes from init_base_auth
+# Returns true if it was successful, false if the user was not found
+auth.enable_user_can_create_orgs(user_id)
+```
+
+<ParamField query="user_id" type="str">
+  The id of the user
+</ParamField>
+
+### Disable Org Creation 
+
+If successful, the user loses the ability to create organizations.
+
+```python
+# auth object comes from init_base_auth
+# Returns true if it was successful, false if the user was not found
+auth.disable_user_can_create_orgs(user_id)
+```
+
+<ParamField query="user_id" type="str">
+  The id of the user
+</ParamField>
+
+
 ## Org Management
 
 ### Create Organization
@@ -875,10 +904,10 @@ auth.update_org_metadata(org_id, name=None, can_setup_saml=None, metadata=None, 
 ```python
 # auth object comes from init_base_auth
 # Returns the API Key
-auth.fetch_api_key(api_key)
+auth.fetch_api_key(api_key_id)
 ```
 
-<ParamField query="api_key" type="str">
+<ParamField query="api_key_id" type="str">
   The API Key ID
 </ParamField>
 
@@ -968,11 +997,11 @@ auth.create_api_key(org_id=None, user_id=None, expires_at_seconds=None, metadata
 ```python
 # auth object comes from init_base_auth
 # Updates a the epiration and/or metadata for an  API Key
-auth.update_api_key(api_key, expires_at_seconds=None, metadata=None)
+auth.update_api_key(api_key_id, expires_at_seconds=None, metadata=None)
 ```
 
 
-<ParamField query="api_key" type="str">
+<ParamField query="api_key_id" type="str">
   The API Key ID
 </ParamField>
 
@@ -989,10 +1018,10 @@ auth.update_api_key(api_key, expires_at_seconds=None, metadata=None)
 ```python
 # auth object comes from init_base_auth
 # Deletes an API Key
-auth.delete_api_key(api_key)
+auth.delete_api_key(api_key_id)
 ```
 
-<ParamField query="api_key" type="str">
+<ParamField query="api_key_id" type="str">
   The API Key ID
 </ParamField>
 
@@ -1002,9 +1031,9 @@ auth.delete_api_key(api_key)
 ```python
 # auth object comes from init_base_auth
 # Returns true if the API key is valid
-auth.validate_api_key(api_key)
+auth.validate_api_key(api_key_id)
 ```
 
-<ParamField query="api_key" type="str">
+<ParamField query="api_key_id" type="str">
   The API Key ID
 </ParamField>

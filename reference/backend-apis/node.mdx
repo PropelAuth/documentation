@@ -847,6 +847,31 @@ Successful response:
     "access_token": "..."
 }
 ```
+
+### Enable Org Creation 
+
+```ts
+function enableUserCanCreateOrgs(userId)
+```
+
+<ParamField query="userId" type="string">
+  Id for the user
+</ParamField>
+
+Returns true if the user was enabled, allowing them to create organizations.
+
+### Disable Org Creation 
+
+```ts
+function disableUserCanCreateOrgs(userId)
+```
+
+<ParamField query="userId" type="string">
+  Id for the user
+</ParamField>
+
+Returns true if the user was disabled, removing their ability to create organizations.
+
 ## Org Management
 
 ### Create Organization

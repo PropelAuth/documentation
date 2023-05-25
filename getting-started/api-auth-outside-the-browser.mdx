@@ -1,0 +1,51 @@
+---
+title: "API Key Authentication"
+sidebarTitle: "API Key Authentication"
+---
+
+In this guide, we’re going to walk through how to create API Keys for both Users and Organizations.
+
+### Overview
+
+API Key authentication allows you to create authenticated API Keys for your end users to use in order to access your product's endpoints. Using PropelAuth, you can create
+ and manage API Keys for both your Users and your Organizations, and validate requests sent to you using validation.
+
+### Basic Usage
+
+In terms of the most basic usage of API Key Authentication, it is designs to be as straightforward as possible for both you and your users.
+
+First, an API Key is created using either our client library endpoints or our hosted pages.
+
+Next, when a user or a member of an organization makes a request to your product, they will send this key along with their request as a header.
+
+Finally, your product makes a request to our validation API endpoint to make sure that the token is valid, and we return the user or organization that the token was issued to,
+ and any relevant metadata associated with it.
+
+![How It Works](/images/api-key-auth.png)
+
+### Setup 
+
+First, in order to use API Key Authentication, you have to make sure that it is enabled in your PropelAuth Project. In the API Key Settings section of the dashboard, make
+ sure that you enable your prefered feature, either Personal or Organization API Keys.
+
+![Settings](/images/api-key-auth-settings.png)
+
+Click on the **Live View** button on the top right, and click on the API Key hosted page you would live to interact with. These are the hosted pages that you will redirect your
+ customers to in your product to create their keys.
+
+![Hosted Pages](/images/api-key-auth-hosted-page.png)
+
+### Validate Requests from your customers
+
+Once one of your customers has generated an API Key for their requests, they can then send that key in the header of their requests to your endpoints. Then, using 
+our validation endpoints, you can can verify that the request is coming from a real user, and receieve any relavent metadata from the requester.
+
+As an example, below is a snippet of a potential Express backend that is just logging to the console the user metadata for a request after using the **validatePersonalApiKey** endpoint.
+
+```js
+app.post('/api/company-names', async (req, res) => {
+    req.user = await auth.validatePersonalApiKey(req.headers.authorization)
+    const userMetadata = req.apiKey.userMetadata
+    console.log(userMetadata)
+})
+```
