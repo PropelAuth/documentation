@@ -47,11 +47,6 @@
       "name": "Blog",
       "icon": "newspaper",
       "url": "https://www.propelauth.com/blog"
-    },
-    {
-      "name": "Components (BETA)",
-      "icon": "puzzle-piece",
-      "url": "component-library"
     }
   ],
   "navigation": [
