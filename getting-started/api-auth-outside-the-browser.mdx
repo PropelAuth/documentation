@@ -7,11 +7,30 @@ sidebarTitle: "API Key Authentication"
 
 API Key authentication allows you to create API Keys for your end users and your organizations in order to protect requests they make to your product.
 
+This assists in verifying requests made to products in a browserless contexts, such as CLI's, cURL, etc., without needing to create 
+browser based frontend authentication.
+
+### Token Types
+
+There are three different kinds of API Keys that PropelAuth can generate, based on the desired use case.
+
+<Tabs>
+	<Tab title="Personal">
+		An API key tied to a user. If the user is blocked/deleted, the API key is blocked/deleted as well. Validating this will return the user’s information.
+	</Tab>
+	<Tab title="Organization">
+		An API key tied to an organization. Revoked when the organization is deleted and (optionally) when the user who created the key leaves the org.
+	</Tab>
+	<Tab title="Generic">
+		Not tied to a user or organization. These can only be made programmatically and is more for cases where you want different backend systems to talk to each other.
+	</Tab>
+</Tabs>
+
 ### Basic Usage
 
-First, an API Key is created using either our PropelAuth hosted pages, or programmatically via our client libraries.
+First, your users create an API Key via our configurable [hosted pages](/overview/hosted-pages) (you can also create them manually via our APIs if you want to manage it yourself)
 
-Next, when a user or a member of an organization makes a request to your product, they will send this key in their request as an Authorization header.
+Next, when a user makes a request to your product, they will send this key in their request.
 
 Finally, your product makes a request to our [validation API endpoints](/reference/backend-apis/node#validate-personal-api-key) to make sure 
 that the token is valid, and we return the user or organization that the token was issued to, along with any relevant metadata.
@@ -40,7 +59,7 @@ the requester.
 As an example, below is a snippet of a potential **Express** backend that is logging to the console the user returned from the **validatePersonalApiKey** endpoint.
 
 ```js
-app.post('/api/company-names', async (req, res) => {
+app.post('/api/whoami', async (req, res) => {
     const user = await auth.validatePersonalApiKey(req.headers.authorization)
     console.log(user)
 })
@@ -55,7 +74,6 @@ user: {
 	"emailConfirmed":true,
 	"hasPassword":true,
 	"pictureUrl":"https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
-
 	"locked":false,
 	"enabled":true,
 	"mfaEnabled":false,
