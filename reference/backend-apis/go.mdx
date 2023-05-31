@@ -718,7 +718,9 @@ client.UpdateOrgMetadata(orgId, UpdateOrgQuery)
   </Expandable>
 </ResponseField>
 
-## API Authentication
+## API Key Authentication
+
+For more information on API Key Authentication, please refer to our [Quickstart Guide](/getting-started/api-auth-outside-the-browser) on the topic.
 
 ### Validate Personal API Key 
 
@@ -732,29 +734,18 @@ client.ValidatePersonalApiKey(apiKeyToken)
 
 If the token provided is not valid, an error is returned. If the token is valid, a user object that is associated with the token is returned.
 
+Successful response user property contains the same fields as [Fetch user metadata by id](#fetch-user-metadata-by-id).
+
 Successful Response
 
 ```JSON
 {
-   "metadata":"None",
    "user":{
       "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
       "email":"test@propelauth.com",
-      "email_confirmed":true,
-      "has_password":true,
-      "picture_url":"https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
-      "structured_metadata":{...},
-      "metadata":{...},
-      "locked":false,
-      "enabled":true,
-      "mfa_enabled":false,
-      "can_create_orgs":false,
-      "created_at":1685487933,
-      "last_active_at":1685494460,
-      "org_id_to_org_info":{...},
-      "update_password_required":false
+      //...
    },
-   "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
+    metadata: {}
 }
 ```
 
@@ -770,57 +761,10 @@ client.ValidateOrgApiKey(apiKeyToken)
 
 If the token provided is not valid, an error is returned. If the token is valid, an organization object that is associated with the token is returned.
 
-Successful Response
+In addition to validating the API Key, this also makes sure it’s specifically an organization API key.
 
-```JSON
-{
-   "metadata":"None",
-   "org":{
-      "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
-      "org_name":"idc",
-      "can_setup_saml":false,
-      "max_users":"None",
-      "metadata":{...}
-   },
-   "user":{
-      "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
-      "email":"test@propelauth.com",
-      "email_confirmed":true,
-      "has_password":true,
-      "picture_url":"https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
-      "structured_metadata":{...},
-      "metadata":{...},
-      "locked":false,
-      "enabled":true,
-      "mfa_enabled":false,
-      "can_create_orgs":false,
-      "created_at":1685487933,
-      "last_active_at":1685494460,
-      "org_id_to_org_info":{...},
-      "update_password_required":false
-   },
-   "user_in_org":{
-      "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
-      "org_name":"idc",
-      "url_safe_org_name":"idc",
-      "org_metadata":{...},
-      "user_role":"Owner",
-      "inherited_user_roles_plus_current_role":[
-         "Owner",
-         "Admin",
-         "Member"
-      ],
-      "user_permissions":[
-         "propelauth::can_invite",
-         "propelauth::can_change_roles",
-         "propelauth::can_remove_users",
-         "propelauth::can_manage_api_keys"
-      ]
-   },
-   "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
-   "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5"
-}
-```
+Successful response contains the same fields as [Fetch user metadata by id](#fetch-user-metadata-by-id).
+
 
 ### Validate API Key 
 
@@ -834,59 +778,7 @@ client.ValidateApiKey(apiKeyToken)
 
 Returns a full user or organization object, depending on where the API Token was issued.
 
-Successful Response
-
-```JSON
-{
-   "metadata":"None",
-   "user":{
-      "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
-      "email":"test@propelauth.com",
-      "email_confirmed":true,
-      "has_password":true,
-      "picture_url":"https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
-      "structured_metadata":{...},
-      "metadata":{...},
-      "locked":false,
-      "enabled":true,
-      "mfa_enabled":false,
-      "can_create_orgs":false,
-      "created_at":1685487933,
-      "last_active_at":1685494460,
-      "org_id_to_org_info":{...},
-      "update_password_required":false
-   },
-   "org":{
-      "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
-      "org_name":"idc",
-      "can_setup_saml":false,
-      "max_users":"None",
-      "metadata":{...}
-   },
-   "user_in_org":{
-      "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
-      "org_name":"idc",
-      "url_safe_org_name":"idc",
-      "org_metadata":{
-         
-      },
-      "user_role":"Owner",
-      "inherited_user_roles_plus_current_role":[
-         "Owner",
-         "Admin",
-         "Member"
-      ],
-      "user_permissions":[
-         "propelauth::can_invite",
-         "propelauth::can_change_roles",
-         "propelauth::can_remove_users",
-         "propelauth::can_manage_api_keys"
-      ]
-   },
-   "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
-   "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5"
-}
-```
+Successful response contains the same fields as [Fetch user metadata by id](#fetch-user-metadata-by-id).
 
 ### Fetch API Key 
 
@@ -951,6 +843,8 @@ client.FetchArchivedAPIKeys(APIKeysQuery)
 </ResponseField>
 
 ### Create API Key 
+
+Note: We have hosted pages for users to create API Keys. However, if you would like to do this programmatically, we have provided this endpoint to create keys via your backend.
 
 ```go
 client.CreateAPIKey(APIKeyCreateParams)

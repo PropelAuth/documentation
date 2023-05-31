@@ -977,7 +977,9 @@ function updateOrg(updateOrgRequest)
   </Expandable>
 </ResponseField>
 
-## API Authentication
+## API Key Authentication
+
+For more information on API Key Authentication, please refer to our [Quickstart Guide](/getting-started/api-auth-outside-the-browser) on the topic.
 
 ### Validate Personal API Key 
 
@@ -991,25 +993,17 @@ function validatePersonalApiKey(apiKeyToken)
 
 If the token provided is not valid, an error is returned. If the token is valid, a user object that is associated with the token is returned.
 
-Successful Response
+In addition to validating the API Key, this also makes sure it’s specifically a personal API key.
+
+Successful response user property contains the same fields as [Fetch user metadata by id](#fetch-user-metadata-by-id).
 
 ```js
 {
 
    "user":{
-      "user_Id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
+      "userId":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
       "email":"test@propelauth.com",
-      "emailConfirmed":true,
-      "hasPassword":true,
-      "pictureUrl":"https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
-      "locked":false,
-      "enabled":true,
-      "mfaEnabled":false,
-      "canCreateOrgs":false,
-      "createdAt":1685487933,
-      "lastActiveAt":1685494460,
-      "orgIdToOrgInfo":{...},
-      "updatePasswordRequired":false
+      //...
    },
     "metadata":{},
 }
@@ -1027,51 +1021,9 @@ function validateOrgApiKey(apiKeyToken)
 
 If the token provided is not valid, an error is returned. If the token is valid, an organization object that is associated with the token is returned.
 
-```js
-{
-   "org":{
-      "orgId":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
-      "orgName":"idc",
-      "canSetupSaml":false,
-      "maxUsers":"None",
-      "metadata":{...}
-   },
-   "user":{
-      "user_Id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
-      "email":"test@propelauth.com",
-      "emailConfirmed":true,
-      "hasPassword":true,
-      "pictureUrl":"https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
-      "locked":false,
-      "enabled":true,
-      "mfaEnabled":false,
-      "canCreateOrgs":false,
-      "createdAt":1685487933,
-      "lastActiveAt":1685494460,
-      "orgIdToOrgInfo":{...},
-      "updatePasswordRequired":false
-   },
-   "userInOrg":{
-      "orgId":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
-      "orgName":"idc",
-      "urlSafeOrgName":"idc",
-      "orgMetadata":{...},
-      "userRole":"Owner",
-      "inheritedUserRolesPlusCurrentRole":[
-         "Owner",
-         "Admin",
-         "Member"
-      ],
-      "userPermissions":[
-         "propelauth::can_invite",
-         "propelauth::can_change_roles",
-         "propelauth::can_remove_users",
-         "propelauth::can_manage_api_keys"
-      ]
-   },
-    "metadata":{},
-}
-```
+In addition to validating the API Key, this also makes sure it’s specifically an organization API key.
+
+Successful response contains the same fields as [Fetch user metadata by id](#fetch-user-metadata-by-id).
 
 ### Validate API Key 
 
@@ -1085,53 +1037,8 @@ function validateApiKey(apiKeyToken)
 
 Returns a full user or organization object, depending on where the API Token was issued.
 
-Successful Response
+Successful response contains the same fields as [Fetch user metadata by id](#fetch-user-metadata-by-id).
 
-```js
-{
-   "org":{
-      "orgId":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
-      "orgName":"idc",
-      "canSetupSaml":false,
-      "maxUsers":"None",
-      "metadata":{...}
-   },
-   "user":{
-      "user_Id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
-      "email":"test@propelauth.com",
-      "emailConfirmed":true,
-      "hasPassword":true,
-      "pictureUrl":"https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
-      "locked":false,
-      "enabled":true,
-      "mfaEnabled":false,
-      "canCreateOrgs":false,
-      "createdAt":1685487933,
-      "lastActiveAt":1685494460,
-      "orgIdToOrgInfo":{...},
-      "updatePasswordRequired":false
-   },
-   "userInOrg":{
-      "orgId":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
-      "orgName":"idc",
-      "urlSafeOrgName":"idc",
-      "orgMetadata":{...},
-      "userRole":"Owner",
-      "inheritedUserRolesPlusCurrentRole":[
-         "Owner",
-         "Admin",
-         "Member"
-      ],
-      "userPermissions":[
-         "propelauth::can_invite",
-         "propelauth::can_change_roles",
-         "propelauth::can_remove_users",
-         "propelauth::can_manage_api_keys"
-      ]
-   },
-    "metadata":{},
-}
-```
 
 ### Fetch API Key 
 
@@ -1213,7 +1120,7 @@ Returns a list of archived API Keys
 
 ### Create API Key 
 
-Note: We have hosted auth pages to do this blah blah blah
+Note: We have hosted pages for users to create API Keys. However, if you would like to do this programmatically, we have provided this endpoint to create keys via your backend.
 
 ```ts
 function createApiKey(createApiKeyRequest)

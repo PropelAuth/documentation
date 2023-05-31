@@ -276,7 +276,7 @@ on a valid request.
 ### Fetch user metadata by id
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.fetch_user_metadata_by_user_id(user_id, include_orgs=False)
 ```
 
@@ -329,7 +329,7 @@ Successful response:
 ### Fetch user metadata by email
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.fetch_user_metadata_by_email(email, include_orgs=False)
 ```
 
@@ -346,7 +346,7 @@ Successful response is the same as [fetch_user_metadata_by_user_id](#fetch-user-
 ### Fetch user metadata by username
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.fetch_user_metadata_by_username(email, include_orgs=False)
 ```
 <ParamField query="username" type="str">
@@ -362,7 +362,7 @@ Successful response is the same as [fetch_user_metadata_by_user_id](#fetch-user-
 ### Batch fetch users by ids
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 user_id_to_metadata = auth.fetch_batch_user_metadata_by_user_ids([
     "1be238f3-5908-4c51-b3bf-e53dd763047e",
     "beb00acf-6e48-435d-8388-3758607ec01b",
@@ -426,7 +426,7 @@ user_id_to_metadata = auth.fetch_batch_user_metadata_by_user_ids([
 ### Batch fetch users by emails
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.fetch_batch_user_metadata_by_emails(["a@example.com", "b@example.com"], include_orgs=True)
 ```
 <ParamField query="emails" type="List[str]">
@@ -442,7 +442,7 @@ Successful response is the same as [Batch fetch users by ids](#batch-fetch-users
 ### Batch fetch users by usernames
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.fetch_batch_user_metadata_by_usernames(["usera", "userb", "userc"], include_orgs=True)
 ```
 
@@ -459,7 +459,7 @@ Successful response is the same as [Batch fetch users by ids](#batch-fetch-users
 ### Search for users
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.fetch_users_by_query(page_size=10, page_number=0, order_by=UserQueryOrderBy.CREATED_AT_ASC,
                           email_or_username=None, include_orgs=False)
 ```
@@ -505,7 +505,7 @@ Successful response:
 ### Fetch users in organization
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.fetch_users_in_org(org_id, page_size=10, page_number=0, include_orgs=False)
 ```
 
@@ -547,7 +547,7 @@ Successful response:
 ### Fetch an organization
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 org = auth.fetch_org(org_id)
 ```
 
@@ -566,7 +566,7 @@ Successful response:
 ### Fetch all organizations
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.fetch_org_by_query(page_size=10, page_number=0, order_by=OrgQueryOrderBy.CREATED_AT_ASC)
 ```
 <ParamField query="page_size" type="int">
@@ -603,7 +603,7 @@ Successful response:
 ### Create User
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.create_user(email, email_confirmed=False, send_email_to_confirm_email_address=True,
                  ask_user_to_update_password_on_login=False,
                  password=None, username=None, first_name=None, last_name=None)
@@ -652,7 +652,7 @@ Successful response:
 ### Update User Email
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
 auth.update_user_email(user_id, new_email, require_email_confirmation)
 ```
@@ -672,7 +672,7 @@ auth.update_user_email(user_id, new_email, require_email_confirmation)
 ### Update User Metadata
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
 auth.update_user_metadata(user_id, username=None, first_name=None, last_name=None, metadata=None)
 ```
@@ -700,7 +700,7 @@ auth.update_user_metadata(user_id, username=None, first_name=None, last_name=Non
 ### Update User Password
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
 auth.update_user_password(user_id, password, ask_user_to_update_password_on_login=False)
 ```
@@ -720,7 +720,7 @@ auth.update_user_password(user_id, password, ask_user_to_update_password_on_logi
 ### Delete user
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
 auth.delete_user(user_id)
 ```
@@ -734,7 +734,7 @@ auth.delete_user(user_id)
 If successful, the user is logged out and unable to log back in.
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
 auth.disable_user(user_id)
 ```
@@ -748,7 +748,7 @@ auth.disable_user(user_id)
 If successful, the user is able to log back in again.
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
 auth.enable_user(user_id)
 ```
@@ -766,7 +766,7 @@ It is also possible to provide an existing identifier, and we will store and ret
 
 
 ```py
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.migrate_user_from_external_source(email, email_confirmed,
                                        existing_user_id=None, existing_password_hash=None,
                                        existing_mfa_base32_encoded_secret=None,
@@ -827,7 +827,7 @@ Successful response:
 Creates a magic link that a user can use to log in. Use this API if you'd prefer to send the magic link to the customer yourself, otherwise, we have [Create User](#create-user) which will email them directly.
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.create_magic_link(email, redirect_to_url=None, expires_in_hours=None, create_new_user_if_one_doesnt_exist=None)
 ```
 
@@ -871,7 +871,7 @@ For testing purposes, you may want to create access tokens separately from the f
 With this API, you can create access tokens for users programmatically and set a custom expiration.
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.create_access_token(user_id, duration_in_minutes)
 ```
 
@@ -896,7 +896,7 @@ Successful response:
 If successful, the user is able to create organizations.
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
 auth.enable_user_can_create_orgs(user_id)
 ```
@@ -910,7 +910,7 @@ auth.enable_user_can_create_orgs(user_id)
 If successful, the user loses the ability to create organizations.
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
 auth.disable_user_can_create_orgs(user_id)
 ```
@@ -925,7 +925,7 @@ auth.disable_user_can_create_orgs(user_id)
 ### Create Organization
 
 ```py
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.create_org(name)
 ```
 
@@ -944,7 +944,7 @@ Successful response:
 ### Add user to organization
 
 ```py
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.add_user_to_org(user_id, org_id, role)
 ```
 
@@ -969,7 +969,7 @@ Successful response:
 ### Allow organization to set up SAML connection
 
 ```py
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.allow_org_to_setup_saml_connection(org_id)
 ```
 <ParamField query="orgId" type="str">
@@ -981,7 +981,7 @@ Returns True if successful, meaning the organization can now set up [SAML](/over
 ### Disallow organization to set up SAML connection
 
 ```py
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.disallow_org_to_setup_saml_connection(org_id)
 ```
 <ParamField query="orgId" type="str">
@@ -994,7 +994,7 @@ Returns True if successful, meaning the organization can no longer set up [SAML]
 ### Update Organization Metadata
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 # Returns true if it was successful, false if the organization was not found
 auth.update_org_metadata(org_id, name=None, can_setup_saml=None, metadata=None, max_users=None)
 ```
@@ -1019,12 +1019,14 @@ auth.update_org_metadata(org_id, name=None, can_setup_saml=None, metadata=None, 
   Updates the maximum number of users that can be in the organization.
 </ParamField>
 
-## API Authentication
+## API Key Authentication
+
+For more information on API Key Authentication, please refer to our [Quickstart Guide](/getting-started/api-auth-outside-the-browser) on the topic.
 
 ### Validate Personal API Key 
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.validate_personal_api_key(api_key_token)
 ```
 
@@ -1034,36 +1036,27 @@ auth.validate_personal_api_key(api_key_token)
 
 If the token provided is not valid, an error is returned. If the token is valid, a user object that is associated with the token is returned.
 
+In addition to validating the API Key, this also makes sure it’s specifically a personal API key.
+
+Successful response user property contains the same fields as [Fetch user metadata by id](#fetch-user-metadata-by-id).
+
 Successful Response
 
 ```JSON
 {
-   "metadata":"None",
    "user":{
       "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
       "email":"test@propelauth.com",
-      "email_confirmed":true,
-      "has_password":true,
-      "picture_url":"https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
-      "structured_metadata":{...},
-      "metadata":{...},
-      "locked":false,
-      "enabled":true,
-      "mfa_enabled":false,
-      "can_create_orgs":false,
-      "created_at":1685487933,
-      "last_active_at":1685494460,
-      "org_id_to_org_info":{...},
-      "update_password_required":false
+      //...
    },
-   "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
+    metadata: {}
 }
 ```
 
 ### Validate Organization API Key 
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.validate_org_api_key(api_key_token)
 ```
 
@@ -1073,62 +1066,14 @@ auth.validate_org_api_key(api_key_token)
 
 If the token provided is not valid, an error is returned. If the token is valid, an organization object that is associated with the token is returned.
 
-Successful Response
+In addition to validating the API Key, this also makes sure it’s specifically an organization API key.
 
-```JSON
-{
-   "metadata":"None",
-   "org":{
-      "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
-      "org_name":"idc",
-      "can_setup_saml":false,
-      "max_users":"None",
-      "metadata":{...}
-   },
-   "user":{
-      "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
-      "email":"test@propelauth.com",
-      "email_confirmed":true,
-      "has_password":true,
-      "picture_url":"https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
-      "structured_metadata":{...},
-      "metadata":{...},
-      "locked":false,
-      "enabled":true,
-      "mfa_enabled":false,
-      "can_create_orgs":false,
-      "created_at":1685487933,
-      "last_active_at":1685494460,
-      "org_id_to_org_info":{...},
-      "update_password_required":false
-   },
-   "user_in_org":{
-      "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
-      "org_name":"idc",
-      "url_safe_org_name":"idc",
-      "org_metadata":{...},
-      "user_role":"Owner",
-      "inherited_user_roles_plus_current_role":[
-         "Owner",
-         "Admin",
-         "Member"
-      ],
-      "user_permissions":[
-         "propelauth::can_invite",
-         "propelauth::can_change_roles",
-         "propelauth::can_remove_users",
-         "propelauth::can_manage_api_keys"
-      ]
-   },
-   "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
-   "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5"
-}
-```
+Successful response contains the same fields as [Fetch user metadata by id](#fetch-user-metadata-by-id).
 
 ### Validate API Key 
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 auth.validate_api_key(api_key_token)
 ```
 
@@ -1138,62 +1083,12 @@ auth.validate_api_key(api_key_token)
 
 Returns a full user or organization object, depending on where the API Token was issued.
 
-```JSON
-{
-   "metadata":"None",
-   "user":{
-      "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
-      "email":"test@propelauth.com",
-      "email_confirmed":true,
-      "has_password":true,
-      "picture_url":"https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
-      "structured_metadata":{...},
-      "metadata":{...},
-      "locked":false,
-      "enabled":true,
-      "mfa_enabled":false,
-      "can_create_orgs":false,
-      "created_at":1685487933,
-      "last_active_at":1685494460,
-      "org_id_to_org_info":{...},
-      "update_password_required":false
-   },
-   "org":{
-      "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
-      "org_name":"idc",
-      "can_setup_saml":false,
-      "max_users":"None",
-      "metadata":{...}
-   },
-   "user_in_org":{
-      "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
-      "org_name":"idc",
-      "url_safe_org_name":"idc",
-      "org_metadata":{
-         
-      },
-      "user_role":"Owner",
-      "inherited_user_roles_plus_current_role":[
-         "Owner",
-         "Admin",
-         "Member"
-      ],
-      "user_permissions":[
-         "propelauth::can_invite",
-         "propelauth::can_change_roles",
-         "propelauth::can_remove_users",
-         "propelauth::can_manage_api_keys"
-      ]
-   },
-   "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
-   "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5"
-}
-```
+Successful response contains the same fields as [Fetch user metadata by id](#fetch-user-metadata-by-id).
 
 ### Fetch API Key 
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 # Returns the API Key
 auth.fetch_api_key(api_key_id)
 ```
@@ -1206,7 +1101,7 @@ auth.fetch_api_key(api_key_id)
 ### Fetch Current API Keys 
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 # Returns a list of current API Keys
 auth.fetch_current_api_keys(org_id: None, user_id: None, user_email: None, page_size: None, page_number: None)
 ```
@@ -1234,7 +1129,7 @@ auth.fetch_current_api_keys(org_id: None, user_id: None, user_email: None, page_
 ### Fetch Archived API Keys 
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 # Returns a list of archived API Keys
 auth.fetch_archived_api_keys(org_id: None, user_id: None, user_email: None, page_size: None, page_number: None)
 ```
@@ -1261,8 +1156,10 @@ auth.fetch_archived_api_keys(org_id: None, user_id: None, user_email: None, page
 
 ### Create API Key 
 
+Note: We have hosted pages for users to create API Keys. However, if you would like to do this programmatically, we have provided this endpoint to create keys via your backend.
+
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 # Creates a new API Key
 auth.create_api_key(org_id=None, user_id=None, expires_at_seconds=None, metadata=None)
 ```
@@ -1286,7 +1183,7 @@ auth.create_api_key(org_id=None, user_id=None, expires_at_seconds=None, metadata
 ### Update API Key 
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 # Updates a the epiration and/or metadata for an  API Key
 auth.update_api_key(api_key_id, expires_at_seconds=None, metadata=None)
 ```
@@ -1307,7 +1204,7 @@ auth.update_api_key(api_key_id, expires_at_seconds=None, metadata=None)
 ### Delete API Key 
 
 ```python
-# auth object comes from init_base_auth
+# auth object comes from init_auth
 # Deletes an API Key
 auth.delete_api_key(api_key_id)
 ```
