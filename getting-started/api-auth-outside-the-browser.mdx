@@ -34,7 +34,8 @@ These pages are where you will redirect your customers to create their API Keys.
 ### Validate Requests from your customers
 
 Once one of your customers has generated an API Key for their requests, they can then send that key in the header of their requests to your product. You 
-can then verify that the request is coming from a real user, and receieve any relevant metadata from the requester.
+can then verify that the request is coming from a real user by hitting our validation endpoints, and receive from PropelAuth any relevant metadata about 
+the requester.
 
 As an example, below is a snippet of a potential **Express** backend that is logging to the console the user returned from the **validatePersonalApiKey** endpoint.
 
