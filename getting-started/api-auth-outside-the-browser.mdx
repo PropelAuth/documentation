@@ -36,11 +36,11 @@ These pages are where you will redirect your customers to create their API Keys.
 Once one of your customers has generated an API Key for their requests, they can then send that key in the header of their requests to your product. You 
 can then verify that the request is coming from a real user, and receieve any relevant metadata from the requester.
 
-As an example, below is a snippet of a potential **Express** backend that is logging to the console the user metadata for a request after using the **validatePersonalApiKey** endpoint.
+As an example, below is a snippet of a potential **Express** backend that is logging to the console the user returned from the **validatePersonalApiKey** endpoint.
 
 ```js
 app.post('/api/company-names', async (req, res) => {
-    const userMetadata = await auth.validatePersonalApiKey(req.headers.authorization)
-    console.log(userMetadata)
+    const user = await auth.validatePersonalApiKey(req.headers.authorization)
+    console.log(user)
 })
 ```
