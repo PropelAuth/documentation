@@ -982,25 +982,23 @@ Successful Response
 
 ```js
 {
-   "metadata":"None",
+
    "user":{
-      "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
+      "user_Id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
       "email":"test@propelauth.com",
-      "email_confirmed":true,
-      "has_password":true,
-      "picture_url":"https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
-      "structured_metadata":{...},
-      "metadata":{...},
+      "emailConfirmed":true,
+      "hasPassword":true,
+      "pictureUrl":"https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
       "locked":false,
       "enabled":true,
-      "mfa_enabled":false,
-      "can_create_orgs":false,
-      "created_at":1685487933,
-      "last_active_at":1685494460,
-      "org_id_to_org_info":{...},
-      "update_password_required":false
+      "mfaEnabled":false,
+      "canCreateOrgs":false,
+      "createdAt":1685487933,
+      "lastActiveAt":1685494460,
+      "orgIdToOrgInfo":{...},
+      "updatePasswordRequired":false
    },
-   "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
+    "metadata":{},
 }
 ```
 
@@ -1018,51 +1016,47 @@ If the token provided is not valid, an error is returned. If the token is valid,
 
 ```js
 {
-   "metadata":"None",
    "org":{
-      "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
-      "org_name":"idc",
-      "can_setup_saml":false,
-      "max_users":"None",
+      "orgId":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
+      "orgName":"idc",
+      "canSetupSaml":false,
+      "maxUsers":"None",
       "metadata":{...}
    },
    "user":{
-      "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
+      "user_Id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
       "email":"test@propelauth.com",
-      "email_confirmed":true,
-      "has_password":true,
-      "picture_url":"https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
-      "structured_metadata":{...},
-      "metadata":{...},
+      "emailConfirmed":true,
+      "hasPassword":true,
+      "pictureUrl":"https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
       "locked":false,
       "enabled":true,
-      "mfa_enabled":false,
-      "can_create_orgs":false,
-      "created_at":1685487933,
-      "last_active_at":1685494460,
-      "org_id_to_org_info":{...},
-      "update_password_required":false
+      "mfaEnabled":false,
+      "canCreateOrgs":false,
+      "createdAt":1685487933,
+      "lastActiveAt":1685494460,
+      "orgIdToOrgInfo":{...},
+      "updatePasswordRequired":false
    },
-   "user_in_org":{
-      "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
-      "org_name":"idc",
-      "url_safe_org_name":"idc",
-      "org_metadata":{...},
-      "user_role":"Owner",
-      "inherited_user_roles_plus_current_role":[
+   "userInOrg":{
+      "orgId":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
+      "orgName":"idc",
+      "urlSafeOrgName":"idc",
+      "orgMetadata":{...},
+      "userRole":"Owner",
+      "inheritedUserRolesPlusCurrentRole":[
          "Owner",
          "Admin",
          "Member"
       ],
-      "user_permissions":[
+      "userPermissions":[
          "propelauth::can_invite",
          "propelauth::can_change_roles",
          "propelauth::can_remove_users",
          "propelauth::can_manage_api_keys"
       ]
    },
-   "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
-   "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5"
+    "metadata":{},
 }
 ```
 
@@ -1082,53 +1076,47 @@ Successful Response
 
 ```js
 {
-   "metadata":"None",
-   "user":{
-      "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
-      "email":"test@propelauth.com",
-      "email_confirmed":true,
-      "has_password":true,
-      "picture_url":"https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
-      "structured_metadata":{...},
-      "metadata":{...},
-      "locked":false,
-      "enabled":true,
-      "mfa_enabled":false,
-      "can_create_orgs":false,
-      "created_at":1685487933,
-      "last_active_at":1685494460,
-      "org_id_to_org_info":{...},
-      "update_password_required":false
-   },
    "org":{
-      "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
-      "org_name":"idc",
-      "can_setup_saml":false,
-      "max_users":"None",
+      "orgId":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
+      "orgName":"idc",
+      "canSetupSaml":false,
+      "maxUsers":"None",
       "metadata":{...}
    },
-   "user_in_org":{
-      "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
-      "org_name":"idc",
-      "url_safe_org_name":"idc",
-      "org_metadata":{
-         
-      },
-      "user_role":"Owner",
-      "inherited_user_roles_plus_current_role":[
+   "user":{
+      "user_Id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
+      "email":"test@propelauth.com",
+      "emailConfirmed":true,
+      "hasPassword":true,
+      "pictureUrl":"https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
+      "locked":false,
+      "enabled":true,
+      "mfaEnabled":false,
+      "canCreateOrgs":false,
+      "createdAt":1685487933,
+      "lastActiveAt":1685494460,
+      "orgIdToOrgInfo":{...},
+      "updatePasswordRequired":false
+   },
+   "userInOrg":{
+      "orgId":"8cdb213e-43a7-40c3-9406-1ae207e6eda5",
+      "orgName":"idc",
+      "urlSafeOrgName":"idc",
+      "orgMetadata":{...},
+      "userRole":"Owner",
+      "inheritedUserRolesPlusCurrentRole":[
          "Owner",
          "Admin",
          "Member"
       ],
-      "user_permissions":[
+      "userPermissions":[
          "propelauth::can_invite",
          "propelauth::can_change_roles",
          "propelauth::can_remove_users",
          "propelauth::can_manage_api_keys"
       ]
    },
-   "user_id":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
-   "org_id":"8cdb213e-43a7-40c3-9406-1ae207e6eda5"
+    "metadata":{},
 }
 ```
 
