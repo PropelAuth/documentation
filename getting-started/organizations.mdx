@@ -76,37 +76,49 @@ don't have to manually cheeck and limit through the dashboard.
   </Tab>
   <Tab title="Flask">
     ```python
-      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', 'Test Org', can_setup_saml=None, metadata=None, 5)
+      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', 'Test Org', can_setup_saml=None, metadata=None, max_users=5)
     ```
   </Tab>
   <Tab title="FastAPI">
     ```python
-      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', 'Test Org', can_setup_saml=None, metadata=None, 5)
+      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', 'Test Org', can_setup_saml=None, metadata=None, max_users=5)
     ```
   </Tab>
   <Tab title="Django">
     ```python
-      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', 'Test Org', can_setup_saml=None, metadata=None, 5)
+      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', 'Test Org', can_setup_saml=None, metadata=None, max_users=5)
     ```   
   </Tab>
   <Tab title="Python">
     ```python
-      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', 'Test Org', can_setup_saml=None, metadata=None, 5)
+      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', 'Test Org', can_setup_saml=None, metadata=None, max_users=5)
     ```
   </Tab>
   <Tab title="Axum">
     ```rust
-      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', 'Test Org', can_setup_saml=None, metadata=None, 5)
+      auth.org().update_org('0eca0135-5daf-46ae-a704-04fed3be62a0'.to_string(), UpdateOrgRequest {
+        name: "Test Org".to_string(),
+        max_users: 5,
+        ..Default::default()
+      })
     ```
   </Tab>
   <Tab title="Actix">
     ```rust
-      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', 'Test Org', can_setup_saml=None, metadata=None, 5)
+      auth.org().update_org('0eca0135-5daf-46ae-a704-04fed3be62a0'.to_string(), UpdateOrgRequest {
+        name: "Test Org".to_string(),
+        max_users: 5,
+        ..Default::default()
+      })
     ```
   </Tab>
   <Tab title="Rust">
     ```rust
-      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', 'Test Org', can_setup_saml=None, metadata=None, 5)
+      auth.org().update_org('0eca0135-5daf-46ae-a704-04fed3be62a0'.to_string(), UpdateOrgRequest {
+        name: "Test Org".to_string(),
+        max_users: 5,
+        ..Default::default()
+      })
     ```
   </Tab>
   <Tab title="Go">
@@ -114,8 +126,8 @@ don't have to manually cheeck and limit through the dashboard.
       client.UpdateOrgMetedata(
         '0eca0135-5daf-46ae-a704-04fed3be62a0',
         {
-            Name: 'Test Org',
-            MaxUsers: 5
+          Name: 'Test Org',
+          MaxUsers: 5
         }
       )
     ```
