@@ -37,7 +37,7 @@ First enable API Key Authentication in your Project. In the API Key Settings sec
 
 ![Settings](/images/api-key-auth-settings.png)
 
-Click on the **Live View** button on the top right, and click on the API Key hosted page or pages you enabled. These pages are where you will redirect your customers to create their API Keys. 
+Click on the **Preview** button on the top right, and click on the API Key hosted page or pages you enabled. These pages are where you will redirect your customers to create their API Keys. 
 
 ![Hosted Pages](/images/api-key-auth-hosted-page.png)
 
@@ -47,12 +47,12 @@ Once a customer has generated an API Key for their requests, they can then send 
 can then verify that the request is coming from a real user by hitting our validation endpoints, and receive from PropelAuth any relevant metadata about 
 the requester.
 
-As an example, below is a snippet of an **Express** backend that is logging to the console the user returned from the **validatePersonalApiKey** endpoint.
+As an example, below is a snippet of an **Express** backend that is logging to the console the returned object from the **validatePersonalApiKey** endpoint.
 
 ```js
 app.post('/api/whoami', async (req, res) => {
-    const user = await auth.validatePersonalApiKey(req.headers.authorization)
-    console.log(user)
+    const apiKey = await auth.validatePersonalApiKey(req.headers.authorization)
+    console.log(apiKey)
 })
 ```
 
@@ -69,7 +69,7 @@ Output
 		"locked":false,
 		"enabled":true,
 		"mfaEnabled":false,
-		"canCreate_orgs":false,
+		"canCreateOrgs":false,
 		"createdAt":1685487933,
 		"lastActiveAt":1685494460,
 		"orgIdToOrgInfo":{
