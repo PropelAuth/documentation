@@ -1,0 +1,84 @@
+---
+title: "API Key Authentication"
+sidebarTitle: "API Key Authentication"
+---
+
+### Overview
+
+API Key authentication allows you to create API Keys for your end users and your organizations in order to protect requests they make to your product.
+
+Our previous guides covered how you setup authentication in the browser. API Key authentication allows your users to make requests outside of the browser, such as CLIs, cURL, etc.
+
+### Token Types
+
+There are three different kinds of API Keys that PropelAuth can generate, based on the desired use case.
+
+| Token Type | Owned by | How to Create? | Automatic Invalidation |
+|---- | ----- | ----- | ----- |
+| Personal | User | Users can create via the hosted page or you can create via our APIs | When the user is blocked or deleted or the token expires |
+| Organization | Organization | Users can create via the hosted page or you can create via our APIs | When the organization is deleted, (optionally) when the user who created the key leaves the org, or when the token expires |
+| Generic | No one | Via our APIs | When the token expires |
+
+### Basic Usage
+
+First, your users create an API Key via our configurable [hosted pages](/overview/hosted-pages) (you can also create them manually via our APIs if you want to manage it yourself)
+
+Next, when a user makes a request to your product, they will send this key in their request.
+
+Finally, your product makes a request to our [validation API endpoints](/reference/backend-apis/node#validate-personal-api-key) to make sure 
+that the token is valid, and we return the user or organization that the token was issued to, along with any relevant metadata.
+
+![How It Works](/images/api-key-auth.png)
+
+### Setup 
+
+First enable API Key Authentication in your Project. In the API Key Settings section of the dashboard, make
+ sure that you enable your prefered feature, either Personal or Organization API Keys, or both.
+
+![Settings](/images/api-key-auth-settings.png)
+
+Click on the **Preview** button on the top right, and click on the API Key hosted page or pages you enabled. These pages are where you will redirect your customers to create their API Keys. 
+
+![Hosted Pages](/images/api-key-auth-hosted-page.png)
+
+### Validate Requests from your customers
+
+Once a customer has generated an API Key for their requests, they can then send that key in the header of their requests to your product. You 
+can then verify that the request is coming from a real user by hitting our validation endpoints, and receive from PropelAuth any relevant metadata about 
+the requester.
+
+As an example, below is a snippet of an **Express** backend that is logging to the console the returned object from the **validatePersonalApiKey** endpoint.
+
+```js
+app.post('/api/whoami', async (req, res) => {
+    const apiKey = await auth.validatePersonalApiKey(req.headers.authorization)
+    console.log(apiKey)
+})
+```
+
+Output
+
+```JSON
+{
+	user: {
+		"userId":"98cef184-7c15-45c5-8918-8c2295aa7ffe",
+		"email":"test@propelauth.com",
+		"emailConfirmed":true,
+		"hasPassword":true,
+		"pictureUrl":"https://img.propelauth.com/2a27d237-db8c-4f82-84fb-5824dfaedc87.png",
+		"locked":false,
+		"enabled":true,
+		"mfaEnabled":false,
+		"canCreateOrgs":false,
+		"createdAt":1685487933,
+		"lastActiveAt":1685494460,
+		"orgIdToOrgInfo":{
+			...
+		},
+		"updatePasswordRequired":false
+	},
+	metadata: {
+		"howDoISetThis": "you can set the metadata on API key creation or update"
+	}
+}
+```
