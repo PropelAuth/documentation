@@ -45,7 +45,7 @@ We proactively email users who are not yet enrolled in 2FA, and allow your custo
 
 A simple way to achieve more organization customization this is through our Backend API endpoints. On all of our libraries, we have the **Update Organization** endpoint, 
 which takes in as one of its parameters a maximum number of users in the organization. This means through your product, you can programatically 
-adjst how many users can be in each organization based on your own requirements. 
+adjust how many users can be in each organization based on your own requirements. 
 
 As an example, let's say you have an integration with some kind of paid API service, that you only want used by your higher tiered customer plans. 
 By using the **Update Organization** endpoint, you could conditionally set a cap on users for specific tiers of customers, so that you 
@@ -56,7 +56,6 @@ don't have to manually cheeck and limit through the dashboard.
     ```js
     const orgUpdateObject = {
         orgId: '0eca0135-5daf-46ae-a704-04fed3be62a0',
-        name: 'Test Org',
         maxUsers: 5
     }
 
@@ -67,7 +66,6 @@ don't have to manually cheeck and limit through the dashboard.
     ```js
     const orgUpdateObject = {
         orgId: '0eca0135-5daf-46ae-a704-04fed3be62a0',
-        name: 'Test Org',
         maxUsers: 5
     }
 
@@ -76,28 +74,27 @@ don't have to manually cheeck and limit through the dashboard.
   </Tab>
   <Tab title="Flask">
     ```python
-      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', 'Test Org', can_setup_saml=None, metadata=None, max_users=5)
+      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', max_users=5)
     ```
   </Tab>
   <Tab title="FastAPI">
     ```python
-      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', 'Test Org', can_setup_saml=None, metadata=None, max_users=5)
+      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', max_users=5)
     ```
   </Tab>
   <Tab title="Django">
     ```python
-      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', 'Test Org', can_setup_saml=None, metadata=None, max_users=5)
+      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', max_users=5)
     ```   
   </Tab>
   <Tab title="Python">
     ```python
-      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', 'Test Org', can_setup_saml=None, metadata=None, max_users=5)
+      auth.update_org_metadata('0eca0135-5daf-46ae-a704-04fed3be62a0', max_users=5)
     ```
   </Tab>
   <Tab title="Axum">
     ```rust
       auth.org().update_org('0eca0135-5daf-46ae-a704-04fed3be62a0'.to_string(), UpdateOrgRequest {
-        name: "Test Org".to_string(),
         max_users: 5,
         ..Default::default()
       })
@@ -106,7 +103,6 @@ don't have to manually cheeck and limit through the dashboard.
   <Tab title="Actix">
     ```rust
       auth.org().update_org('0eca0135-5daf-46ae-a704-04fed3be62a0'.to_string(), UpdateOrgRequest {
-        name: "Test Org".to_string(),
         max_users: 5,
         ..Default::default()
       })
@@ -115,7 +111,6 @@ don't have to manually cheeck and limit through the dashboard.
   <Tab title="Rust">
     ```rust
       auth.org().update_org('0eca0135-5daf-46ae-a704-04fed3be62a0'.to_string(), UpdateOrgRequest {
-        name: "Test Org".to_string(),
         max_users: 5,
         ..Default::default()
       })
@@ -126,7 +121,6 @@ don't have to manually cheeck and limit through the dashboard.
       client.UpdateOrgMetedata(
         '0eca0135-5daf-46ae-a704-04fed3be62a0',
         {
-          Name: 'Test Org',
           MaxUsers: 5
         }
       )
