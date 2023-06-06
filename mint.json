@@ -44,10 +44,21 @@
       "url": "reference"
     },
     {
+      "name": "How To's",
+      "icon": "book",
+      "url": "how-tos"
+    },
+    {
+      "name": "Changelog",
+      "icon": "clock-rotate-left",
+      "url": "changelog"
+    },
+    {
       "name": "Blog",
       "icon": "newspaper",
       "url": "https://www.propelauth.com/blog"
     }
+
   ],
   "navigation": [
     {
@@ -58,8 +69,7 @@
         "overview/frontend-integration",
         "overview/backend-integration",
         "overview/organizations",
-        "overview/roles",
-        "overview/emails"
+        "overview/roles"
       ]
     },
     {
@@ -114,6 +124,16 @@
     {
       "group": "Example Apps",
       "pages": ["example-apps/apps"]
+    },
+    {
+      "group": "Core Concepts",
+      "pages":[
+        "how-tos/customizing-ui",
+        "how-tos/user-id-on-frontend",
+        "how-tos/user-id-on-backend",
+        "how-tos/making-authenticated-requests",
+        "how-tos/roles-and-permissions"
+      ]
     },
     {
       "group": "Component Library",
