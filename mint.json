@@ -66,8 +66,7 @@
       "pages": [
         "overview",
         "overview/hosted-pages",
-        "overview/frontend-integration",
-        "overview/backend-integration",
+        "overview/integration",
         "overview/organizations",
         "overview/roles"
       ]
@@ -136,25 +135,24 @@
       ]
     },
     {
-      "group": "Component Library",
+      "group": "Advanced Concepts",
       "pages": [
-        "component-library/overview",
-        {
-          "group": "Getting Started",
-          "pages": [
-            "component-library/getting-started/usage",
-            "component-library/getting-started/customization"
-          ]
-        },
-        {
-          "group": "Components",
-          "pages": [
-            "component-library/components/login-manager",
-            "component-library/components/signup",
-            "component-library/components/login-passwordless",
-            "component-library/components/forgot-password"
-          ]
-        }
+        "how-tos/saml",
+        "how-tos/scim",
+        "how-tos/user-impersonation"
+      ]
+    },
+    {
+      "group": "Common Use Cases",
+      "pages": [
+        "how-tos/redirect-the-user",
+        "how-tos/users-in-one-org",
+        "how-tos/sync-users-groups-with-webhooks",
+        "how-tos/slack-alerts-on-signup",
+        "how-tos/how-to-onboard-users",
+        "how-tos/ui-customizations",
+        "how-tos/logging-out",
+        "how-tos/setting-active-organization"
       ]
     },
     {

@@ -1,0 +1,43 @@
+---
+title: "How To Integrate"
+description: "PropelAuth's hosted pages and client libraries greatly reduce the time it takes to integrate"
+---
+
+## Frontend Integration
+
+PropelAuth provides you with [full UIs](/overview/hosted-pages) out of the box. This means that you don't have to
+worry about any login/signup/account management flows.
+
+This often raises the question - how do you get a user's information within your product?
+PropelAuth provides [frontend libraries](/getting-started/frontend-integration) for frameworks like React,
+no-code tools like Webflow, and vanilla javascript.
+
+These libraries provide abstractions for common frontend use cases like:
+ - "Tell me if the user is logged in or not"
+ - "Get the current user's information"
+ - "Does this user have permission to see this page"
+ - "Make an **authenticated** request to the backend"
+
+The [getting started guide](/getting-started/quickstart-fe) provides detailed examples for your framework of choice.
+
+
+
+## Backend Integration
+
+PropelAuth provides [hosted UIs](/overview/hosted-pages) and [frontend libraries](/overview/frontend-integration),
+but what about the backend?
+
+On the backend, we provide [libraries](/getting-started/frontend-integration) for languages like Node, Python, and Rust.
+We then also provide more specific libraries for frameworks like Express (node), FastAPI (python), Flask (python), etc.
+
+These libraries provide abstractions for common backend use cases like:
+ - "Only allow users that are logged in to call this API"
+ - "Only allow users that are Admins of this organization to call this API"
+ - "Block this user"
+ - "Fetch all users in an organization"
+
+Essentially, every backend library has two components to it:
+ - Functions for authentication/authorization - making sure the user has permission to perform some action
+ - APIs on top of PropelAuth - fetch user information, modify/create users, change roles, etc.
+
+The [getting started guide](/getting-started/quickstart-fe) provides detailed examples for your framework of choice.
