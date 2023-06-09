@@ -1,0 +1,28 @@
+---
+title: "Webhooks [TODO]"
+description:
+  "Webhooks allow you to reliably receive an HTTP request when a specific action
+  occurs, like a user signing up, joining an organization, or having their role
+  change."
+---
+
+Some examples of things you can do include:
+
+- Creating a copy of your users and organizations in your DB
+- Signing up new users to your mailing list and sending them a welcome email
+- Provisioning resources for a user right when they sign up
+- Updating your billing information as new users join organizations within your
+  product
+
+You can set them up by going to the **Webhook** section of your
+[dashboard](https://auth.propelauth.com/signup). You can set up different
+endpoints for your test and production environments, so you can easily
+distinguish between the two. There's also a full event catalog with examples of
+what the events look like.
+
+![](/images/example_webhook.png)
+
+We use [Svix](https://www.svix.com/) for our Webhooks. To make sure that the
+requests are actually coming from us and not from a malicious actor, make sure
+to
+[verify the messages you receive](https://docs.svix.com/receiving/verifying-payloads/how).

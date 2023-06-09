@@ -69,20 +69,8 @@
         "overview/hosted-pages",
         "overview/integration",
         "overview/organizations",
-        "overview/roles"
-      ]
-    },
-    {
-      "group": "Advanced Features",
-      "pages": [
-        "overview/saml",
-        "overview/user-schema",
-        "overview/2fa",
-        "overview/user-impersonation",
-        "overview/disable-public-signups",
-        "overview/slack-notifications",
-        "overview/webhooks",
-        "overview/migrate-existing-users"
+        "overview/roles",
+        "overview/features"
       ]
     },
     {
@@ -98,7 +86,6 @@
       "pages": [
         "getting-started/quickstart-fe",
         "getting-started/quickstart-be",
-        "getting-started/quickstart-requests",
         "getting-started/deploy-to-prod",
         "getting-started/api-auth-outside-the-browser"
       ]
@@ -114,11 +101,7 @@
     {
       "group": "Organizations (B2B)",
       "pages": [
-        "getting-started/organizations",
-        "getting-started/rbac",
-        "getting-started/authorization-fe",
-        "getting-started/authorization-be",
-        "getting-started/saml"
+        "getting-started/organizations"
       ]
     },
     {
@@ -152,13 +135,18 @@
         "how-tos/how-to-onboard-users",
         "how-tos/ui-customizations",
         "how-tos/logging-out",
-        "how-tos/setting-active-organization"
+        "how-tos/setting-active-organization",
+        "how-tos/user-schema",
+        "how-tos/2fa",
+        "how-tos/disable-public-signups",
+        "how-tos/slack-notifications",
+        "how-tos/migrate-existing-users"
       ]
     },
     {
       "group": "Changelog",
       "pages": [
-        "changelog/changelog"
+        "changelog/index"
       ]
     },
     {

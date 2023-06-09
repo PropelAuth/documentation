@@ -1,0 +1,49 @@
+---
+title: "Migrate users from an existing auth source"
+description:
+  "If you switch your auth provider, there are a few major considerations to
+  take into account."
+---
+
+For example:
+
+- I have user IDs already persisted in my database, how can I maintain those
+  IDs?
+- How can I allow my users to keep their existing password?
+- Some of my users have 2FA enabled, how do I make sure they keep in enabled?
+- Can I test the migration before committing to it?
+
+Ideally, there's no user impact and a simple API to use. Luckily, we have a
+[simple API](/reference/backend-apis/api) that you can use to migrate your
+users. Each of our backend libraries has an API wrapper that you can use called
+`migrateUserFromExternalSource`.
+
+### Linking user IDs
+
+Our migration API also takes in the user's existing ID, and we will present a
+`legacy_user_id` everywhere alongside our `user_id`. This allows you to use the
+`legacy_user_id` whenever it's present, and fallback to new `user_ids` for any
+user created after the migration.
+
+### Maintaining users' passwords
+
+Passwords should **never** be stored in plaintext or any recoverable form. Our
+migration API doesn't take in a password, it takes in a password hash. We
+support both BCrypt and Argon2 hashes and by providing your user's password
+hash, they will be able to log in with their existing password.
+
+### Maintaining MFA
+
+Our migration API also optionally takes in a base32 encoded MFA secret. If you
+pass one in, we'll enable MFA for your user's account automatically and their
+existing MFA device's codes will work just like they currently do.
+
+### Testing the migration
+
+All this works in both your production and test environments, allowing you to
+test the migration before fully committing to it.
+
+### Questions?
+
+Have any questions or need any help with your migration? Don't hesitate to reach
+out at support@propelauth.com
