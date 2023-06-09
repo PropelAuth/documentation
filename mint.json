@@ -156,6 +156,12 @@
       ]
     },
     {
+      "group": "Changelog",
+      "pages": [
+        "changelog/changelog"
+      ]
+    },
+    {
       "group": "Full Reference",
       "pages": [
         "reference/overview",
