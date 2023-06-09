@@ -65,6 +65,7 @@
       "group": "Concepts",
       "pages": [
         "overview",
+        "overview/dashboard",
         "overview/hosted-pages",
         "overview/integration",
         "overview/organizations",
@@ -127,9 +128,9 @@
     {
       "group": "Core Concepts",
       "pages":[
-        "how-tos/customizing-ui",
-        "how-tos/user-id-on-frontend",
-        "how-tos/user-id-on-backend",
+        "how-tos/ui-customization",
+        "how-tos/authorization-fe",
+        "how-tos/authorization-be",
         "how-tos/making-authenticated-requests",
         "how-tos/roles-and-permissions"
       ]
@@ -138,7 +139,6 @@
       "group": "Advanced Concepts",
       "pages": [
         "how-tos/saml",
-        "how-tos/scim",
         "how-tos/user-impersonation"
       ]
     },

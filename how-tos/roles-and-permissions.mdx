@@ -1,0 +1,43 @@
+---
+title: "Configure Roles and Permissions (RBAC)"
+---
+
+By default, you start with three roles:
+
+- Owner
+- Admin
+- Member
+
+Importantly, these roles apply only within the context of an organization. One
+of your users can be an Owner of organization A and a Member of organization B.
+Those roles dictate permissions within the organization - not globally.
+
+## Changing the default roles
+
+In your dashboard, under **Roles and Permissions**, you can create roles
+that make sense for your product.
+
+![custom roles](/images/roles-1.png)
+
+When you change your roles, if the change is backwards incompatible (removing a role, for example), we'll automatically
+migrate existing users/invitations with that role.
+
+![role back incompat change](/images/role-back-incompat.png)
+
+## What are permissions?
+
+Permissions are arbitrary strings associated with a role. For example,
+**can_view_billing**, **ProductA::CanCreate**, and **ReadOnly** are all valid
+permissions.
+
+![manage permissions](/images/roles-3.png)
+
+These permissions are associated with your roles. A user with the role **Admin**
+will also have all the permissions associated with the role **Admin**.
+
+## What's the difference between roles and permissions?
+
+Roles are something that your users will see. When your users invite their coworkers to your product, they specify a role for you after you join.
+
+Permissions are something that only you will see. They are optional, but can be helpful if you'd rather write code that says "Show the billing page if this user has the **CanViewBilling** permission"
+instead of "Show the billing page for users with the role **Admin**".
