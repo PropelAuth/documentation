@@ -1,0 +1,41 @@
+---
+title: "Redirecting Users"
+sidebarTitle: "Redirecting Users"
+---
+
+A seamless authentication experience for users is key to working with PropelAuth, which means we have provided various methods of redirecting 
+your users to the correct location.
+
+## Default Locations
+
+In the PropelAuth Dashboard, you can specify various redirect locations from the Frontend Integration section.
+
+![frontend integration locations](/images/redirect-dashboard.png)
+
+You can specify default locations for after a user is logged in, and after they are logged out. You can also add additional locations that can access user information 
+from this page as well.
+
+## Overriding the Defaults
+
+While you can rely on the defaults set in your dashboard, what if you have custom locations you would like to send your users to? Well, using our frontend libraries, 
+you can do just that.
+
+We have provided a suite of redirect functions for use in your application, so that you can direct your users to the various hosted UI's that we provide for authentication. 
+That said, each of these functions come with an optional `postSignupRedirectUrl` parameter, which allows you to specify the URL you would like to redirect to.
+
+For example, let's say I have users clicking a link to log in at the domain `propelauth.com`, but after a successful login, I want to direct them to `app.propelauth.com`. 
+
+First, In My dashboard, I would add a new frontend location for this second domain, and make sure to click "Allow any subdomain". 
+
+![frontend integration new location](/images/redirect-new-domain.png)
+
+Second, I would integrate PropelAuth into my frontend as I normally would, but in the component that let's users log in, I would specify the 
+new domain in the options
+
+```js
+redirectToLoginPage({
+	postLoginRedirectUrl: 'https://app.propelauth.com'
+})
+```
+
+For a full list of redirect functions, be sure to read our reference guide for our frontend libraries.
