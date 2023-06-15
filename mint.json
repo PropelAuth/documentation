@@ -131,11 +131,6 @@
         "how-tos/redirect-the-user",
         "how-tos/users-in-one-org",
         "how-tos/sync-users-groups-with-webhooks",
-        "how-tos/slack-alerts-on-signup",
-        "how-tos/how-to-onboard-users",
-        "how-tos/ui-customizations",
-        "how-tos/logging-out",
-        "how-tos/setting-active-organization",
         "how-tos/user-schema",
         "how-tos/2fa",
         "how-tos/disable-public-signups",
@@ -146,7 +141,7 @@
     {
       "group": "Changelog",
       "pages": [
-        "changelog/index"
+        "changelog/changelog"
       ]
     },
     {

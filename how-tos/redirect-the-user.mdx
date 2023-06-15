@@ -8,34 +8,79 @@ your users to the correct location.
 
 ## Default Locations
 
-In the PropelAuth Dashboard, you can specify various redirect locations from the Frontend Integration section.
+In the PropelAuth Dashboard, you can specify the default redirect location from the Frontend Integration section.
 
 ![frontend integration locations](/images/redirect-dashboard.png)
 
-You can specify default locations for after a user is logged in, and after they are logged out. You can also add additional locations that can access user information 
-from this page as well.
+In this case, after the user logs in or logs out of the test environment, they will be redirected to http://localhost:8000
 
 ## Overriding the Defaults
 
-While you can rely on the defaults set in your dashboard, what if you have custom locations you would like to send your users to? Well, using our frontend libraries, 
-you can do just that.
+While you can rely on the defaults set in your dashboard, what if you have custom locations you would like to send your 
+users to? Well, using our frontend libraries, you can do just that.
 
-We have provided a suite of redirect functions for use in your application, so that you can direct your users to the various hosted UI's that we provide for authentication. 
-That said, each of these functions come with an optional `postSignupRedirectUrl` parameter, which allows you to specify the URL you would like to redirect to.
+When you are sending the user to the login/signup pages, you have the option to specify where they will come back to 
+after they complete that action. For example, let’s say I have users clicking a **Login** button at the domain `example.com`, 
+but after a successful login, I want to direct them to `example.com/onboarding`.
 
-For example, let's say I have users clicking a link to log in at the domain `propelauth.com`, but after a successful login, I want to direct them to `app.propelauth.com`. 
-
-First, In My dashboard, I would add a new frontend location for this second domain, and make sure to click "Allow any subdomain". 
-
-![frontend integration new location](/images/redirect-new-domain.png)
-
-Second, I would integrate PropelAuth into my frontend as I normally would, but in the component that let's users log in, I would specify the 
-new domain in the options
+All it would take would be to make sure that in my redirect function on the frontend, I pass that URL as the `postLoginRedirectUrl`.
 
 ```js
 redirectToLoginPage({
-	postLoginRedirectUrl: 'https://app.propelauth.com'
+	postLoginRedirectUrl: 'https://propelauth.com/account'
 })
 ```
+
+Now I could have done this by changing the default redirect location to “/account” in my dashboard. But this method 
+works for programatic redirects as well. Let’s say I have a contextual instance_id that I need to pass into the URL. To do this, 
+I would need to do it pass in
+
+```js
+redirectToLoginPage({
+	postLoginRedirectUrl: `https://propelauth.com/${instance_id}`
+})
+```
+
+## Redirect to the Current Page 
+
+What if you wanted to redirect the user back to their current page in your app after they login? In that case, 
+you could use the same method as before, but this time we would pass in a window reference as the URL.
+
+```js
+redirectToLoginPage({
+	postLoginRedirectUrl: window.location.href
+})
+```
+
+In this case, a user would be redirected back to whatever page they were on when they initially clicked to login to the application. 
+
+We can even do this automatically across your whole application, like in following example, where we passed in a `RedirectToLogin` 
+component to the `RequiredAuthProvider`.
+
+```js
+<RequiredAuthProvider
+  authUrl={process.env.NEXT_PUBLIC_AUTH_URL || ""}
+  displayIfLoggedOut={
+    <RedirectToLogin
+      postLoginRedirectUrl={window.location.href}
+    />
+  }
+>
+  {children}
+</RequiredAuthProvider>
+```
+
+
+## Redirect to a Preview Deployment 
+
+In some cases, you may want to redirect to a preview deployment of the application. Some platforms, like Netlify, Vercel, 
+and Render have support for preview deployments, but how would you make sure you come back to the right place after logging in?
+
+To accomplish this, first you'll need to add an additional frontend location to the frontend integration section of your dashboard. 
+
+![frontend integration locations](/images/redirect-new-domain.png)
+
+Once added, you can then use the above examples with `window.location.href` and it will automatically redirect back to the 
+preview deployment instead of your default.
 
 For a full list of redirect functions, be sure to read our reference guide for our frontend libraries.
