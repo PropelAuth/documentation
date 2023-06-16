@@ -1,107 +1,35 @@
 ---
 title: "SAML"
 sidebarTitle: "SAML / Enterprise SSO"
-description:
-  "PropelAuth's SAML SSO support allows your end users to connect their
-  organizations directly to however they manage employees internally."
 ---
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/YHU1nuajmT4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+PropelAuth's [SAML SSO](https://www.propelauth.com/post/what-does-saml-actually-mean) support allows your users to
+connect their organizations their own identity provider (e.g. Okta, Azure AD, JumpCloud, etc).
 
-As an example, lets say you have a customer "Acme Co". Acme's IT team uses
-OneLogin as their identity provider, meaning that all employees at the company
-have an account with OneLogin. New employees are onboarded to OneLogin and
+As an example, lets say you have a customer "Acme Co". Acme uses
+Okta as their identity provider, meaning that all employees at the company
+have an account with Okta. New employees are onboarded to Okta and
 exiting employees are removed.
 
-A SAML connection between your product and Acme allows Acme's IT team to specify
-which users have access to your product. They could give everyone at the company
-access, specify teams like only the engineering team, or even pick specific
-people to give access.
+A SAML connection between your product and Acme allows employees at Acme to sign in to your product with their existing work accounts.
 
-### SAML Setup Guide
+![saml login](/images/saml-login.png)
 
-We're going to set up our PropelAuth Project to enable Acme Co to set up a SAML connection.
+## No need to write any extra code
 
-1. On the dashboard for your project, click the "Org Page" option under the "View Our Hosted UIs button. When you click this, you are now viewing the organization management page for your product. In other words, you are now acting as if you were an employee at Acme Co. If you haven't done it yet, you'll need to sign up before you can view the org page.
+PropelAuth's libraries have a concept of an [organization](/overview/organizations).
+Users are added to these organizations via invitations or joining by their domain.
 
-![dashboard](/images/saml-setup-3.png)
-
-2. Click the Create Organization button.
-
-![create organization](/images/saml-setup-4.png)
-
-3. Write a name for the organization, and click Create Organization.
-
-![organization game](/images/saml-setup-9.png)
-
-4. Back in the project dashboard, under the Management section of your Project, select the Organizations tab, and click the name of the organization in which you would like to enable SAML.
-
-![organization settings](/images/saml-setup-11.png)
-
-5. Check the Can Enable SAML checkbox.
-
-![enable saml](/images/saml-setup-13.png)
-
-6. Now we can go back to being a user at Acme Co. Back on the page for the new Organization, click the Settings button, and click Enable SAML.
-
-![enable saml](/images/saml-setup-10.png)
-
-7. Click the option for the SAML Identity Provider you would like to use.
-
-![choose identity provider](/images/saml-setup-7.png)
-
-8. Follow the set by step instructions we have provided for the Identity Provider of choice.
-
-![follow IDP instructions](/images/saml-setup-8.png)
-
-As an employee of Acme Co, I was given step by step instructions on how to connect my IDP. I can then manage my employees access to your product easily. As the implementor, all you have to do is enable SAML for their organization, and PropelAuth takes care of the rest.
-
-
-### SAML Example Use
-
-Here's an example where Acme gives a user access to Figma directly from
-OneLogin.
-
-![user being added to figma](/images/saml-1.png)
-
-PropelAuth's SAML support extends our [hosted UIs](https://demo.propelauth.com/)
-with a full set of UIs to enable your users to setup SAML connections with you.
-Your users select the identity provider they use:
-
-![user selecting an IDP](/images/saml-2.png)
-
-And then are guided through the process of setting up a SAML connection with
-step-by-step instructions:
-
-![saml wizard](/images/saml-3.png)
-
-Once the connection is set up, your users can test the connection to make sure
-it is working:
-
-![testing a saml connection](/images/saml-4.png)
-
-This SAML connection is tied to an organization, meaning that any user that logs
-in via Acme's SAML connection will automatically be added to Acme's
-organization.
-
-### Working with SAML
-
-So far, we've seen that your users can set up a SAML connection and easily
-onboard/offboard their users to an organization within your product. But what do
-you need to do to interact with SAML?
-
-Pretty much nothing - SAML is an implementation detail of how an organization
-manages their users within your product. Some organizations will set up SAML
-while others will use our other supported methods like inviting coworkers
-manually or allowing anyone with a matching email domain (e.g. @acme.com) to
-join. Any code you write that deals with organizations will work, regardless of
+One of the best things about our SAML integration, is your code doesn't need to change at all when you close your first
+customer that needs it. SAML is an implementation detail of how an organization
+manages their users within your product. Any code you write that deals with organizations will work, regardless of
 the method that organization uses to manage its members.
 
-### Controlling who can set up SAML
+## Who can set up SAML?
 
 With the click of a button, you can allow all of your organizations to set up
 SAML connections with you. However, you may not want that if you consider SAML
 to be an enterprise/paid feature.
 
-You can select which organizations can use SAML either in your dashboard or
+You can also select which organizations can use SAML either in your dashboard or
 programmatically via our APIs.

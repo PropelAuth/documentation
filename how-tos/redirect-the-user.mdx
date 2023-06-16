@@ -3,8 +3,9 @@ title: "Redirecting Users"
 sidebarTitle: "Redirecting Users"
 ---
 
-A seamless authentication experience for users is key to working with PropelAuth, which means we have provided various methods of redirecting 
-your users to the correct location.
+PropelAuth provides configurable UIs for login, signup, and org management. We host these for you so you can start testing them, even before you've written any code.
+
+One question we often get, however, is how can I redirect my user back to the right place after they login?
 
 ## Default Locations
 
@@ -20,24 +21,24 @@ While you can rely on the defaults set in your dashboard, what if you have custo
 users to? Well, using our frontend libraries, you can do just that.
 
 When you are sending the user to the login/signup pages, you have the option to specify where they will come back to 
-after they complete that action. For example, let’s say I have users clicking a **Login** button at the domain `example.com`, 
+after they complete that action. For example, let's say I have users clicking a **Login** button at the domain `example.com`, 
 but after a successful login, I want to direct them to `example.com/onboarding`.
 
-All it would take would be to make sure that in my redirect function on the frontend, I pass that URL as the `postLoginRedirectUrl`.
+All it would take would be to make sure that in my redirect function on the frontend, I pass that URL as the `postLoginRedirectUrl`.
 
 ```js
 redirectToLoginPage({
-	postLoginRedirectUrl: 'https://propelauth.com/account'
+	postLoginRedirectUrl: 'https://example.com/account'
 })
 ```
 
 Now I could have done this by changing the default redirect location to “/account” in my dashboard. But this method 
-works for programatic redirects as well. Let’s say I have a contextual instance_id that I need to pass into the URL. To do this, 
+works for programatic redirects as well. Let's say I have a contextual `instance_id` that I need to pass into the URL. To do this, 
 I would need to do it pass in
 
 ```js
 redirectToLoginPage({
-	postLoginRedirectUrl: `https://propelauth.com/${instance_id}`
+	postLoginRedirectUrl: `https://example.com/${instance_id}`
 })
 ```
 
@@ -83,4 +84,4 @@ To accomplish this, first you'll need to add an additional frontend location to 
 Once added, you can then use the above examples with `window.location.href` and it will automatically redirect back to the 
 preview deployment instead of your default.
 
-For a full list of redirect functions, be sure to read our reference guide for our frontend libraries.
+For a full list of redirect functions, be sure to read our reference guide for our [frontend libraries](/reference/overview).
