@@ -26,10 +26,7 @@ below, making sure to include the ***newline characters*** in your **verifierKey
 import { initBaseAuth } from "@propelauth/node";
 
 const propelauth = initBaseAuth({
-  // If true, error messages returned to the user will be detailed.
-  // It's useful for debugging, but a good idea to turn off in production.
-  debugMode: true,
-  // You can find the rest of the fields under the Backend Integration section for your project in PropelAuth.
+  // You can find these fields under the Backend Integration section for your project in PropelAuth.
   authUrl: "YOUR_AUTH_URL",
   apiKey: "YOUR_API_KEY",
   manualTokenVerificationMetadata: {

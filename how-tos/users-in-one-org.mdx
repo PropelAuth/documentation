@@ -1,0 +1,40 @@
+---
+title: "Maximum Number of Users Per Org"
+
+---
+
+When creating a pricing structure for your product, it's common to limit the number of users in an organization depending 
+on the plan your customer is currently paying for. But how do you accomplish this in PropelAuth?
+
+## Setting a Max User Limit 
+
+Let's say you have a pricing model that has three tiers and plans
+
+- Hobbyist, meaning team size is max 1
+- Startup, meaning team size is max 5
+- Growth, meaning unlimited team size
+
+When an organization selects a plan, you will want to set a limit based on the plan they are paying for
+
+To do this, you will want to update the organization they are a part of programatically. Using one of our libraries, you would 
+use the [update organization](/reference/backend-apis/node#update-organization-metadata) endpoint to create a maximum limit of 
+users in the specified organization. For example, if running a Node backend, it would looks comething like:
+
+```js
+ function updateOrgWithNewPricingInfo(plan, orgId) {
+	if (plan === "hobby") {
+		auth.updateOrg(orgId, { maxUsers: 1 })
+	} else if (plan === "startup") {
+		auth.updateOrg(orgId, { maxUsers: 5 })
+	} else {
+		auth.updateOrg(orgId, { maxUsers: 100000 })
+	}
+}
+```
+
+## Connecting with a Payment System 
+
+In order to properly accomplish this kind of pricing limitation, you need a mapping from your organization to a payment system, 
+like Stripe. If you want to do this programmatically, you can use our webhooks and listen to the `org.created` event.
+
+For more information on our webhooks, be sure to check out our [documentation on the subject](/how-tos/sync-users-groups-with-webhooks).

@@ -44,35 +44,33 @@
       "url": "reference"
     },
     {
+      "name": "How To's",
+      "icon": "book",
+      "url": "how-tos"
+    },
+    {
+      "name": "Changelog",
+      "icon": "clock-rotate-left",
+      "url": "changelog"
+    },
+    {
       "name": "Blog",
       "icon": "newspaper",
       "url": "https://www.propelauth.com/blog"
     }
+
   ],
   "navigation": [
     {
       "group": "Concepts",
       "pages": [
         "overview",
+        "overview/dashboard",
         "overview/hosted-pages",
-        "overview/frontend-integration",
-        "overview/backend-integration",
+        "overview/integration",
         "overview/organizations",
         "overview/roles",
-        "overview/emails"
-      ]
-    },
-    {
-      "group": "Advanced Features",
-      "pages": [
-        "overview/saml",
-        "overview/user-schema",
-        "overview/2fa",
-        "overview/user-impersonation",
-        "overview/disable-public-signups",
-        "overview/slack-notifications",
-        "overview/webhooks",
-        "overview/migrate-existing-users"
+        "overview/features"
       ]
     },
     {
@@ -88,7 +86,6 @@
       "pages": [
         "getting-started/quickstart-fe",
         "getting-started/quickstart-be",
-        "getting-started/quickstart-requests",
         "getting-started/deploy-to-prod",
         "getting-started/api-auth-outside-the-browser"
       ]
@@ -104,11 +101,7 @@
     {
       "group": "Organizations (B2B)",
       "pages": [
-        "getting-started/organizations",
-        "getting-started/rbac",
-        "getting-started/authorization-fe",
-        "getting-started/authorization-be",
-        "getting-started/saml"
+        "getting-started/organizations"
       ]
     },
     {
@@ -116,25 +109,39 @@
       "pages": ["example-apps/apps"]
     },
     {
-      "group": "Component Library",
+      "group": "Core Concepts",
+      "pages":[
+        "how-tos/ui-customization",
+        "how-tos/authorization-fe",
+        "how-tos/authorization-be",
+        "how-tos/making-authenticated-requests",
+        "how-tos/roles-and-permissions"
+      ]
+    },
+    {
+      "group": "Advanced Concepts",
       "pages": [
-        "component-library/overview",
-        {
-          "group": "Getting Started",
-          "pages": [
-            "component-library/getting-started/usage",
-            "component-library/getting-started/customization"
-          ]
-        },
-        {
-          "group": "Components",
-          "pages": [
-            "component-library/components/login-manager",
-            "component-library/components/signup",
-            "component-library/components/login-passwordless",
-            "component-library/components/forgot-password"
-          ]
-        }
+        "how-tos/saml",
+        "how-tos/user-impersonation"
+      ]
+    },
+    {
+      "group": "Common Use Cases",
+      "pages": [
+        "how-tos/redirect-the-user",
+        "how-tos/users-in-one-org",
+        "how-tos/sync-users-groups-with-webhooks",
+        "how-tos/user-schema",
+        "how-tos/2fa",
+        "how-tos/disable-public-signups",
+        "how-tos/slack-notifications",
+        "how-tos/migrate-existing-users"
+      ]
+    },
+    {
+      "group": "Changelog",
+      "pages": [
+        "changelog/changelog"
       ]
     },
     {
@@ -152,37 +159,7 @@
         {
           "group": "Backend",
           "pages": [
-            {
-              "group": "API",
-              "pages": [
-                "reference/backend-apis/api",
-                "reference/backend-apis/api/fetch-id",
-                "reference/backend-apis/api/fetch-email",
-                "reference/backend-apis/api/fetch-username",
-                "reference/backend-apis/api/batch-ids",
-                "reference/backend-apis/api/batch-emails",
-                "reference/backend-apis/api/batch-usernames",
-                "reference/backend-apis/api/search-users",
-                "reference/backend-apis/api/fetch-org-users",
-                "reference/backend-apis/api/create-user",
-                "reference/backend-apis/api/migrate-user",
-                "reference/backend-apis/api/magic-link",
-                "reference/backend-apis/api/update-user-email",
-                "reference/backend-apis/api/update-user-metadata",
-                "reference/backend-apis/api/delete-user",
-                "reference/backend-apis/api/disable-user",
-                "reference/backend-apis/api/enable-user",
-                "reference/backend-apis/api/fetch-organization",
-                "reference/backend-apis/api/fetch-all-organizations",
-                "reference/backend-apis/api/create-organization",
-                "reference/backend-apis/api/update-org-metadata",
-                "reference/backend-apis/api/add-user",
-                "reference/backend-apis/api/allow-organization",
-                "reference/backend-apis/api/disallow",
-                "reference/backend-apis/api/fetch-access-token",
-                "reference/backend-apis/api/error-codes"
-              ]
-            },
+            "reference/backend-apis/api",
             "reference/backend-apis/actix",
             "reference/backend-apis/axum",
             "reference/backend-apis/cloudflare",
