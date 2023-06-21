@@ -3,13 +3,13 @@ title: "Testing Your Backend"
 
 ---
 
-When your frontend makes a request to your backend, it [includes an access token](https://docs.propelauth.com/how-tos/making-authenticated-requests). But, what if we don’t have a frontend yet? Or what if we want to test our backend independently from our frontend?
+When your frontend makes a request to your backend, it [includes an access token](/overview/making-authenticated-requests). But, what if we don’t have a frontend yet? Or what if we want to test our backend independently from our frontend?
 
 The following guide will walk you through how to use and test the PropelAuth backend libraries in isolation from your frontend.
 
 ## Getting an Access Token Without a Frontend
 
-There are a few different ways that you can get started with initializing this process, but they all boil down to creating an [Access Token](https://docs.propelauth.com/overview/access-tokens) for use in your testing.
+There are a few different ways that you can get started with initializing this process, but they all boil down to creating an [Access Token](/overview/access-tokens) for use in your testing.
 
 With our frontend libraries, you can get an access token and send them to the backend via an Authorization header. We do also have an endpoint on our backend libraries that can create an access token for one of your users with a configurable expiration time. 
 

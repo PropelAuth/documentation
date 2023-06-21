@@ -70,6 +70,7 @@
         "overview/integration",
         "overview/organizations",
         "overview/roles",
+        "overview/making-authenticated-requests",
         "overview/features"
       ]
     },
