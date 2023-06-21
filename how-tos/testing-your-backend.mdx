@@ -27,9 +27,6 @@ You could also use something like the Python interpreter and one of our Python l
 
 ```python
 ╰─ python
-Python 3.8.13 (default, May  2 2022, 01:02:44)
-[Clang 13.0.0 (clang-1300.0.29.30)] on darwin
-Type "help", "copyright", "credits" or "license" for more information.
 >>> from propelauth_py import init_base_auth
 >>> auth = init_base_auth("YOUR_AUTH_URL", "YOUR_API_KEY")
 >>> auth.create_access_token("USER_ID", "DURATION_IN_MINUTES")
@@ -51,15 +48,6 @@ app.get('/generate-access-token', async (req, res) => {
 
 No matter the method you choose, each will return an access token that you can use in testing your authorized endpoints.
 
-## Testing in a Framework
-
-If you are using a framework like FastAPI, which has built in OpenAPI docs, you can use the access token directly in their UI
-
-![Untitled](/images/testing-your-backend-fastapi.png)
-
-By using the Authorize button on the right, you can pass in the access token directly, and test your endpoints from here
-
-![Untitled](/images/testing-your-backend-fastapi-auth.png)
 
 ## Testing in Postman
 
@@ -75,10 +63,19 @@ app.get('/whoami', requireUser, (req, res) => {
 
 Once I run my backend locally, I can make make a request to this endpoint as long as I pass in the access token that I created previously under the Authorization tab on the request
 
-![Untitled](/images/testing-your-backend-postman-request.png)
+![postman request](/images/testing-your-backend-postman-request.png)
 
 Then, if everything is running correctly, it’s returned as if my user made the request
 
-![Untitled](/images/testing-your-backend-postman-response.png)
+![postman response](/images/testing-your-backend-postman-response.png)
 
-Our backend libraries are designed to validate access tokens that are sent to them. Typically, the tokens are retrieved from our client libraries, however we can also generate them ourselves so that we can test our APIs independently from the frontend
+## Testing with FastAPI
+
+If you are using a framework like FastAPI, which has built in OpenAPI docs, you can use the access token directly in their UI
+
+![fastapi openapi docs](/images/testing-your-backend-fastapi.png)
+
+By using the Authorize button on the right, you can pass in the access token directly, and test your endpoints from here
+
+![fastapi openapi auth](/images/testing-your-backend-fastapi-auth.png)
+
