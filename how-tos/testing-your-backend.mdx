@@ -1,0 +1,84 @@
+---
+title: "Testing Your Backend"
+
+---
+
+When your frontend makes a request to your backend, it [includes an access token](https://docs.propelauth.com/how-tos/making-authenticated-requests). But, what if we don’t have a frontend yet? Or what if we want to test our backend independently from our frontend?
+
+The following guide will walk you through how to use and test the PropelAuth backend libraries in isolation from your frontend.
+
+## Getting an Access Token Without a Frontend
+
+There are a few different ways that you can get started with initializing this process, but they all boil down to creating an [Access Token](https://docs.propelauth.com/overview/access-tokens) for use in your testing.
+
+With our frontend libraries, you can get an access token and send them to the backend via an Authorization header. We do also have an endpoint on our backend libraries that can create an access token for one of your users with a configurable expiration time. 
+
+Now to create this token, you could use the command line, which might look something like:
+
+```bash
+curl -H "Content-Type: application/json" 
+     -H "Authorization: Bearer {PROPELAUTH_API_KEY}" 
+     -X POST 
+     -d '{"user_id": "{USER_ID}", duration_in_minutes: 1440}'
+     "{AUTH_URL}/api/backend/v1/access_token" 
+```
+
+You could also use something like the Python interpreter and one of our Python libraries:
+
+```python
+╰─ python
+Python 3.8.13 (default, May  2 2022, 01:02:44)
+[Clang 13.0.0 (clang-1300.0.29.30)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from propelauth_py import init_base_auth
+>>> auth = init_base_auth("YOUR_AUTH_URL", "YOUR_API_KEY")
+>>> auth.create_access_token("USER_ID", "DURATION_IN_MINUTES")
+```
+
+There are some options like FastAPI, which has built in OpenAPI docs, which allow you to 
+
+You could even create a test endpoint on your backend to call through either curl or a program like Postman
+
+```jsx
+app.get('/generate-access-token', async (req, res) => {
+	let token = await createAccessToken({
+		userId: "9ea9de86-bf30-4162-a791-8cb64639a4ba",
+		durationInMinutes: 30
+	})
+	res.json(token)
+})
+```
+
+No matter the method you choose, each will return an access token that you can use in testing your authorized endpoints.
+
+## Testing in a Framework
+
+If you are using a framework like FastAPI, which has built in OpenAPI docs, you can use the access token directly in their UI
+
+![Untitled](/images/testing-your-backend-fastapi.png)
+
+By using the Authorize button on the right, you can pass in the access token directly, and test your endpoints from here
+
+![Untitled](/images/testing-your-backend-fastapi-auth.png)
+
+## Testing in Postman
+
+Now that you have an access token returned, how can you test out your backend using Postman, as an example?
+
+To start, let’s say I have an Express server with the following endpoint
+
+```jsx
+app.get('/whoami', requireUser, (req, res) => {
+  res.json({user: req.user});
+})
+```
+
+Once I run my backend locally, I can make make a request to this endpoint as long as I pass in the access token that I created previously under the Authorization tab on the request
+
+![Untitled](/images/testing-your-backend-postman-request.png)
+
+Then, if everything is running correctly, it’s returned as if my user made the request
+
+![Untitled](/images/testing-your-backend-postman-response.png)
+
+Our backend libraries are designed to validate access tokens that are sent to them. Typically, the tokens are retrieved from our client libraries, however we can also generate them ourselves so that we can test our APIs independently from the frontend

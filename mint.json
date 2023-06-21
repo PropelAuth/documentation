@@ -130,6 +130,7 @@
       "pages": [
         "how-tos/redirect-the-user",
         "how-tos/users-in-one-org",
+        "how-tos/testing-your-backend",
         "how-tos/sync-users-groups-with-webhooks",
         "how-tos/user-schema",
         "how-tos/2fa",
