@@ -69,9 +69,7 @@
         "overview/hosted-pages",
         "overview/integration",
         "overview/organizations",
-        "overview/roles",
-        "overview/making-authenticated-requests",
-        "overview/features"
+        "overview/roles"
       ]
     },
     {
@@ -80,6 +78,7 @@
         "overview/how-our-auth-works",
         "overview/access-tokens",
         "overview/faq"
+        
       ]
     },
     {
@@ -87,8 +86,10 @@
       "pages": [
         "getting-started/quickstart-fe",
         "getting-started/quickstart-be",
+        "getting-started/making-authenticated-requests",
         "getting-started/deploy-to-prod",
-        "getting-started/api-auth-outside-the-browser"
+        "getting-started/api-auth-outside-the-browser",
+        "getting-started/nextjs"
       ]
     },
     {

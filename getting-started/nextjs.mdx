@@ -1,0 +1,275 @@
+---
+title: "NextJS Support"
+sidebarTitle: "NextJS Support"
+description:
+  "PropelAuth currently supports authentication in applications developed using the NextJS version 13.
+	This guide provides a simple way to integrate your Next.js application (either AppRouter or Pages) with PropelAuth."
+---
+
+<Tip>This guide is for getting started with using PropelAuth with NextJS version 13 
+with server side rendering. If you are only planning on using client side support, 
+please reference our React libraries instead. </Tip>
+
+## Installation
+
+First, be sure to install the following package in order to access these features.
+
+```bash
+npm install @propelauth/nextjs
+```
+
+## Setup
+
+Before you start, make sure you have a PropelAuth account. You can sign up for free at here.
+
+You'll need to set the following .env variables in your Next.js application:
+
+```NEXT_PUBLIC_AUTH_URL
+PROPELAUTH_API_KEY
+PROPELAUTH_VERIFIER_KEY
+PROPELAUTH_REDIRECT_URI
+```
+
+You can find the ```NEXT_PUBLIC_AUTH_URL```, ```PROPELAUTH_API_KEY```, and ```PROPELAUTH_VERIFIER_KEY``` variables for your 
+application in the PropelAuth Dashboard under Backend Integration.
+
+When you copy the ```PROPELAUTH_VERIFIER_KEY``` from the PropelAuth dashboard, it will automatically paste into 
+your .env file with line breaks. However, due to the way some systems interpret multiline environment 
+variables, you will need to edit the verifier key value to include '\n' instead of newline characters. For example:
+
+```PROPELAUTH_VERIFIER_KEY=-----BEGIN PUBLIC KEY-----\nMIIBIjANBgk...```
+
+For the ```PROPELAUTH_REDIRECT_URI``` variable, you need to add ```/api/auth/callback``` to the end of one of your 
+allowed frontend locations. So, for example, if you are developing in the test environment and 
+using http://localhost:3000, you would use http://localhost:3000/api/auth/callback
+
+### Set up routes
+
+In your `src/app/api/auth/[slug]` directory, create a file called `route.ts` with the following content:
+
+```tsx
+import {getRouteHandler, postRouteHandler} from "@/auth";
+
+export const GET = getRouteHandler
+export const POST = postRouteHandler
+```
+
+### Set up AuthProvider
+
+<Tabs>
+  <Tab title="Using AppRouter">
+		In your root layout, `src/app/layout.tsx`, add the `AuthProvider`:
+
+		```tsx
+		export default async function RootLayout({children}: {children: React.ReactNode}) {
+			return (
+					<html lang="en">
+					<AuthProvider authUrl={process.env.NEXT_PUBLIC_AUTH_URL}>
+							<body className={inter.className}>{children}</body>
+					</AuthProvider>
+					</html>
+			)
+		}
+		```
+  </Tab>
+	  <Tab title="Using Pages">
+		In your _app.tsx file, add the AuthProvider:
+
+		```tsx
+		export default function MyApp({Component, pageProps}: AppProps) {
+			return (
+				<AuthProvider authUrl={process.env.NEXT_PUBLIC_AUTH_URL}>
+					<Component {...pageProps} />
+				</AuthProvider>
+			)
+		}
+		```
+  </Tab>
+</Tabs>
+
+This will wrap your NextJS application, and will allow you to access a user's access token and metadata throughout the entire application.
+
+### Set up middleware (AppRouter Version Only)
+
+In your `src/middleware.ts` file, add the following:
+
+```tsx
+import {authMiddleware} from "@propelauth/nextjs/server/app-router";
+
+export const middleware = authMiddleware
+
+// The middleware is responsible for keeping the user session up to date.
+// It should be called on every request that requires authentication AND /api/auth/.* routes.
+export const config = {
+  matcher: [
+      // REQUIRED: Match all request paths that start with /api/auth/
+      '/api/auth/(.*)',
+      // OPTIONAL: Don't match any static assets
+      '/((?!_next/static|_next/image|favicon.ico).*)',
+  ],
+}
+```
+
+This will wrap and protect any routes that start with `/api/auth/`.
+
+## Basic Usage
+
+Now that our project has been set up, below are a few examples of basic auth functionality 
+using PropelAuth. As a reminder, Server components cannot have any user interactivity, so be 
+sure to keep your desired functionality in mind when choosing which components to use.
+
+### Get the user in Server Components
+
+<Tabs>
+  <Tab title="AppRouter Version">
+		```tsx
+		import {getUser} from "@propelauth/nextjs/server/app-router";
+
+		const WelcomeMessage = async () => {
+			const user = await getUser()
+			
+			if (user) {
+				return <div>Hello {user.firstName}!</div>
+			} else {
+				return <div>Please log in to be welcomed</div>
+			}
+		}
+		```
+		```tsx
+		import {getUser} from "@propelauth/nextjs/server/app-router";
+
+		const WelcomeMessage = async () => {
+			// If the user is not logged in, they will be redirected to the login page
+			const user = await getUserOrRedirect()
+			
+			return <div>Hello {user.firstName}!</div>
+		}
+		```
+  </Tab>
+	<Tab title="Pages Version">
+
+		```tsx
+		import {GetServerSideProps, InferGetServerSidePropsType} from "next";
+		import {getUserFromServerSideProps} from "@propelauth/nextjs/server/pages";
+		import {User} from "@propelauth/nextjs/client";
+
+		export default function WelcomeMessage({userJson}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+			// Deserialize the user from the JSON string so you can call functions like user.getOrg()
+			const user = User.fromJSON(userJson)
+			return <div>Hello, {user.firstName}</div>
+		}
+
+		export const getServerSideProps: GetServerSideProps = async (context) => {
+			const user = await getUserFromServerSideProps(context)
+			if (!user) {
+				return {redirect: {destination: '/api/auth/login', permanent: false}}
+			}
+			return { props: {userJson: JSON.stringify(user) } }
+		}
+		```
+  </Tab>
+</Tabs>
+
+
+### Get the user in Client Components
+
+```tsx
+"use client";
+
+import {useUser} from "@propelauth/nextjs/client";
+
+const WelcomeMessage = () => {
+  const {loading, user} = useUser()
+  if (loading) {
+    return <div>Loading...</div>
+  } else if (user) {
+    return <div>Hello {user.email}!</div>
+  } else {
+    return <div>Please log in to be welcomed</div>
+  }
+}
+```
+
+### Checking organization membership / RBAC
+
+Note that this works on both the client and server's `User` object, but the below example is on the server.
+
+If you are curious where the organization information comes from, check out our documentation on 
+[organizations](https://docs.propelauth.com/overview/organizations?utm_source=github&utm_medium=library&utm_campaign=nextjs). 
+The quick answer is:
+
+- PropelAuth provides UI for users to create organizations and invite other users to join them.
+- Your users can also create Enterprise SSO/SAML connections to their own Identity Providers (IdPs) so their organization members can log in with their existing work credentials.
+- You can create organizations and add users to them via our APIs or our Dashboard.
+
+```tsx
+// src/app/org/[slug]/page.tsx
+import {getUserOrRedirect} from "@/auth";
+
+export default async function AdminOnlyPage({ params }: { params: { slug: string } }) {
+    const user = await getUserOrRedirect()
+    const org = user.getOrgByName(params.slug);
+    const isAdmin = org?.isRole("Admin")
+
+    if (!isAdmin) {
+        return <div>Not found</div>
+    } else {
+        return <div>Welcome {user.firstName}, Admin of {org?.orgName}</div>
+    }
+}
+```
+
+### Logging out
+
+```tsx
+"use client"
+
+import {useLogoutFunction} from "@propelauth/nextjs/client";
+
+export default function LogoutButton() {
+    const logoutFn = useLogoutFunction()
+    return <button onClick={logoutFn}>Logout</button>
+}
+```
+
+### Logging in / Signing up
+
+If you don't want to use redirect functions, you can also use `useHostedPageUrls` which will 
+return the URLs instead of redirecting.
+
+```tsx
+"use client"
+
+import {useRedirectFunctions} from "@propelauth/nextjs/client";
+
+export default function SignupAndLoginButtons() {
+    const {redirectToSignupPage, redirectToLoginPage} = useRedirectFunctions()
+    return <>
+        <button onClick={redirectToSignupPage}>Sign up</button>
+        <button onClick={redirectToLoginPage}>Log in</button>
+    </>
+}
+```
+
+### Redirecting to Account / Org pages
+
+PropelAuth also provides you with pre-built account and organization management UIs. You can 
+redirect your users to these pages by using the following functions:
+
+```tsx
+"use client"
+
+import {useRedirectFunctions} from "@propelauth/nextjs/client";
+
+export default function AccountAndOrgButtons() {
+    const {redirectToAccountPage, redirectToOrgPage} = useRedirectFunctions()
+    return <>
+        <button onClick={redirectToAccountPage}>Account</button>
+        <button onClick={redirectToOrgPage}>Organization</button>
+    </>
+}
+```
+
+Hopefully this is has been a helpful guide to getting started with using the newest version of 
+NextJS and PropelAuth. As a reminder, this feature is in **Beta**, so be sure to reach out to 
+support@propelauth.com with any additional questions you may have.
