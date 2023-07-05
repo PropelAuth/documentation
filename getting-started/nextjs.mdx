@@ -69,6 +69,8 @@ export const POST = routeHandlers.postRouteHandler
 		In your root layout, `src/app/layout.tsx`, add the `AuthProvider`:
 
 		```tsx
+                import {AuthProvider} from "@propelauth/nextjs/client";
+
 		export default async function RootLayout({children}: {children: React.ReactNode}) {
 		    return (
 				<html lang="en">
@@ -84,6 +86,8 @@ export const POST = routeHandlers.postRouteHandler
 		In your _app.tsx file, add the AuthProvider:
 
 		```tsx
+                import {AuthProvider} from "@propelauth/nextjs/client";
+
 		export default function MyApp({Component, pageProps}: AppProps) {
 			return (
 				<AuthProvider authUrl={process.env.NEXT_PUBLIC_AUTH_URL}>
