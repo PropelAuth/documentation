@@ -98,6 +98,10 @@ The **user** object contains:
   If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be undefined 
 </ParamField>
 
+<ParamField query="properties" type="{ [key: string]: unknown }">
+    A dictionary of custom properties for the user. See [Custom Properties](/overview/user-metadata) for more details.
+</ParamField>
+
 The values of **orgIdToOrgMemberInfo** are **OrgMemberInfo**'s, with the
 following fields/functions:
 
@@ -254,7 +258,12 @@ Successful response (**UserMetadata**):
     },
 
     // Only returned if user was migrated from an external system
-    legacyUserId:    "507f191e810c19729de860ea"
+    legacyUserId:    "507f191e810c19729de860ea",
+
+    properties: {
+        // Arbitrary key-value pairs
+        "key": "value"
+    }
 }
 ```
 
@@ -349,7 +358,12 @@ A successful response will be a map of the user objects set to keys of the userI
         },
 
         // Only returned if user was migrated from an external system
-        legacyUserId:    "507f191e810c19729de860ea"
+        legacyUserId:    "507f191e810c19729de860ea",
+
+        properties: {
+            // Arbitrary key-value pairs
+            "key": "value"
+        }
     },
     // other user_ids
 }
@@ -586,6 +600,10 @@ function createUser(createUserRequest)
   Optional last name. Can only be used if **name** is enabled in your user schema
 </ParamField>
 
+<ParamField query="properties" type="{ [key: string]: any }">
+  A dictionary of custom properties for the user. See [Custom Properties](/overview/user-metadata) for more details.
+</ParamField>
+
 
 Successful response:
 
@@ -646,8 +664,8 @@ function updateUserMetadata(userId, updateUserMetadataRequest)
       Optional last name. Can only be used if **name** is enabled in your user schema
     </ResponseField>
 
-    <ResponseField name="metadata" type="object">
-      Optional custom metadata JSON object.
+    <ResponseField query="properties" type="{ [key: string]: any }">
+      A dictionary of custom properties for the user. See [Custom Properties](/overview/user-metadata) for more details.
     </ResponseField>
 
   </Expandable>
@@ -766,6 +784,10 @@ function migrateUserFromExternalSource(migrateUserFromExternalSourceRequest)
     <ResponseField name="lastName" type="boolean">
       Optional last name. Can only be used if **name** is enabled in your user schema
     </ResponseField>
+
+    <ResponseField name="properties" type="{ [key: string]: any }">
+      A dictionary of custom properties for the user. See [Custom Properties](/overview/user-metadata) for more details.
+    </ResponseField >
 
   </Expandable>
 </ResponseField>

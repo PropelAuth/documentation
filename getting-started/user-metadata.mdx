@@ -1,54 +1,85 @@
 ---
-title: "User Metadata"
+title: "User Properties"
 ---
 
-By default, the only required field a user needs is an email address. There are a few more options to customize the
-user experience. They can be found under **User Schema** in the sidebar.
+User properties allows you to define the fields that make up your user object.
+These fields could be attributes like a **name**, which we will collect on signup,
+or a **profile picture**, which we will allow users to upload, or even a custom internal field like a **Stripe customer id**.
 
-Enabling an extra field has a few effects:
+![User Properties](/images/user-properties.png)
 
-- Your signup page will now also ask for that field (except for profile picture,
-  where we start them off with a default).
+## Types of User Properties
 
-![enable name](/images/configure-4.png)
+There are two types of user properties:
 
-- Users that sign in via passwordless login (which only asks for email address),
-  will be asked to provide the extra field when they first sign up.
-- Existing users will be asked to fill in that field when they next sign up.
-- Your users can update those fields on your hosted account pages.
+ - **Managed by your users** - These are fields that can be viewed and edited by your users. Some examples of these are **name**, **profile picture**, **terms of service**, etc.
+   You and your team can also edit these fields on behalf of your users.
+ - **Managed by you** - These are fields that your users cannot view or edit. Some examples of these are **Stripe customer id**, **user group**, **A/B testing group**, etc.
 
-## Custom Metadata
+## User Property Options
 
-Other than the inherent properties discussed in the section above this, you can also add custom metadata to your user 
-objects. By using our functions, you can add on a JSON object to the new "metadata" field, and this can be anything you want! 
-This feature also exists for organizations, so you can add custom metadata there as well.
+Each user property has a set of options that you can configure. These options include:
 
-### Example
+| Option | Description |
+|--------|-------------|
+| **Name** | The name of the property. This will be used as the key in your user object. |
+| **Label** | The label of the property. This will be used as the label in your signup page and account page. |
+| **Type** | The type of the property (e.g. Text, Date, Enum, etc). |
+| **Collect on Signup** | Whether or not this property should be collected on signup. If enabled, your signup page will automatically update to collect this field. |
+| **Show in Account Page** | Whether or not this property should be shown in your users' account page. If enabled, your users will be able to view and optionally edit this field. |
+| **Required** | Whether or not this property is required. See [the section below](#when-do-required-properties-get-collected) for more information. |
+| **Include in Token** | Enabling this option will include this proprety in the access token (JWT). This means you can access it on your backend without making an external request to us, however, this should not be enabled for sensitive data. |
+| **Collect via SAML** | For your users that are setting up SAML SSO, this option will allow them to set up an attribute mapping to collect this field automatically. |
 
-Input:
+### When do required properties get collected?
 
-```jsx
-    await auth.updateUserMetadata("3954c1a9-8575-4a24-9d3a-aa66f4be7511", {
-        metadata: {
-            "user_testing_group": "A",
-        }
-    })
+When setting up a required property, you can choose between it being required for **all users** or **only new users**.
 
-    // later on...
-    const user = await auth.fetchUserMetadataByUserId("3954c1a9-8575-4a24-9d3a-aa66f4be7511")
-    console.log(user)
+If you choose **all users**, then all of your existing users will be prompted to fill out this property the next time they log in.
+
+If you choose **only new users**, then only users who sign up after this property is required will be prompted to fill out this property.
+
+### What happens if I manually onboard a user without a required property?
+
+![complete your account](/images/user-properties-complete.png)
+
+When manually creating a user, you can choose to skip the required properties. The first time the user logs in, they will be prompted to fill out the required properties.
+
+### Updating properties
+
+You can update a user's properties either in your dashboard or via the API.
+Each of our libraries has an `updateUserMetadata` method that you can use to update a user's properties.
+
+## Examples
+
+### How did you find out about us (a.k.a. Enums)?
+
+![how did you find out about us](/images/referral.png)
+
+Using our Enum property, you can add a simple field to your signup flow and get a better understanding of which marketing channels are working.
+
+### Accepting Terms of Service / Privacy Policy
+
+When you toggle on ToS support, you can provide links to your own policies, and we ask them to accept before they can continue.
+
+![terms of service](/images/terms.png)
+
+Importantly, this isn’t just a toggle on the signup page. If your users are manually onboarded via our dashboard or login through a magic link, we will still make sure they agree before they can start using your product.
+
+### Metadata (a.k.a. "Just let me do whatever I want with JSON")
+
+All the properties we’ve talked about so far have been visible to the user. You also may want fields that your users cannot see or modify, like their Stripe Customer ID.
+
+```tsx
+{ "stripe_customer_id": "f46d1803-282b-489a-a151-32e79f50f802" }
 ```
 
-Output:
-```jsx
-    {
-        email: 'brooks@test.com',
-        metadata: { user_testing_group: 'A' },
-        locked: false,
-        enabled: true,
-        ....
-        mfaEnabled: false,
-        createdAt: 1680895145,
-        lastActiveAt: 1682024563
-    }
-```
+With a non-user-facing JSON field, you can store whatever information you want. You can also control whether or not these fields are placed within the JWT, enabling access to the fields without making an external request to us.
+
+### Title (e.g. Director, VP) without asking the user
+
+Title is a field that you could ask the user for - however, you can also set it up to be automatically collected for some users.
+
+![attribute mappings](/images/attributes.png)
+
+Any fields you specify to collect via SAML will be available during the attribute mapping stage of the SAML setup flow.

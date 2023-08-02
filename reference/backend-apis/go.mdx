@@ -205,7 +205,8 @@ models.UserMetadata{
     LegacyUserID: "",
     OrgIDToOrgInfo: map[UUID]models.OrgInfo{UUID.Must"c784285e-d827-4801-9362-1f1361e20329":
         models.OrgInfo{OrgID:UUID.Must"c784285e-d827-4801-9362-1f1361e20329", OrgName:"Acme", UserRole:"Owner"}
-    }
+    },
+    Properties: map[string]interface{}{"custom_property": "custom_value"},
 }
 ```
 
@@ -457,8 +458,8 @@ client.CreateUser(CreateUserQuery)
         Optional last name. Can only be used if **name** is enabled in your user schema
     </ResponseField>
 
-    <ResponseField name="Metadata" type="struct">
-        Optional custom metadata structure.
+    <ResponseField name="Properties" type="struct">
+        A dictionary of custom properties for the user. See [Custom Properties](/overview/user-metadata) for more details.
     </ResponseField>
   </Expandable>
 </ResponseField>
@@ -508,8 +509,8 @@ client.UpdateUserMetadata(userId, UpdateUserMetadataQuery)
     <ResponseField name="PictureURL" type="string">
         The url for the user's profile picture.
     </ResponseField>
-    <ResponseField name="Metadata" type="struct">
-        Optional custom metadata structure.
+    <ResponseField query="properties" type="dict">
+        A dictionary of custom properties for the user. See [Custom Properties](/overview/user-metadata) for more details.
     </ResponseField>
   </Expandable>
 </ResponseField>
@@ -599,6 +600,9 @@ client.MigrateUserFromExternalSource(MigrateUserQuery)
     </ResponseField>
     <ResponseField name="LastName" type="string">
         The user's last name.
+    </ResponseField>
+    <ResponseField query="properties" type="dict">
+        A dictionary of custom properties for the user. See [Custom Properties](/overview/user-metadata) for more details.
     </ResponseField>
   </Expandable>
 </ResponseField>

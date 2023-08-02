@@ -119,6 +119,10 @@ The user object looks like:
   If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be undefined 
 </ParamField>
 
+<ParamField query="properties" type="{ [key: string]: unknown }">
+    A dictionary of custom properties for the user. See [Custom Properties](/overview/user-metadata) for more details.
+</ParamField>
+
 The values of **orgIdToOrgMemberInfo** are **OrgMemberInfo**'s, with the
 following fields/functions:
 
@@ -675,6 +679,10 @@ function createUser(createUserRequest)
   Optional last name. Can only be used if **name** is enabled in your user schema
 </ParamField>
 
+<ParamField query="properties" type="{ [key: string]: any }">
+    A dictionary of custom properties for the user. See [Custom Properties](/overview/user-metadata) for more details.
+</ParamField>
+
 
 Successful response:
 
@@ -738,6 +746,11 @@ function updateUserMetadata(userId, updateUserMetadataRequest)
     <ResponseField name="metadata" type="object">
       Optional custom metadata JSON object.
     </ResponseField>
+
+    <ParamField query="properties" type="{ [key: string]: any }">
+      A dictionary of custom properties for the user. See [Custom Properties](/overview/user-metadata) for more details.
+    </ParamField>
+
 
   </Expandable>
 </ResponseField>
@@ -856,6 +869,9 @@ function migrateUserFromExternalSource(migrateUserFromExternalSourceRequest)
       Optional last name. Can only be used if **name** is enabled in your user schema
     </ResponseField>
 
+    <ParamField query="properties" type="{ [key: string]: any }">
+      A dictionary of custom properties for the user. See [Custom Properties](/overview/user-metadata) for more details.
+    </ParamField>
   </Expandable>
 </ResponseField>
 
