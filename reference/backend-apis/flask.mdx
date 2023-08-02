@@ -87,6 +87,10 @@ A per-request value that contains user information for the user making the reque
   If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be None 
 </ParamField>
 
+<ParamField query="properties">
+    A dictionary of custom properties for the user. See [Custom Properties](/getting-started/user-metadata) for more details.
+</ParamField>
+
 <ParamField query="exists() ">
   A function that returns True if the user is logged in and False otherwise. You only need to check this if you are using [optional_user](#optional-user), otherwise it always returns True.
 </ParamField>
@@ -323,7 +327,11 @@ Successful response:
     },
 
     // Only returned if user was migrated from an external system
-    "legacy_user_id":    "507f191e810c19729de860ea"
+    "legacy_user_id":    "507f191e810c19729de860ea",
+
+    "properties": {
+        "custom_property": "value"
+    }
 }
 ```
 
@@ -416,7 +424,11 @@ user_id_to_metadata = auth.fetch_batch_user_metadata_by_user_ids([
         },
 
         // Only returned if user was migrated from an external system
-        "legacy_user_id":    "507f191e810c19729de860ea"
+        "legacy_user_id":    "507f191e810c19729de860ea",
+
+        "properties": {
+            "custom_property": "value"
+        }
     },
     "beb00acf-6e48-435d-8388-3758607ec01b": {
         //...
@@ -607,7 +619,7 @@ Successful response:
 # auth object comes from init_auth
 auth.create_user(email, email_confirmed=False, send_email_to_confirm_email_address=True,
                  ask_user_to_update_password_on_login=False,
-                 password=None, username=None, first_name=None, last_name=None)
+                 password=None, username=None, first_name=None, last_name=None, properties=None)
 ```
 
 <ParamField query="email" type="str">
@@ -641,6 +653,11 @@ auth.create_user(email, email_confirmed=False, send_email_to_confirm_email_addre
 <ParamField query="last_name" type="str">
   Optional last name. Can only be used if **name** is enabled in your user schema
 </ParamField>
+
+<ParamField query="properties" type="dict">
+    A dictionary of custom properties for the user. See [Custom Properties](/getting-started/user-metadata) for more details.
+</ParamField>
+
 
 Successful response:
 
@@ -694,9 +711,10 @@ auth.update_user_metadata(user_id, username=None, first_name=None, last_name=Non
   Optional last name. Can only be used if **name** is enabled in your user schema
 </ParamField>
 
-<ParamField query="metadata" type="dict">
-  Optional custom metadata dictionary.
+<ParamField query="properties" type="dict">
+    A dictionary of custom properties for the user. See [Custom Properties](/getting-started/user-metadata) for more details.
 </ParamField>
+
 
 ### Update User Password
 
@@ -772,7 +790,7 @@ auth.migrate_user_from_external_source(email, email_confirmed,
                                        existing_user_id=None, existing_password_hash=None,
                                        existing_mfa_base32_encoded_secret=None,
                                        ask_user_to_update_password_on_login=False,
-                                       enabled=None, first_name=None, last_name=None, username=None)
+                                       enabled=None, first_name=None, last_name=None, username=None, properties=None)
 ```
 
 <ParamField query="email" type="str">
@@ -813,6 +831,10 @@ auth.migrate_user_from_external_source(email, email_confirmed,
 
 <ParamField query="last_name" type="str">
   Optional last name. Can only be used if **name** is enabled in your user schema
+</ParamField>
+
+<ParamField query="properties" type="dict">
+    A dictionary of custom properties for the user. See [Custom Properties](/getting-started/user-metadata) for more details.
 </ParamField>
 
 Successful response:
