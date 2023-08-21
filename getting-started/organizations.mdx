@@ -7,27 +7,12 @@ If you are building a B2B product, organizations are the companies using your pr
 
 ![an organization management page](/images/organizations-2.png)
 
-If you aren't ready to add organizations to your product yet, you can enable/disable them at any time.
+If you aren't ready to add organizations to your product yet, you can enable/disable them at any time via the **Organization Settings** page.
 PropelAuth provides a number of options for configuring your users organization experience, including changing the name itself.
 
-## Organization options
+## Organization Settings
 
-### All users must be in an organization
-
-This setting will make sure that all users must be in at least one organization before they are allowed to use your product.
-
-The signup/login flows will direct the user to create or join an organization.
-
-### Users can create their own organizations
-
-If enabled, users have access to the 'Create Org' UI, allowing them to create their own organizations.
-
-Disable this if you want to manually create organizations yourself, on behalf of your users.
-
-### Maximum number of orgs per user
-
-This sets the limit on the number of organizations a user can be in at once.
-Most commonly, we see people setting this to either 1 (meaning each user can only be in one organization) or "as many as they want".
+The following options are available on the **Organization Settings** page in your PropelAuth dashboard.
 
 ### Changing the word "Organization"
 
@@ -36,12 +21,47 @@ you can configure this by changing the organization metaname.
 
 ![changing the org metaname](/images/org-metaname.png)
 
+### Users can create their own organizations
+
+If enabled, users have access to the 'Create Org' UI, allowing them to create their own organizations.
+
+Disable this if you want to manually create organizations yourself, on behalf of your users.
+
+### All users must be in an organization
+
+This setting will make sure that all users must be in at least one organization before they are allowed to use your product.
+
+The signup/login flows will direct the user to create or join an organization.
+
+### Maximum number of orgs per user
+
+This sets the limit on the number of organizations a user can be in at once.
+Most commonly, we see people setting this to either 1 (meaning each user can only be in one organization) or "as many as they want."
+
 ### Requiring 2FA for all users within an Org (coming soon)
 
 This setting will require all users within an organization to have 2FA enabled before they can use your product.
 We proactively email users who are not yet enrolled in 2FA, and allow your customers to set a deadline for when they must enroll.
 
-### Maximum Users Per Org
+## How do users get added to orgs?
+
+PropelAuth provides a management UI for your users as well. This enables them to
+send invitations, manage [roles](/overview/roles), remove users
+from the organization, and more.
+
+A user that received an invitation will be prompted to sign up if they haven't yet.
+
+![user invitation](/images/organizations-3.png)
+
+Your users can also allow anyone with a matching email domain to automatically
+join at the lowest role (e.g. everyone from **@acme.com** can join the Acme
+Organization).
+
+We also support [SAML](/overview/saml) which enables your customers
+to connect their organization membership directly to their identity provider
+(like Okta, OneLogin, or JumpCloud).
+
+### Limiting the number of users in an organization
 
 A simple way to achieve more organization customization this is through our Backend API endpoints. On all of our libraries, we have the **Update Organization** endpoint, 
 which takes in as one of its parameters a maximum number of users in the organization. This means through your product, you can programatically 
@@ -127,22 +147,4 @@ don't have to manually cheeck and limit through the dashboard.
     ```
   </Tab>
 </Tabs>
-
-## How do users get added to orgs?
-
-PropelAuth provides a management UI for your users as well. This enables them to
-send invitations, manage [roles](/overview/roles), remove users
-from the organization, and more.
-
-A user that received an invitation will be prompted to sign up if they haven't yet.
-
-![user invitation](/images/organizations-3.png)
-
-Your users can also allow anyone with a matching email domain to automatically
-join at the lowest role (e.g. everyone from **@acme.com** can join the Acme
-Organization).
-
-We also support [SAML](/overview/saml) which enables your customers
-to connect their organization membership directly to their identity provider
-(like Okta, OneLogin, or JumpCloud).
 
