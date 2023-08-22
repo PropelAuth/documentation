@@ -321,3 +321,7 @@ const MyComponent = () => {
 ```
 
 Within the App Router, you can also call `getAccessToken` to get the access token.
+
+## Troubleshooting
+
+The most common cause of issues is placing the `route.ts` file in the wrong directory. It must be in `src/app/api/auth/[slug]` whether you're using the App Router or Pages Router.
