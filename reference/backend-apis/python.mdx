@@ -569,7 +569,7 @@ auth.update_user_email(user_id, new_email, require_email_confirmation)
 ```python
 # auth object comes from init_base_auth
 # Returns true if it was successful, false if the user was not found
-auth.update_user_metadata(user_id, username=None, first_name=None, last_name=None, metadata=None, picture_url=None, update_password_required=None)
+auth.update_user_metadata(user_id, username=None, first_name=None, last_name=None, metadata=None, picture_url=None, update_password_required=None, properties=None)
 ```
 
 <ParamField query="user_id" type="str">
@@ -598,6 +598,10 @@ auth.update_user_metadata(user_id, username=None, first_name=None, last_name=Non
 
 <ParamField query="update_password_required" type="bool">
   If True, the user will be prompted to change their password when they next log in.
+</ParamField>
+
+<ParamField query="properties" type="dict">
+    A dictionary of custom properties for the user. See [Custom Properties](/getting-started/user-metadata) for more details.
 </ParamField>
 
 
