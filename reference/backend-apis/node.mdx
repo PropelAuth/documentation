@@ -1060,6 +1060,18 @@ function updateOrg(updateOrgRequest)
       Updates the maximum number of users that can be in the organization.
     </ResponseField>
 
+    <ResponseField name="domain" type="string">
+      The domain the organization should be associated with
+    </ResponseField>
+
+    <ResponseField name="enableAutoJoiningByDomain" type="Boolean">
+      If true, any user whose email has a matching domain can join the organization without being invited.
+    </ResponseField>
+
+    <ResponseField name="membersMustHaveMatchingDomain" type="Boolean">
+      If true, any user whose email does not match the domain can not join or be invited to the organization.
+    </ResponseField>
+
   </Expandable>
 </ResponseField>
 
