@@ -330,8 +330,9 @@ Successful response:
     "legacy_user_id":    "507f191e810c19729de860ea",
 
     "properties": {
-        "custom_property": "value"
-    }
+        "key1": "value1",
+        "key2": "value2"
+    },
 }
 ```
 
@@ -427,8 +428,9 @@ user_id_to_metadata = auth.fetch_batch_user_metadata_by_user_ids([
         "legacy_user_id":    "507f191e810c19729de860ea",
 
         "properties": {
-            "custom_property": "value"
-        }
+            "key1": "value1",
+            "key2": "value2"
+        },
     },
     "beb00acf-6e48-435d-8388-3758607ec01b": {
         //...
@@ -658,7 +660,6 @@ auth.create_user(email, email_confirmed=False, send_email_to_confirm_email_addre
     A dictionary of custom properties for the user. See [Custom Properties](/getting-started/user-metadata) for more details.
 </ParamField>
 
-
 Successful response:
 
 ```js
@@ -692,7 +693,7 @@ auth.update_user_email(user_id, new_email, require_email_confirmation)
 ```python
 # auth object comes from init_auth
 # Returns true if it was successful, false if the user was not found
-auth.update_user_metadata(user_id, username=None, first_name=None, last_name=None, metadata=None)
+auth.update_user_metadata(user_id, username=None, first_name=None, last_name=None, metadata=None, picture_url=None, update_password_required=None, properties=None)
 ```
 
 <ParamField query="user_id" type="str">
@@ -709,6 +710,18 @@ auth.update_user_metadata(user_id, username=None, first_name=None, last_name=Non
 
 <ParamField query="last_name" type="str">
   Optional last name. Can only be used if **name** is enabled in your user schema
+</ParamField>
+
+<ParamField query="metadata" type="dict">
+  Optional custom metadata dictionary.
+</ParamField>
+
+<ParamField query="picture_url" type="str">
+  The URL of their profile picture
+</ParamField>
+
+<ParamField query="update_password_required" type="bool">
+  If True, the user will be prompted to change their password when they next log in.
 </ParamField>
 
 <ParamField query="properties" type="dict">
@@ -914,6 +927,7 @@ Successful response:
 }
 ```
 
+
 ### Enable Org Creation 
 
 If successful, the user is able to create organizations.
@@ -942,6 +956,17 @@ auth.disable_user_can_create_orgs(user_id)
   The id of the user
 </ParamField>
 
+### Clear Password
+
+```python
+# auth object comes from init_auth
+auth.clear_user_password(user_id)
+```
+
+<ParamField query="user_id" type="str">
+  The id of the user
+</ParamField>
+
 
 ## Org Management
 
@@ -949,11 +974,27 @@ auth.disable_user_can_create_orgs(user_id)
 
 ```py
 # auth object comes from init_auth
-auth.create_org(name)
+auth.create_org(name, enable_auto_joining_by_domain=False, members_must_have_matching_domain=False, domain=None, max_users=None)
 ```
 
 <ParamField query="name" type="str">
   The organization's name
+</ParamField>
+
+<ParamField query="enable_auto_joining_by_domain" type="bool">
+  If true, any user whose email has a matching domain can join the organization without being invited.
+</ParamField>
+
+<ParamField query="members_must_have_matching_domain" type="bool">
+  If true, any user whose email does not match the domain can not join or be invited to the organization.
+</ParamField>
+
+<ParamField query="domain" type="str">
+  The domain the organization should be associated with
+</ParamField>
+
+<ParamField query="max_users" type="integer">
+  The maximum number of users that can be in this organization. If None there is no limit.
 </ParamField>
 
 Successful response:
@@ -965,6 +1006,8 @@ Successful response:
 ```
 
 ### Add user to organization
+
+Adds a user to an organization, which does not send an invitation email. 
 
 ```py
 # auth object comes from init_auth
@@ -989,13 +1032,49 @@ Successful response:
 {}
 ```
 
+### Invite User to Organization
+
+Sends an invitation email inviting someone to join an organization. The invitee does not already have to have an account.
+
+```py
+# auth object comes from init_auth
+auth.invite_user_to_org(email, org_id, role)
+```
+
+<ParamField query="email" type="str">
+  The email address of the invitee
+</ParamField>
+
+<ParamField query="org_id" type="str">
+  The org's ID
+</ParamField>
+
+<ParamField query="role" type="str">
+  The role of the user in that organization, e.g. Admin
+</ParamField>
+
+### Remove User from Organization
+
+```py
+# auth object comes from init_auth
+auth.remove_user_from_org(user_id, org_id)
+```
+
+<ParamField query="user_id" type="str">
+  The id of the user
+</ParamField>
+
+<ParamField query="org_id" type="str">
+  The org's ID
+</ParamField>
+
 ### Allow organization to set up SAML connection
 
 ```py
 # auth object comes from init_auth
 auth.allow_org_to_setup_saml_connection(org_id)
 ```
-<ParamField query="orgId" type="str">
+<ParamField query="org_id" type="str">
   The org's ID
 </ParamField>
 
@@ -1007,7 +1086,7 @@ Returns True if successful, meaning the organization can now set up [SAML](/over
 # auth object comes from init_auth
 auth.disallow_org_to_setup_saml_connection(org_id)
 ```
-<ParamField query="orgId" type="str">
+<ParamField query="org_id" type="str">
   The org's ID
 </ParamField>
 
@@ -1019,10 +1098,10 @@ Returns True if successful, meaning the organization can no longer set up [SAML]
 ```python
 # auth object comes from init_auth
 # Returns true if it was successful, false if the organization was not found
-auth.update_org_metadata(org_id, name=None, can_setup_saml=None, metadata=None, max_users=None)
+auth.update_org_metadata(org_id, name=None, can_setup_saml=None, metadata=None, max_users=None, can_join_on_email_domain_match=None, members_must_have_email_domain_match=None, domain=None)
 ```
 
-<ParamField query="orgId" type="str">
+<ParamField query="org_id" type="str">
   The org's ID
 </ParamField>
 
@@ -1041,6 +1120,49 @@ auth.update_org_metadata(org_id, name=None, can_setup_saml=None, metadata=None, 
 <ParamField query="max_users" type="int">
   Updates the maximum number of users that can be in the organization.
 </ParamField>
+
+<ParamField query="enable_auto_joining_by_domain" type="bool">
+  If true, any user whose email has a matching domain can join the organization without being invited.
+</ParamField>
+
+<ParamField query="members_must_have_matching_domain" type="bool">
+  If true, any user whose email does not match the domain can not join or be invited to the organization.
+</ParamField>
+
+<ParamField query="domain" type="str">
+  The domain the organization should be associated with
+</ParamField>
+
+### Change User Role Within Org
+ 
+ ```python
+ # auth object comes from init_auth
+ auth.change_user_role_in_org(user_id, org_id, role)
+ ```
+
+<ParamField query="user_id" type="str">
+  The ID of the user
+</ParamField>
+
+<ParamField query="org_id" type="str">
+  The org's id
+</ParamField>
+
+<ParamField query="role" type="str">
+  The role the user should be changed to e.g. Admin
+</ParamField>
+
+### Delete Organization
+
+```python
+# auth object froms from init_auth
+auth.delete_org(org_id)
+```
+
+<ParamField query="org_id" type="str">
+  The org's id
+</ParamField>
+
 
 ## API Key Authentication
 
@@ -1126,7 +1248,7 @@ auth.fetch_api_key(api_key_id)
 ```python
 # auth object comes from init_auth
 # Returns a list of current API Keys
-auth.fetch_current_api_keys(org_id: None, user_id: None, user_email: None, page_size: None, page_number: None)
+auth.fetch_current_api_keys(org_id = None, user_id = None, user_email = None, api_key_type = None, page_size = None, page_number = None)
 ```
 
 <ParamField query="org_id" type="str">
@@ -1139,6 +1261,10 @@ auth.fetch_current_api_keys(org_id: None, user_id: None, user_email: None, page_
 
 <ParamField query="user_email" type="str">
   The user's email
+</ParamField>
+
+<ParamField query="api_key_type" type="str">
+  One of User, Org, or Generic. See [API Keys](/getting-started/api-auth-outside-the-browser) for more information
 </ParamField>
 
 <ParamField query="page_size" type="int">
@@ -1154,7 +1280,7 @@ auth.fetch_current_api_keys(org_id: None, user_id: None, user_email: None, page_
 ```python
 # auth object comes from init_auth
 # Returns a list of archived API Keys
-auth.fetch_archived_api_keys(org_id: None, user_id: None, user_email: None, page_size: None, page_number: None)
+auth.fetch_archived_api_keys(org_id = None, user_id = None, user_email = None, api_key_type = None, page_size = None, page_number = None)
 ```
 
 <ParamField query="org_id" type="str">
@@ -1167,6 +1293,10 @@ auth.fetch_archived_api_keys(org_id: None, user_id: None, user_email: None, page
 
 <ParamField query="user_email" type="str">
   The user's email
+</ParamField>
+
+<ParamField query="api_key_type" type="str">
+  One of User, Org, or Generic. See [API Keys](/getting-started/api-auth-outside-the-browser) for more information
 </ParamField>
 
 <ParamField query="page_size" type="int">
