@@ -94,13 +94,13 @@ func requireAdmin(client *propelauth.Client, next http.HandlerFunc) http.Handler
 ```
 
 The **user** object contains:
-<ParamField query="UserID" type="UUID">
+<ParamField query="UserID" type="uuid.UUID">
 	The id of the user
 </ParamField>
 <ResponseField name="OrgIDToOrgMemberInfo" type="map[string]*OrgMemberInfoFromToken">
   A map from OrgID to OrgMemberInfoFromToken
   <Expandable>
-    <ResponseField name="OrgID" type="UUID">
+    <ResponseField name="OrgID" type="uuid.UUID">
         The id of the org
     </ResponseField>
     <ResponseField name="OrgName" type="string">
@@ -117,7 +117,7 @@ The **user** object contains:
 <ParamField query="LegacyUserID" type="*string">
   The original ID of the user, if the user was migrated from an external source 
 </ParamField>
-<ParamField query="ImpersonatorUserID" type="*UUID">
+<ParamField query="ImpersonatorUserID" type="*uuid.UUID">
   If someone on your team is impersonating another user, this will be set to the employee's ID. By default, user impersonation is turned off and this will be nil
 </ParamField>
 
@@ -177,7 +177,7 @@ client.FetchUserMetadataByUserID(userId, includeOrgs)
 
 Parameters
 
-<ParamField query="userId" type="UUID">
+<ParamField query="userId" type="uuid.UUID">
   The id of the user
 </ParamField>
 
@@ -252,7 +252,7 @@ Successful response is the same as [Fetch user metadata by id](#fetch-user-metad
 client.FetchBatchUserMetadataByUserIds(userIds, includeOrgs)
 ```
 
-<ParamField query="userIds" type="[]string">
+<ParamField query="userIds" type="[]uuid.UUID">
   The array of user Ids
 </ParamField>
 
@@ -470,7 +470,7 @@ client.CreateUser(CreateUserQuery)
 client.UpdateUserEmail(userId, UpdateEmailQuery)
 ```
 
-<ParamField query="userId" type="string">
+<ParamField query="userId" type="uuid.UUID">
   The id of the user
 </ParamField>
 
@@ -491,7 +491,7 @@ client.UpdateUserEmail(userId, UpdateEmailQuery)
 client.UpdateUserMetadata(userId, UpdateUserMetadataQuery)
 ```
 
-<ParamField query="userId" type="string">
+<ParamField query="userId" type="uuid.UUID">
   The id of the user
 </ParamField>
 
@@ -521,7 +521,7 @@ client.UpdateUserMetadata(userId, UpdateUserMetadataQuery)
 client.UpdateUserPassword(userId, UpdateUserPasswordQuery)
 ```
 
-<ParamField query="userId" type="string">
+<ParamField query="userId" type="uuid.UUID">
   The id of the user
 </ParamField>
 
@@ -536,13 +536,33 @@ client.UpdateUserPassword(userId, UpdateUserPasswordQuery)
   </Expandable>
 </ResponseField>
 
+### Clear User Password
+
+```go
+client.ClearUserPassword(userId)
+```
+
+<ParamField query="userId" type="uuid.UUID">
+  The id of the user
+</ParamField>
+
+### Disable 2FA
+
+```go
+client.DisableUser2fa(userId)
+```
+
+<ParamField query="userId" type="uuid.UUID">
+  The id of the user
+</ParamField>
+
 ### Delete user
 
 ```go
 client.DeleteUser(userId)
 ```
 
-<ParamField query="userId" type="string">
+<ParamField query="userId" type="uuid.UUID">
   The id of the user
 </ParamField>
 
@@ -552,7 +572,7 @@ client.DeleteUser(userId)
 client.DisableUser(userId)
 ```
 
-<ParamField query="userId" type="string">
+<ParamField query="userId" type="uuid.UUID">
   The id of the user
 </ParamField>
 
@@ -562,7 +582,7 @@ client.DisableUser(userId)
 client.EnableUser(userId)
 ```
 
-<ParamField query="userId" type="string">
+<ParamField query="userId" type="uuid.UUID">
   The id of the user
 </ParamField>
 
@@ -636,7 +656,7 @@ client.CreateMagicLink(CreateMagicLinkQuery)
 client.CreateAccessToken(userId, durationInMinutes)
 ```
 
-<ParamField query="userId" type="string">
+<ParamField query="userId" type="uuid.UUID">
   The id of the user
 </ParamField>
 
@@ -664,10 +684,10 @@ client.AddUserToOrg(AddUserToOrgQuery)
 
 <ResponseField name="AddUserToOrgQuery">
   <Expandable>
-    <ResponseField name="UserID" type="string">
+    <ResponseField name="UserID" type="uuid.UUID">
         The user's Id
     </ResponseField>
-    <ResponseField name="OrgID" type="string">
+    <ResponseField name="OrgID" type="uuid.UUID">
         The org's ID
     </ResponseField>
     <ResponseField name="Role" type="string">
@@ -676,13 +696,98 @@ client.AddUserToOrg(AddUserToOrgQuery)
   </Expandable>
 </ResponseField>
 
+### Create organization V2
+
+```go
+client.CreateOrgV2(CreateOrgV2Query)
+```
+
+<ResponseField name="CreateOrgV2Query">
+  <Expandable>
+    <ResponseField name="name" type="string">
+        The name of the organization
+    </ResponseField>
+    <ResponseField name="domain" type="string">
+        The domain the organization should be associated with
+    </ResponseField>
+    <ResponseField name="EnableAutoJoiningByDomain" type="bool">
+        If true, any user whose email has a matching domain can join the organization without being invited.
+    </ResponseField>
+    <ResponseField name="MembersMustHaveMatchingDomain" type="bool">
+        If true, any user whose email does not match the domain can not join or be invited to the organization.
+    </ResponseField>
+    <ResponseField name="MaxUsers" type="int">
+        The maximum number of users that can be in this organization. If None there is no limit.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Add user to organization
+
+```go
+client.AddUserToOrg(AddUserToOrgQuery)
+```
+
+<ResponseField name="AddUserToOrgQuery">
+  <Expandable>
+    <ResponseField name="UserID" type="uuid.UUID">
+        The user's Id
+    </ResponseField>
+    <ResponseField name="OrgID" type="uuid.UUID">
+        The org's ID
+    </ResponseField>
+    <ResponseField name="Role" type="string">
+        The role of the user in that organization, e.g. Admin
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+
+### Change user role within organization
+
+```go
+client.ChangeUserRoleInOrg(ChangeUserRoleInOrgQuery)
+```
+
+<ResponseField name="ChangeUserRoleInOrgQuery">
+  <Expandable>
+    <ResponseField name="UserID" type="uuid.UUID">
+        The user's Id
+    </ResponseField>
+    <ResponseField name="OrgID" type="uuid.UUID">
+        The org's ID
+    </ResponseField>
+    <ResponseField name="Role" type="string">
+        The role of the user in that organization, e.g. Admin
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Remove user From organization
+
+```go
+client.RemoveUserFromOrg(RemoveUserFromOrgQuery)
+```
+
+<ResponseField name="ChangeUserRoleInOrgQuery">
+  <Expandable>
+    <ResponseField name="UserID" type="uuid.UUID">
+        The user's Id
+    </ResponseField>
+    <ResponseField name="OrgID" type="uuid.UUID">
+        The org's ID
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+
 ### Allow organization to set up SAML connection
 
 ```go
 client.AllowOrgToSetupSamlConnection(orgId)
 ```
 
-<ParamField query="orgId" type="string">
+<ParamField query="orgId" type="uuid.UUID">
   The id of the organization
 </ParamField>
 
@@ -692,16 +797,16 @@ client.AllowOrgToSetupSamlConnection(orgId)
 client.DisallowOrgToSetupSamlConnection(orgId)
 ```
 
-<ParamField query="orgId" type="string">
+<ParamField query="orgId" type="uuid.UUID">
   The id of the organization
 </ParamField>
 
-### Update Organization Metadata
+### Update organization Metadata
 ```go
 client.UpdateOrgMetadata(orgId, UpdateOrgQuery)
 ```
 
-<ParamField query="orgId" type="string">
+<ParamField query="orgId" type="uuid.UUID">
   The id of the organization
 </ParamField>
 
@@ -718,6 +823,15 @@ client.UpdateOrgMetadata(orgId, UpdateOrgQuery)
     </ResponseField>
 		<ResponseField name="MaxUsers" type="int">
       Updates the maximum number of users that can be in the organization.
+    </ResponseField>
+    <ResponseField name="EnableAutoJoiningByDomain" type="bool">
+        If true, any user whose email has a matching domain can join the organization without being invited.
+    </ResponseField>
+    <ResponseField name="MembersMustHaveMatchingDomain" type="bool">
+        If true, any user whose email does not match the domain can not join or be invited to the organization.
+    </ResponseField>
+    <ResponseField name="Domain" type="string">
+      The domain associated with the organization
     </ResponseField>
   </Expandable>
 </ResponseField>
@@ -802,10 +916,10 @@ client.FetchCurrentAPIKeys(APIKeysQuery)
 
 <ResponseField name="APIKeysQuery">
   <Expandable>
-		<ResponseField name="OrgID" type="string">
+		<ResponseField name="OrgID" type="uuid.UUID">
 			The org's ID
     </ResponseField>
-    <ResponseField name="UserID" type="string">
+    <ResponseField name="UserID" type="uuid.UUID">
         The user's Id
     </ResponseField>
 		<ResponseField name="UserEmail" type="string">
@@ -828,10 +942,10 @@ client.FetchArchivedAPIKeys(APIKeysQuery)
 
 <ResponseField name="APIKeysQuery">
   <Expandable>
-		<ResponseField name="OrgID" type="string">
+		<ResponseField name="OrgID" type="uuid.UUID">
 			The org's ID
     </ResponseField>
-    <ResponseField name="UserID" type="string">
+    <ResponseField name="UserID" type="uuid.UUID">
         The user's Id
     </ResponseField>
 		<ResponseField name="UserEmail" type="string">
@@ -856,10 +970,10 @@ client.CreateAPIKey(APIKeyCreateParams)
 
 <ResponseField name="APIKeyCreateParams">
   <Expandable>
-		<ResponseField name="OrgID" type="string">
+		<ResponseField name="OrgID" type="uuid.UUID">
 			The org's ID
     </ResponseField>
-    <ResponseField name="UserID" type="string">
+    <ResponseField name="UserID" type="uuid.UUID">
         The user's Id
     </ResponseField>
 		<ResponseField name="ExpiresAtSeconds" type="int">
