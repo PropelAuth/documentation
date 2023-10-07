@@ -743,13 +743,21 @@ function updateUserMetadata(userId, updateUserMetadataRequest)
       Optional last name. Can only be used if **name** is enabled in your user schema
     </ResponseField>
 
-    <ResponseField name="metadata" type="object">
-      Optional custom metadata JSON object.
+     <ResponseField name="picturlURL" type="string">
+        The URL of their profile picture
     </ResponseField>
 
-    <ParamField query="properties" type="{ [key: string]: any }">
+    <ResponseField name="properties" type="{ [key: string]: any }">
         A dictionary of custom properties for the user. See [Custom Properties](/getting-started/user-metadata) for more details.
-    </ParamField>
+    </ResponseField>
+
+    <ResponseField name="metadata" type="{ [key: string]: any }">
+        Optional custom metadata dictionary
+    </ResponseField>
+
+    <ResponseField name="updatePasswordRequired" type="boolean">
+        If True, the user will be prompted to change their password when they next log in.
+    </ResponseField>
 
 
   </Expandable>
@@ -780,6 +788,15 @@ function updateUserPassword(userId, updateUserPasswordRequest)
 </ResponseField>
 
 Returns true if the user's password was updated.
+
+### Clear password
+```ts
+function clearUserPassword(userID)
+```
+
+<ParamField query="userId" type="string">
+  Id for the user
+</ParamField>
 
 ### Delete user
 
@@ -991,6 +1008,22 @@ function createOrg(createOrgRequest)
       The organization's name
     </ResponseField>
 
+    <ResponseField name="domain" type="string">
+      The domain the organization should be associated with
+    </ResponseField>
+
+    <ResponseField name="enableAutoJoiningByDomain" type="boolean">
+      If true, any user whose email has a matching domain can join the organization without being invited.
+    </ResponseField>
+
+    <ResponseField name="membersMustHaveMatchingDomain" type="boolean">
+      If true, any user whose email does not match the domain can not join or be invited to the organization.
+    </ResponseField>
+
+    <ResponseField name="maxUsers" type="number">
+      The maximum number of users that can be in this organization. If None there is no limit.
+    </ResponseField>
+
   </Expandable>
 </ResponseField>
 
@@ -1003,6 +1036,8 @@ Successful response:
 ```
 
 ### Add user to organization
+
+Adds a user to an organization, which does not send an invitation email.
 
 ```ts
 function addUserToOrg(addUserToOrgRequest)
@@ -1026,6 +1061,28 @@ function addUserToOrg(addUserToOrgRequest)
 </ResponseField>
 
 Returns true if the user was successfully added to the organization.
+
+### Invite user to organization
+
+Sends an invitation email inviting someone to join an organization. The invitee does not already have to have an account.
+
+<ResponseField name="inviteUserToOrgRequest" type="request object">
+  <Expandable title="properties">
+
+    <ResponseField name="orgId" type="string">
+      The org's ID
+    </ResponseField>
+
+    <ResponseField name="email" type="string">
+      The email address of the invitee
+    </ResponseField>
+
+    <ResponseField name="role" type="string">
+      The role of the user in that organization, e.g. Admin
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
 
 ### Allow organization to set up SAML connection
 
@@ -1078,6 +1135,18 @@ function updateOrg(updateOrgRequest)
 
     <ResponseField name="maxUsers" type="number">
       Updates the maximum number of users that can be in the organization.
+    </ResponseField>
+
+    <ResponseField name="domain" type="string">
+      The domain the organization should be associated with
+    </ResponseField>
+
+    <ResponseField name="enableAutoJoiningByDomain" type="boolean">
+      If true, any user whose email has a matching domain can join the organization without being invited.
+    </ResponseField>
+
+    <ResponseField name="membersMustHaveMatchingDomain" type="boolean">
+      If true, any user whose email does not match the domain can not join or be invited to the organization.
     </ResponseField>
 
   </Expandable>
