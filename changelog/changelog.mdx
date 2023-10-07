@@ -6,6 +6,20 @@ description: A list of user-facing changes made to the PropelAuth product
 This changelog includes important updates to PropelAuth. For larger features, we'll provide links where you can find more details.
 For any item with the **Beta** label, if you are interested in testing it out, please email us at [support@propelauth.com](mailto:support@propelauth.com).
 
+
+### 2023-10-06
+
+| **Feature** | Our Node and Express libraries have been updated to include `clearPassword` and `inviteUser.`
+| **Improvement** | Additional arguments have been added to `createOrg`, `updateOrgMetadata` and `updateUserMetadata` in our Node and Express libraries. |
+| **Feature** | Our Go library has been updated to include `ClearPassword`, `Disable2FA`, `ChangeRole.` and `CreateOrgV2`
+| **Improvement** | Additional arguments have been added to `updateOrg` in our Go library. |
+| **Feature** | Our Rust library has been updated to include `create_access_token`, `delete_org`, and `clear_password` 
+| **Improvement** | Additional arguments have been added to `update_org` and `update_user_metadata` in our Rust library. |
+| **Improvement** | Added a force refresh option to `getUserFromServerSideProps` in our Next.js library |
+| **Improvement** | Reduced the cases where Next.js middleware was necessary. |
+| **Bugfix** | Fixed some issues in our Next.js library around logout |
+
+
 ### 2023-09-29
 | Category | Description |
 |--|----|
