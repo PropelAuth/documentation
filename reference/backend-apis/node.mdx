@@ -676,7 +676,7 @@ function updateUserMetadata(userId, updateUserMetadataRequest)
         Optional custom metadata dictionary
     </ResponseField>
 
-    <ResponseField name="updatePasswordRequired" type="Boolean">
+    <ResponseField name="updatePasswordRequired" type="boolean">
         If True, the user will be prompted to change their password when they next log in.
     </ResponseField>
 
@@ -934,11 +934,11 @@ function createOrg(createOrgRequest)
       The domain the organization should be associated with
     </ResponseField>
 
-    <ResponseField name="enableAutoJoiningByDomain" type="Boolean">
+    <ResponseField name="enableAutoJoiningByDomain" type="boolean">
       If true, any user whose email has a matching domain can join the organization without being invited.
     </ResponseField>
 
-    <ResponseField name="membersMustHaveMatchingDomain" type="Boolean">
+    <ResponseField name="membersMustHaveMatchingDomain" type="boolean">
       If true, any user whose email does not match the domain can not join or be invited to the organization.
     </ResponseField>
 
@@ -1064,11 +1064,11 @@ function updateOrg(updateOrgRequest)
       The domain the organization should be associated with
     </ResponseField>
 
-    <ResponseField name="enableAutoJoiningByDomain" type="Boolean">
+    <ResponseField name="enableAutoJoiningByDomain" type="boolean">
       If true, any user whose email has a matching domain can join the organization without being invited.
     </ResponseField>
 
-    <ResponseField name="membersMustHaveMatchingDomain" type="Boolean">
+    <ResponseField name="membersMustHaveMatchingDomain" type="boolean">
       If true, any user whose email does not match the domain can not join or be invited to the organization.
     </ResponseField>
 
