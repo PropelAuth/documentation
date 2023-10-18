@@ -97,7 +97,8 @@
       "pages": [
         "getting-started/ui-customization",
         "getting-started/authentication-options",
-        "getting-started/user-metadata"
+        "getting-started/user-metadata",
+        "getting-started/emails"
       ]
     },
     {
