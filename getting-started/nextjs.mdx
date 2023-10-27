@@ -44,6 +44,11 @@ For the ```PROPELAUTH_REDIRECT_URI``` variable, you need to add ```/api/auth/cal
 allowed frontend locations. So, for example, if you are developing in the test environment and 
 using http://localhost:3000, you would use http://localhost:3000/api/auth/callback
 
+Finally, in the **Frontend Integration** section of your dashboard, make sure to add `/api/auth/callback` as the Default redirect path after login, and `/api/auth/logout` 
+as the Default redirect path after logout.
+
+![nextjs frontend locations](/images/nextjs-frontend-locations.png)
+
 ### Set up routes
 
 In your `src/app/api/auth/[slug]` directory, create a file called `route.ts` with the following content:
@@ -62,6 +67,8 @@ export const GET = routeHandlers.getRouteHandler
 export const POST = routeHandlers.postRouteHandler
 ```
 
+If you would like to adjust the path users are redirected to after logging in, you can change the returned path above.
+
 ### Set up AuthProvider
 
 <Tabs>
@@ -69,7 +76,7 @@ export const POST = routeHandlers.postRouteHandler
 		In your root layout, `src/app/layout.tsx`, add the `AuthProvider`:
 
 		```tsx
-                import {AuthProvider} from "@propelauth/nextjs/client";
+        import {AuthProvider} from "@propelauth/nextjs/client";
 
 		export default async function RootLayout({children}: {children: React.ReactNode}) {
 		    return (
@@ -86,7 +93,7 @@ export const POST = routeHandlers.postRouteHandler
 		In your _app.tsx file, add the AuthProvider:
 
 		```tsx
-                import {AuthProvider} from "@propelauth/nextjs/client";
+        import {AuthProvider} from "@propelauth/nextjs/client";
 
 		export default function MyApp({Component, pageProps}: AppProps) {
 			return (
@@ -261,6 +268,7 @@ export default function LogoutButton() {
 If you don't want to use redirect functions, you can also use `useHostedPageUrls` which will 
 return the URLs instead of redirecting.
 
+
 ```tsx
 "use client"
 
@@ -269,11 +277,14 @@ import {useRedirectFunctions} from "@propelauth/nextjs/client";
 export default function SignupAndLoginButtons() {
 	const {redirectToSignupPage, redirectToLoginPage} = useRedirectFunctions()
 	return <>
-		<button onClick={redirectToSignupPage}>Sign up</button>
-		<button onClick={redirectToLoginPage}>Log in</button>
+		<button onClick={() => redirectToSignupPage()}>Sign up</button>
+		<button onClick={() => redirectToLoginPage()}>Log in</button>
 	</>
 }
 ```
+
+For the redirect functions, you can either call them as seen below, or provide alternative paths post login or signup using the following pattern: 
+`redirectToSignupPage({postSignupRedirectPath: "/somewhere-else"})` or `redirectToLoginPage({postLoginRedirectPath: "/somewhere-else"})`
 
 ### Redirecting to Account / Org pages
 
