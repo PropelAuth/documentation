@@ -47,6 +47,8 @@ using http://localhost:3000, you would use http://localhost:3000/api/auth/callba
 Finally, in the **Frontend Integration** section of your dashboard, make sure to add `/api/auth/callback` as the Default redirect path after login, and `/api/auth/logout` 
 as the Default redirect path after logout.
 
+![nextjs frontend locations](/images/nextjs-frontend-locations.png)
+
 ### Set up routes
 
 In your `src/app/api/auth/[slug]` directory, create a file called `route.ts` with the following content:
@@ -175,7 +177,7 @@ sure to keep your desired functionality in mind when choosing which components t
 		}
 
 		export const getServerSideProps: GetServerSideProps = async (context) => {
-			const user = await getUserFromServerSideProps(context, true)
+			const user = await getUserFromServerSideProps(context)
 			if (!user) {
 				return {redirect: {destination: '/api/auth/login', permanent: false}}
 			}
@@ -275,13 +277,13 @@ import {useRedirectFunctions} from "@propelauth/nextjs/client";
 export default function SignupAndLoginButtons() {
 	const {redirectToSignupPage, redirectToLoginPage} = useRedirectFunctions()
 	return <>
-		<button onClick={redirectToSignupPage()}>Sign up</button>
-		<button onClick={redirectToLoginPage()}>Log in</button>
+		<button onClick={() => redirectToSignupPage()}>Sign up</button>
+		<button onClick={() => redirectToLoginPage()}>Log in</button>
 	</>
 }
 ```
 
-For the reidrect functions, you can either call them as seen below, or provide alternative paths post login or signup using the following pattern: 
+For the redirect functions, you can either call them as seen below, or provide alternative paths post login or signup using the following pattern: 
 `redirectToSignupPage({postSignupRedirectPath: "/somewhere-else"})` or `redirectToLoginPage({postLoginRedirectPath: "/somewhere-else"})`
 
 ### Redirecting to Account / Org pages
