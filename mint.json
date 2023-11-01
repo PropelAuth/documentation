@@ -66,6 +66,7 @@
       "pages": [
         "overview",
         "overview/dashboard",
+        "overview/insights",
         "overview/hosted-pages",
         "overview/integration",
         "overview/organizations",
