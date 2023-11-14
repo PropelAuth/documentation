@@ -29,7 +29,7 @@ user created after the migration.
 
 Passwords should **never** be stored in plaintext or any recoverable form. Our
 migration API doesn't take in a password, it takes in a password hash. We
-support both BCrypt and Argon2 hashes and by providing your user's password
+support both BCrypt, Argon2 and PBKDF2 hashes and by providing your user's password
 hash, they will be able to log in with their existing password.
 
 ### Maintaining MFA
